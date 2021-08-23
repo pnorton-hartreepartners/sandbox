@@ -1,0 +1,62 @@
+{
+  "curve_id": 100123456,
+  "metadata": {
+    "source": {
+      "name": "ice",
+      "product": {
+        "id": 4331,
+        "symbol": "TTF",
+        "url": "https://www.theice.com/products/27996665/Dutch-TTF-Gas-Futures",
+        "delivery": {
+          "delivers": "physical",
+          "period": "day",
+          "start": "0600 hrs"
+        },
+        "size": {
+          "one_lot": "1MW"
+        }
+      },
+      "versions": {
+        "1": "Settlement",
+        "2": "Settlement-Indicative"
+      },
+      "expiry_calendar": {
+        "name": "ICE gas",
+        "rule": "eom-1bd"
+      },
+      "ownership": {
+        "name": "pnorton",
+        "update": "2021-18-16 12:00"
+      }
+    },
+    "provider": {
+      "name": "TT",
+      "schedule": "D+1 0300 UTC",
+      "ownership": {
+        "name": "pnorton",
+        "update": "2021-18-16 12:00"
+      }
+    },
+    "measure": {
+      "name": "price"
+    },
+    "units": {
+      "quantity": "mwh",
+      "currency": {
+        "symbol": "EUR",
+        "multiplier": 1.0
+      }
+    },
+    "name": {
+      "default": "ICE_TTF",
+      "gas_desk": "ICE_TTF_EUR",
+      "power_desk": "TTF"
+    },
+    "usage": {
+      "eod": {
+        "etrm": "tempest"
+      },
+      "availability": "none"
+    }
+  }
+}

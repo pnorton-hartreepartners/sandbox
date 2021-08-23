@@ -1,0 +1,152 @@
+{
+  "chart": "Naphtha crack Q4Q1 v days to expiry",
+  "structure": "NAP-CRK",
+  "date_func": "Daily",
+  "curves": [
+    {
+      "Q4Q120": {
+        "offset": "None",
+        "legs": [
+          {
+            "Q420": {
+              "factor": 1,
+              "aggregate": "SimpleAverage",
+              "legs": [
+                {
+                  "Oct20": {
+                    "forward_date": [
+                      "2020-10-01",
+                      "2020-10-01"
+                    ]
+                  }
+                },
+                {
+                  "Nov20": {
+                    "forward_date": [
+                      "2020-11-01",
+                      "2020-11-01"
+                    ]
+                  }
+                },
+                {
+                  "Dec20": {
+                    "forward_date": [
+                      "2020-12-01",
+                      "2020-12-01"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Q121": {
+              "factor": -1,
+              "aggregate": "SimpleAverage",
+              "legs": [
+                {
+                  "Jan21": {
+                    "forward_date": [
+                      "2021-01-01",
+                      "2021-01-01"
+                    ]
+                  }
+                },
+                {
+                  "Feb21": {
+                    "forward_date": [
+                      "2021-02-01",
+                      "2021-02-01"
+                    ]
+                  }
+                },
+                {
+                  "Mar21": {
+                    "forward_date": [
+                      "2021-03-01",
+                      "2021-03-01"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Q4Q119": {
+        "offset": {
+          "func": "BusinessDaysToExpiry",
+          "versus": "Q4Q120"
+        },
+        "legs": [
+          {
+            "Q419": {
+              "factor": 1,
+              "aggregate": "SimpleAverage",
+              "legs": [
+                {
+                  "Oct19": {
+                    "forward_date": [
+                      "2019-10-01",
+                      "2019-10-01"
+                    ]
+                  }
+                },
+                {
+                  "Nov19": {
+                    "forward_date": [
+                      "2019-11-01",
+                      "2019-11-01"
+                    ]
+                  }
+                },
+                {
+                  "Dec19": {
+                    "forward_date": [
+                      "2019-12-01",
+                      "2019-12-01"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Q120": {
+              "factor": -1,
+              "aggregate": "SimpleAverage",
+              "legs": [
+                {
+                  "Jan20": {
+                    "forward_date": [
+                      "2020-01-01",
+                      "2020-01-01"
+                    ]
+                  }
+                },
+                {
+                  "Feb20": {
+                    "forward_date": [
+                      "2020-02-01",
+                      "2020-02-01"
+                    ]
+                  }
+                },
+                {
+                  "Mar20": {
+                    "forward_date": [
+                      "2020-03-01",
+                      "2020-03-01"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

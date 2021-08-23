@@ -1,0 +1,22 @@
+{
+  "examples": [
+    {
+      "name": {
+        "select": "display_name"
+      },
+      "columns": "min",
+      "versions": "True"
+    },
+    {
+      "name": {
+        "define": "TTF"
+      },
+      "columns": "max",
+      "versions": "False"
+    },
+    {
+      "name": {
+        "select": "symbol"
+      },
+  ]
+}
