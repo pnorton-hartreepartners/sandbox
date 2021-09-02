@@ -22,13 +22,13 @@ and instrument_key < '{yearmonth}'
 and char_length(instrument_key) = {length}  --<-- exclude options here
 and field = 'Price'
 and label = 'Settlement'
-and date >= '2021-07-01'
+and date >= '{date}'
 group by exchange, "date", field, label, "source"
 ) prod
 full outer join 
 (
 SELECT exchange, "date", field, label, "source", sum(value) as value, count(*) as curve_length
-FROM settles.values_2
+FROM settles.values
 where exchange = '{exchange}'
 and source = 'TT'
 and instrument_key like '{symbol} %'
@@ -37,7 +37,7 @@ and instrument_key < '{yearmonth}'
 and char_length(instrument_key) = {length}  --<-- exclude options here
 and field = 'Price'
 and label = 'Settlement'
-and date >= '2021-07-01'
+and date >= '{date}'
 group by exchange, "date", field, label, "source"
 ) uat
 on prod.exchange = uat.exchange
@@ -48,7 +48,17 @@ order by prod.date
 """
 
 sql_detail_template = """
-select '{symbol}' as symbol, prod.*, uat.label, uat.value,
+select '{symbol}' as symbol,
+nullif(uat.exchange, prod.exchange) as exchange,
+uat.instrument_key as uat_instrument_key,
+prod.instrument_key as prod_instrument_key,
+nullif(uat.date, prod.date) as date,
+nullif(uat.field, prod.field) as field,
+uat.source as uat_source,
+prod.source as prod_source,
+uat.label as uat_label,
+prod.value as prod_value,
+uat.value as uat_value,
 prod.value - uat.value as value_diff
 from 
 (
@@ -67,7 +77,7 @@ and date = '{date}'
 full outer join 
 (
 SELECT *
-FROM settles.values_2
+FROM settles.values
 where exchange = '{exchange}'
 and source = 'TT'
 and instrument_key like '{symbol} %'
@@ -94,10 +104,10 @@ class Exchange(Enum):
     CME = 'CME'
 
 
-def get_checksum(exchange, symbol, yearmonth, engine):
+def get_checksum(exchange, symbol, date, yearmonth, engine):
     length = len(symbol) + 7
     yearmonth = symbol + ' ' + yearmonth
-    sql = sql_checksum_template.format(exchange=exchange, symbol=symbol, length=length, yearmonth=yearmonth)
+    sql = sql_checksum_template.format(exchange=exchange, symbol=symbol, date=date, length=length, yearmonth=yearmonth)
     return pd.read_sql(sql, con=engine)
 
 
@@ -116,6 +126,9 @@ def get_args():
                         help='detail or checksum',
                         choices=['detail', 'checksum'],
                         required=True)
+    parser.add_argument('-v', '--version',
+                        help='indicative or final',
+                        choices=['indicative', 'final'])
     parser.add_argument('-e', '--exchange',
                         help='CME or ICE',
                         choices=['CME', 'ICE'],
@@ -126,8 +139,15 @@ def get_args():
 if __name__ == "__main__":
     '''
     from the command prompt:
-    >>> python settles_feed.py -e ICE -d 2021-08-12 -r checksum
-    >>> python settles_feed.py -e ICE -d 2021-08-12 -r detail
+    
+    this runs checksum for every day since the given date
+    >>> python settles_feed.py -e ICE -d 2021-08-01 -r checksum
+    
+    test the indicative feed for current date (today is 2-sep)
+    >>> python settles_feed.py -e ICE -d 2021-09-02 -r detail -v indicative
+    
+    test the final version for yesterday
+    >>> python settles_feed.py -e ICE -d 2021-09-01 -r detail -v final
     '''
 
     # ============================
@@ -142,22 +162,26 @@ if __name__ == "__main__":
 
     # arguments from command line
     args = get_args()
-    eod_date_sql = args.eod_date
-    report_selection = args.report
-    exchange = args.exchange
+    try:
+        eod_date_sql = args.eod_date
+        report_selection = args.report
+        exchange = args.exchange
+        version = args.version
+    except Exception as e:
+        pass
 
     symbols_dict = {Exchange.ICE.value: ice_symbols,
                     Exchange.CME.value: cme_symbols
                     }
     symbols = symbols_dict[exchange]
-    # eod_date_sql = dt.date(2021, 8, 12)
-    # report_selection = 'detail'
-    # exchange = 'ICE'
-
 
     # report selection
     run_checksum = True if report_selection == 'checksum' else False
     run_detail = True if report_selection == 'detail' else False
+    if version == 'indicative':
+        version = Version.INDICATIVE.value
+    elif version == 'final':
+        version = Version.FINAL.value
 
     # variables used for setting file name
     eod_date_str = eod_date_sql.strftime('%Y%m%d')
@@ -177,14 +201,12 @@ if __name__ == "__main__":
     if run_checksum:
         with pd.ExcelWriter(checksum_file) as writer:
             for symbol in symbols:
-                df = get_checksum(exchange=exchange, symbol=symbol, yearmonth=yearmonth, engine=engine)
+                df = get_checksum(exchange=exchange, symbol=symbol, date=eod_date_sql, yearmonth=yearmonth, engine=engine)
                 df.to_excel(writer, sheet_name=symbol)
 
     if run_detail:
-        for version in Version:
-            detail_file = os.path.join(path, detail_filename_dict[version.value].format(eod_date_str=eod_date_str, exchange=exchange, report_run_date=report_run_date_str))
-
-            with pd.ExcelWriter(detail_file) as writer:
-                for symbol in symbols:
-                    df = get_detail(exchange=exchange, symbol=symbol, uat_label=version.value, date=eod_date_sql, engine=engine)
-                    df.to_excel(writer, sheet_name=symbol)
+        detail_file = os.path.join(path, detail_filename_dict[version].format(eod_date_str=eod_date_str, exchange=exchange, report_run_date=report_run_date_str))
+        with pd.ExcelWriter(detail_file) as writer:
+            for symbol in symbols:
+                df = get_detail(exchange=exchange, symbol=symbol, uat_label=version, date=eod_date_sql, engine=engine)
+                df.to_excel(writer, sheet_name=symbol)
