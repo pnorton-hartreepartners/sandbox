@@ -1,22 +1,22 @@
 {
   "examples": [
     {
-      "name": {
-        "select": "display_name"
-      },
-      "columns": "min",
+      "name_choice": "select",
+      "name": "display_name"
+    },
+
+    {
+      "name_choice": "select",
+      "name": "symbol",
       "versions": "True"
     },
+
     {
-      "name": {
-        "define": "TTF"
-      },
-      "columns": "max",
-      "versions": "False"
-    },
-    {
-      "name": {
-        "select": "symbol"
-      },
+      "name_choice": "define",
+      "name": "TTF",
+      "columns": "all",
+      "versions": "False",
+      "pivot": "True"
+    }
   ]
 }
