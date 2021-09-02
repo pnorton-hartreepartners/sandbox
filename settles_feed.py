@@ -121,7 +121,8 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--eod_date',
                         help='format YYYY-MM-DD',
-                        type=dt.date.fromisoformat)
+                        type=dt.date.fromisoformat,
+                        required=True)
     parser.add_argument('-r', '--report',
                         help='detail or checksum',
                         choices=['detail', 'checksum'],
@@ -129,9 +130,13 @@ def get_args():
     parser.add_argument('-v', '--version',
                         help='indicative or final',
                         choices=['indicative', 'final'])
-    parser.add_argument('-e', '--exchange',
+    parser.add_argument('-x', '--exchange',
                         help='CME or ICE',
                         choices=['CME', 'ICE'],
+                        required=True)
+    parser.add_argument('-e', '--env',
+                        help='prod or dev',
+                        choices=['prod', 'dev'],
                         required=True)
     return parser.parse_args()
 
@@ -141,17 +146,19 @@ if __name__ == "__main__":
     from the command prompt:
     
     this runs checksum for every day since the given date
-    >>> python settles_feed.py -e ICE -d 2021-08-01 -r checksum
+    >>> python settles_feed.py -x ICE -d 2021-08-20 -r checksum -e dev
     
     test the indicative feed for current date (today is 2-sep)
-    >>> python settles_feed.py -e ICE -d 2021-09-02 -r detail -v indicative
+    >>> python settles_feed.py -x ICE -d 2021-09-02 -r detail -v indicative -e dev
     
     test the final version for yesterday
-    >>> python settles_feed.py -e ICE -d 2021-09-01 -r detail -v final
+    >>> python settles_feed.py -x ICE -d 2021-09-01 -r detail -v final -e dev
     '''
 
     # ============================
     # some config
+    prod_str = 'ttda.storage.mosaic.hartreepartners.com:4200'
+    dev_str = 'ttda.cratedb-dev-cluster.mosaic.hartreepartners.com:4200'
 
     ice_symbols = ['TTF', 'UKF', 'NBP', 'G', 'EUA', 'B']
     cme_symbols = ['CL', 'NG', 'HO', 'XAU']
@@ -167,6 +174,7 @@ if __name__ == "__main__":
         report_selection = args.report
         exchange = args.exchange
         version = args.version
+        env = args.env
     except Exception as e:
         pass
 
@@ -174,6 +182,10 @@ if __name__ == "__main__":
                     Exchange.CME.value: cme_symbols
                     }
     symbols = symbols_dict[exchange]
+
+    conn_dict = {'dev': dev_str,
+                 'prod': prod_str}
+    conn_str = conn_dict[env]
 
     # report selection
     run_checksum = True if report_selection == 'checksum' else False
@@ -195,7 +207,7 @@ if __name__ == "__main__":
     eod_date_sql = eod_date_sql.strftime('%Y-%m-%d')
 
     # set up db connection
-    os.environ['CRATE_HOST'] = 'ttda.storage.mosaic.hartreepartners.com:4200'
+    os.environ['CRATE_HOST'] = conn_str
     engine = get_engine(EngineInstance.TTDA, timeout=20, debug=False)
 
     if run_checksum:
