@@ -146,13 +146,13 @@ if __name__ == "__main__":
     from the command prompt:
     
     this runs checksum for every day since the given date
-    >>> python settles_feed.py -x ICE -d 2021-08-20 -r checksum -e dev
+    >>> python settles_feed.py -x ICE -d 2021-08-20 -r checksum -e prod
     
     test the indicative feed for current date (today is 2-sep)
-    >>> python settles_feed.py -x ICE -d 2021-09-02 -r detail -v indicative -e dev
+    >>> python settles_feed.py -x ICE -d 2021-09-02 -r detail -v indicative -e prod
     
     test the final version for yesterday
-    >>> python settles_feed.py -x ICE -d 2021-09-01 -r detail -v final -e dev
+    >>> python settles_feed.py -x ICE -d 2021-09-01 -r detail -v final -e prod
     '''
 
     # ============================
