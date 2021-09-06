@@ -1,0 +1,47 @@
+{
+  "hub": {
+    "name": "rotterdam",
+    "inco_term": "fob",
+    "screen-name": "rott fob"
+  },
+  "product": {
+    "primary": "isobutane",
+    "sulphur": {
+      "quantity": 3.5,
+      "uom": "percent"
+    },
+    "octane": {
+      "quantity": 95,
+      "uom": "RON"
+    },
+    "screen-name": "isobutane 3.5 95 RON"
+  },
+  "contract": {
+    "contract": "future",
+    "screen-name": "F"
+  },
+  "pricing": {
+    "basis": 10001234,
+    "screen-name": "basis GO"
+  },
+  "settlement": {
+    "deliver": {
+      "deliver": "cash",
+      "calculation": "month-ahead average"
+    },
+    "screen-name": "NB"
+  },
+  "units": {
+    "quantity": "mwh",
+    "currency": {
+      "symbol": "GBP",
+      "multiplier": 0.01
+    },
+    "screen-name": "GBp/MWh"
+  },
+  "data-source": {
+    "source": "ICE",
+    "provider": "TT",
+    "screen-name": "ICE"
+  }
+}
