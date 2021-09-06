@@ -1,6 +1,7 @@
 {
   "hub": {
     "name": "rotterdam",
+    "short_name": "rott",
     "inco_term": "fob",
     "screen-name": "rott fob"
   },
@@ -20,9 +21,10 @@
     "contract": "future",
     "screen-name": "F"
   },
-  "pricing": {
+  "price": {
     "basis": 10001234,
-    "screen-name": "basis GO"
+    "type": "mid",
+    "screen-name": "mid basis GO"
   },
   "settlement": {
     "deliver": {
