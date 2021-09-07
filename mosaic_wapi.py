@@ -49,6 +49,7 @@ def build_symbol_df(host, exchange, symbol, forward_dates):
     if not dfs.empty:
         dfs = dfs[['symbol', 'date', 'forward_date', 'value']]
         dfs.sort_values(['symbol', 'date', 'forward_date', 'value'], inplace=True)
+        dfs.rename(columns={'date': 'observation_date'}, inplace=True)
     return dfs
 
 

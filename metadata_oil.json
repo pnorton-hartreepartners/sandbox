@@ -1,49 +1,146 @@
-{
-  "hub": {
-    "name": "rotterdam",
-    "short_name": "rott",
-    "inco_term": "fob",
-    "screen-name": "rott fob"
+[
+  {
+    "curve_id": 10000000,
+    "metadata": {
+      "hub": {
+        "name": "rotterdam",
+        "short_name": "rott",
+        "port_code": "NL RTM",
+        "inco_term": "fob",
+        "vessel": "barge",
+        "search": "rott fob barges"
+      },
+      "product": {
+        "primary": {
+          "name": "gasoline",
+          "calorific_value": "high",
+          "viscosity": {
+            "quantity": 380,
+            "uom": "centistokes"
+          },
+          "octane": {
+            "quantity": 95,
+            "uom": "RON"
+          }
+        },
+        "sulphur": {
+          "quantity": 3.5,
+          "uom": "percent"
+        },
+        "search": "gasoline hi-cal 3.5 95 RON"
+      },
+      "contract": {
+        "contract": "future",
+        "search": "F"
+      },
+      "price": {
+        "basis": 10001234,
+        "type": "mid",
+        "search": "mid basis GO"
+      },
+      "settlement": {
+        "deliver": {
+          "deliver": "cash",
+          "calculation": "month-ahead average"
+        },
+        "search": "NB"
+      },
+      "units": {
+        "quantity": "mwh",
+        "currency": {
+          "symbol": "GBP",
+          "multiplier": 0.01
+        },
+        "search": "GBp/MWh"
+      },
+      "data": {
+        "source": "ICE",
+        "provider": "TT",
+        "search": "ICE"
+      },
+      "external": {
+        "ice": {
+          "name": "Fuel Oil 3.5% FOB Rotterdam Barges Future"
+        },
+        "hdq": {
+          "symbol": "UsgcUnlPpr"
+        },
+        "bloomberg": {
+          "ticker_stem": "CL",
+          "func_key": "index"
+        }
+      }
+    }
   },
-  "product": {
-    "primary": "isobutane",
-    "sulphur": {
-      "quantity": 3.5,
-      "uom": "percent"
-    },
-    "octane": {
-      "quantity": 95,
-      "uom": "RON"
-    },
-    "screen-name": "isobutane 3.5 95 RON"
-  },
-  "contract": {
-    "contract": "future",
-    "screen-name": "F"
-  },
-  "price": {
-    "basis": 10001234,
-    "type": "mid",
-    "screen-name": "mid basis GO"
-  },
-  "settlement": {
-    "deliver": {
-      "deliver": "cash",
-      "calculation": "month-ahead average"
-    },
-    "screen-name": "NB"
-  },
-  "units": {
-    "quantity": "mwh",
-    "currency": {
-      "symbol": "GBP",
-      "multiplier": 0.01
-    },
-    "screen-name": "GBp/MWh"
-  },
-  "data-source": {
-    "source": "ICE",
-    "provider": "TT",
-    "screen-name": "ICE"
+  {
+    "curve_id": 10000001,
+    "metadata": {
+      "hub": {
+        "name": "Rotterdam",
+        "port_code": "NL RTM",
+        "inco_term": "FOB",
+        "vessel": "barges",
+        "search": "FOB Rotterdam Barges"
+      },
+      "product": {
+        "primary": {
+          "name": "fuel oil",
+          "aka": ["FO", "HSFO"]
+        },
+        "sulphur": {
+          "quantity": 3.5,
+          "uom": "percent"
+        },
+        "viscosity": {
+          "quantity": 380,
+          "uom": "centistokes"
+        },
+        "search": "Fuel Oil 3.5%"
+      },
+      "contract": {
+        "contract": "future",
+        "search": "F"
+      },
+      "term": {"tenor": "month"},
+      "price": {
+        "basis": 10001234,
+        "type": "mid",
+        "search": "mid basis BRENT"
+      },
+      "settlement": {
+        "deliver": {
+          "deliver": "cash",
+          "calculation": "average"
+        },
+        "search": ""
+      },
+      "units": {
+        "quantity": "mwh",
+        "currency": {
+          "symbol": "GBP",
+          "multiplier": 0.01
+        },
+        "search": "GBp/MWh"
+      },
+      "data": {
+        "source": "CME",
+        "provider": "TT",
+        "settlement": "Platts",
+        "search": "Platts"
+      },
+      "external": {
+        "ice": {
+          "name": "Fuel Oil 3.5% FOB Rotterdam Barges Future",
+          "url": "https://www.theice.com/products/6753479/Fuel-Oil-35-FOB-Rotterdam-Barges-Future"
+        },
+        "hdq": {
+          "symbol": "HS3.5ROTTDM"
+        },
+        "bloomberg": {
+          "ticker_stem": "FSRO",
+          "func_key": "Index"
+        }
+      }
+    }
   }
-}
+]

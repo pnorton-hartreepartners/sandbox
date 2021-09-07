@@ -1,4 +1,4 @@
-{
+[{
   "curve_id": 100123456,
   "metadata": {
     "source": {
@@ -59,4 +59,7 @@
       "availability": "none"
     }
   }
-}
+},
+{
+  "curve_id": 100123457
+}]
