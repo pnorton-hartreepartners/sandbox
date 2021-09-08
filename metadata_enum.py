@@ -74,6 +74,16 @@ class Tenor(Enum):
     QUARTER = 'quarter'
 
 
+class UnderlyingTenor(Enum):
+    DATED = 'dated'
+    DAY = 'day'
+    MONTH = 'month'
+
+
+class UnderlyingSource(Enum):
+    PLATTS = 'platts'
+
+
 class PriceCalc(Enum):
     BASIS = 'basis'
     CRACK = 'crack'
@@ -83,6 +93,16 @@ class PriceCalc(Enum):
 class Size(Enum):
     MINI = 'mini'
     NORMAL = 'normal'
+
+
+class Index(Enum):
+    MA1 = 'month ahead average'
+    MA1_ADJ = 'month ahead average with roll adjust'
+
+
+class Deliver(Enum):
+    CASH = 'cash'
+    PHYSICAL = 'physical'
 
 
 @dataclass
@@ -98,25 +118,26 @@ class Sulphur:
     flavours = ['sweet', 'sour']
     percentages = [0.5, 3.5]
 
-    @classmethod
-    def flavour(cls, value):
-        if value in Sulphur.flavours:
-            return value
-
-    @classmethod
-    def ppm(cls, value):
-        return value
-
-    @classmethod
-    def percent(cls, value):
-        if value in Sulphur.percentages:
-            return value
+    def __init__(self, key, value):
+        self.key = key
+        if self.key == 'flavour' and value in Sulphur.flavours:
+            self.value = value
+        elif self.key == 'percentage' and value in Sulphur.percentages:
+            self.value = value
+        elif self.key == 'ppm':
+            self.value = value
+        else:
+            raise NotImplementedError
 
 
 @dataclass
 class Viscosity:
     viscosities = [180, 380]
     VALUE: float
+
+    def __init__(self, value):
+        if value in Viscosity.viscosities:
+            self.VALUE = value
 
 
 # locations
@@ -126,18 +147,31 @@ BRAZIL = ['Manaus', 'Itaqui', 'Suape', 'Aratu', 'Santos', 'Paranagua', 'Tramanda
 
 
 if __name__ == '__main__':
-    brent = (Product.CRUDE, Hub.NORTHSEA)
 
-    wti = (Product.CRUDE, Hub.CUSHING, Incoterm.FOB)
+    # https://www.theice.com/products/219/Brent-Crude-Futures
+    ice_brent_futures = (Source.ICE, Product.CRUDE, Hub.NORTHSEA, Contract.FUTURES)
 
-    dubai = (Product.CRUDE, Hub.DUBAI)
+    # https://www.theice.com/products/6753532/Brent-1st-Line-Future
+    ice_brent_first_line = (Source.ICE, Product.CRUDE, Hub.NORTHSEA, Contract.SWAP, Index.MA1_ADJ)
 
-    rbob = (Product.GASOLINE, Hub.NEWYORKHARBOUR, Incoterm.FOB)
+    # https://www.theice.com/products/6753541
+    ice_brent_dated = (Source.ICE, Product.CRUDE, Hub.NORTHSEA, Contract.FUTURES, UnderlyingTenor.DATED)
 
-    ebob = (Product.GASOLINE, Hub.ROTTERDAM, Incoterm.FOB, Vessel.BARGES)
+    # https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.html
+    cme_wti = (Source.CME, Product.CRUDE, Hub.CUSHING)
 
+    # https://www.cmegroup.com/markets/energy/crude-oil/dubai-crude-oil-calendar-swap-futures.contractSpecs.html
+    dubai = (Source.CME, Product.CRUDE, Hub.DUBAI, PriceCalc.OUTRIGHT)
+
+    # https://www.cmegroup.com/markets/energy/refined-products/rbob-gasoline.html
+    rbob = (Source.CME, Product.GASOLINE, Hub.NEWYORKHARBOUR, Incoterm.FOB)
+
+    # https://www.theice.com/products/6753470/Argus-Eurobob-Oxy-FOB-Rotterdam-Barges-Future
+    ebob = (Source.ICE, Product.GASOLINE, Hub.ROTTERDAM, Incoterm.FOB, Vessel.BARGES)
+
+    # https://www.theice.com/products/6753545/Singapore-Mogas-95-Unleaded-Platts-Future
     Octane.RON = 95
-    singapore_mogas_95 = (Product.GASOLINE, Hub.SINGAPORE, Octane.RON)
+    singapore_mogas_95 = (Source.ICE, Product.GASOLINE, Hub.SINGAPORE, Octane.RON)
 
 '''
     # regex definition of permitted strings of numbers
