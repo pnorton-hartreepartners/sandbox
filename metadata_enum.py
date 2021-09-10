@@ -4,6 +4,13 @@ from collections import namedtuple
 import re
 
 
+class Source(Enum):
+    ARGUS = 'argus'
+    PLATTS = 'platts'
+    CME = 'cme'
+    ICE = 'ICE'
+
+
 class Product(Enum):
     CRUDE = 'crude'
     GASOLINE = 'gasoline'
@@ -28,13 +35,6 @@ class Hub(Enum):
     CUSHING = 'cushing'
     ARABGULF = 'arab gulf'
     DUBAI = 'dubai'
-
-
-class Source(Enum):
-    ARGUS = 'argus'
-    PLATTS = 'platts'
-    CME = 'cme'
-    ICE = 'ICE'
 
 
 class Vessel(Enum):
@@ -138,6 +138,12 @@ class Viscosity:
     def __init__(self, value):
         if value in Viscosity.viscosities:
             self.VALUE = value
+
+
+class Gravity(Enum):
+    HEAVY = 'heavy'
+    INTERMEDIATE = 'intermediate'
+    LIGHT = 'light'
 
 
 # locations
