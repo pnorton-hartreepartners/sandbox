@@ -1,8 +1,17 @@
 import requests
 import pandas as pd
 import datetime as dt
+import argparse
+from constants import PROD, DEV, SETTLES, hosts
 
-SETTLES_API = 'http://settles-api.mosaic.hartreepartners.com'
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-e', '--env',
+                        help='prod or dev',
+                        choices=['prod', 'dev'],
+                        required=True)
+    return parser.parse_args()
 
 
 def decorate_result(f):
@@ -14,6 +23,19 @@ def decorate_result(f):
             return pd.DataFrame()
         return pd.DataFrame(result.json())
     return decorated
+
+
+@decorate_result
+def get_any_api(template_url, kwargs):
+    url = template_url.format(**kwargs)
+    print(f'\nurl is:\n{url}')
+    return requests.get(url)
+
+
+@decorate_result
+def get_settles_w_status_ts(host, instrument_key, exchange, allow_indicative):
+    url = f'{host}/settles/api/v1/getSettlementTS/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}'
+    return requests.get(url)
 
 
 @decorate_result
@@ -66,7 +88,44 @@ def build_from_curves_df(host, curves, start_date, periods):
 
 
 if __name__ == '__main__':
-    host = SETTLES_API
+    '''
+    >>>python mosaic_wapi.py -e dev
+    '''
+
+    template_url_dict = {
+        # time series of all results for a single contract
+        'getSettlementTS': r'{host}/settles/api/v1/getSettlementTS/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}',
+
+        # latest result for a single contract
+        'getSettlement': r'{host}/settles/api/v1/getSettlement/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}',
+
+        # latest result for a collection of symbols on a given observation date
+        'getFutureCurveSettlement': r'{host}/settles/api/v1/getFutureCurveSettlement/{symbols}/{exchange}/{stamp}&allow_indicative={allow_indicative}',
+
+        # use regex to filter instruments and parse instrument name to contract month
+        'getSettlementTSWithRegex': r'{host}/settles/api/v1/getSettlementTSWithRegex/{symbol}/{contract_regex}/{exchange}',
+    }
+
+    args = get_args()
+    env = args.env
+    host = hosts[SETTLES][env]
+
+    template = template_url_dict['getSettlementTS']
+
+    # example call data works for all apis so far
+    kwargs = {'host': host,
+              'instrument_key': 'CL 202012',
+              'exchange': 'CME',
+              'allow_indicative': 'true',
+              'symbols': 'CL%2CHO',
+              'stamp': '2021-09-14',
+              'symbol': 'CL',
+              'contract_regex': '2021SUMMER',
+              }
+
+    df = get_any_api(template_url=template, kwargs=kwargs)
+    print(df)
+    import pdb; pdb.set_trace()
 
     cme_european_naphtha_calendar_swap = ('CME', 'UN')
     ice_brent_1st_line_future = ('ICE', 'I')
