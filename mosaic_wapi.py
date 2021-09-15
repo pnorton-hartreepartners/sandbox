@@ -100,7 +100,7 @@ if __name__ == '__main__':
         'getSettlement': r'{host}/settles/api/v1/getSettlement/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}',
 
         # latest result for a collection of symbols on a given observation date
-        'getFutureCurveSettlement': r'{host}/settles/api/v1/getFutureCurveSettlement/{symbols}/{exchange}/{stamp}&allow_indicative={allow_indicative}',
+        'getFutureCurveSettlement': r'{host}/settles/api/v1/getFutureCurveSettlement/{symbols}/{exchange}/{stamp}?allow_indicative={allow_indicative}',
 
         # use regex to filter instruments and parse instrument name to contract month
         'getSettlementTSWithRegex': r'{host}/settles/api/v1/getSettlementTSWithRegex/{symbol}/{contract_regex}/{exchange}',
