@@ -1,22 +1,31 @@
 [
   {
-    "help": "this is a collection of outrights; with timeseries adjusted to show seasonality",
-    "definition": {
-      "analysis": "outright",
+    "help": "this is a collection of simple outrights",
+    "builder": {
+      "analysis": "collection",
       "curves": [
         {
-          "symbol": "BR_F",
-          "contract": "202103",
+          "definition": "curve",
+          "curve": {
+            "symbol": "BR_F",
+            "contract": "202103"
+          },
           "factor": 1
         },
         {
-          "symbol": "WTI_F",
-          "contract": "202103",
+          "definition": "curve",
+          "curve": {
+            "symbol": "WTI_F",
+            "contract": "202103"
+          },
           "factor": 1
         },
         {
-          "symbol": "BR_F",
-          "contract": "202106",
+          "definition": "curve",
+          "curve": {
+            "symbol": "BR_F",
+            "contract": "202106"
+          },
           "factor": 1
         }
       ]
@@ -33,18 +42,24 @@
     }
   },
   {
-    "help": "a single cross-product timespread; with timeseries adjusted to show seasonality",
-    "definition": {
+    "help": "a single cross-product timespread",
+    "builder": {
       "analysis": "calculation",
       "curves": [
         {
-          "symbol": "BR_F",
-          "contract": "202103",
+          "definition": "curve",
+          "curve": {
+            "symbol": "BR_F",
+            "contract": "202103"
+          },
           "factor": 1
         },
         {
-          "symbol": "WTI_F",
-          "contract": "202106",
+          "definition": "curve",
+          "curve": {
+            "symbol": "WTI_F",
+            "contract": "202106"
+          },
           "factor": -1
         }
       ]
@@ -61,26 +76,35 @@
     }
   },
   {
-    "help": "a single cross-product timespread; versus/and an outright as a scatter chart",
-    "definition": {
-      "analysis": "outright",
+    "help": "a single cross-product timespread; versus/and an outright",
+    "builder": {
+      "analysis": "collection",
       "curves": [
         {
-          "symbol": "BR_F",
-          "contract": "202103",
+          "definition": "curve",
+          "curve": {
+            "symbol": "BR_F",
+            "contract": "202103"
+          },
           "factor": 1
         },
         {
-          "analysis": "calculation",
+          "definition": "structure",
           "curves": [
             {
-              "symbol": "BR_F",
-              "contract": "202103",
+              "definition": "curve",
+              "curve": {
+            "symbol": "BR_F",
+            "contract": "202103"
+          },
               "factor": 1
             },
             {
-              "symbol": "WTI_F",
-              "contract": "202106",
+              "definition": "curve",
+              "curve": {
+            "symbol": "WTI_F",
+            "contract": "202106"
+          },
               "factor": -1
             }
           ]
