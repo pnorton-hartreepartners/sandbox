@@ -1,0 +1,45 @@
+{
+  "curves": [
+    {
+      "symbol": "BR_F",
+      "factor": 1,
+      "type": "TimeSpread",
+      "contracts": [
+        "202103",
+        "202106"
+      ]
+    },
+    {
+      "symbol": "WTI_F",
+      "factor": 1,
+      "type": "TimeSpread",
+      "contracts": [
+        "202103",
+        "202106"
+      ]
+    }
+  ],
+  "chart_type": "timeseries"
+}
+
+
+
+
+
+(or
+Outright
+or
+Butterfly)
+
+(or
+Outright
+or
+Butterfly)"
+"
+
+
+(
+'timeseries'
+or
+'scatter'
+)

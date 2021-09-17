@@ -1,0 +1,94 @@
+[
+  {
+    "help": "this is a collection of outrights; with timeseries adjusted to show seasonality",
+    "definition": {
+      "analysis": "outright",
+      "curves": [
+        {
+          "symbol": "BR_F",
+          "contract": "202103",
+          "factor": 1
+        },
+        {
+          "symbol": "WTI_F",
+          "contract": "202103",
+          "factor": 1
+        },
+        {
+          "symbol": "BR_F",
+          "contract": "202106",
+          "factor": 1
+        }
+      ],
+      "chart": {
+        "type": "timeseries",
+        "seasonality": {
+          "offset": "expiry",
+          "base": {
+            "symbol": "BR_F",
+            "contract": "202103"
+          }
+        }
+      }
+    }
+  },
+  {
+    "help": "a single cross-product timespread; with timeseries adjusted to show seasonality",
+    "definition": {
+      "analysis": "calculation",
+      "curves": [
+        {
+          "symbol": "BR_F",
+          "contract": "202103",
+          "factor": 1
+        },
+        {
+          "symbol": "WTI_F",
+          "contract": "202106",
+          "factor": -1
+        }
+      ]
+    },
+    "chart": {
+      "type": "timeseries",
+      "seasonality": {
+        "offset": "expiry",
+        "base": {
+          "symbol": "BR_F",
+          "contract": "202103"
+        }
+      }
+    }
+  },
+  {
+    "help": "a single cross-product timespread; versus/and an outright as a scatter chart",
+    "definition": {
+      "analysis": "outright",
+      "curves": [
+        {
+          "symbol": "BR_F",
+          "contract": "202103",
+          "factor": 1
+        },
+        {
+          "analysis": "calculation",
+          "curves": [
+            {
+              "symbol": "BR_F",
+              "contract": "202103",
+              "factor": 1
+            },
+            {
+              "symbol": "WTI_F",
+              "contract": "202106",
+              "factor": -1
+            }
+          ]
+        }
+      ]
+    },
+    "chart": {
+      "type": "scatter"
+    }
+  }
+]
