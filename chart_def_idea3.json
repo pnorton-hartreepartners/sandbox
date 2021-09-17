@@ -19,15 +19,15 @@
           "contract": "202106",
           "factor": 1
         }
-      ],
-      "chart": {
-        "type": "timeseries",
-        "seasonality": {
-          "offset": "expiry",
-          "base": {
-            "symbol": "BR_F",
-            "contract": "202103"
-          }
+      ]
+    },
+    "chart": {
+      "type": "timeseries",
+      "seasonality": {
+        "offset": "expiry",
+        "base": {
+          "symbol": "BR_F",
+          "contract": "202103"
         }
       }
     }
@@ -47,15 +47,15 @@
           "contract": "202106",
           "factor": -1
         }
-      ],
-      "chart": {
-        "type": "timeseries",
-        "seasonality": {
-          "offset": "expiry",
-          "base": {
-            "symbol": "BR_F",
-            "contract": "202103"
-          }
+      ]
+    },
+    "chart": {
+      "type": "timeseries",
+      "seasonality": {
+        "offset": "expiry",
+        "base": {
+          "symbol": "BR_F",
+          "contract": "202103"
         }
       }
     }
@@ -85,10 +85,10 @@
             }
           ]
         }
-      ],
-      "chart": {
-        "type": "scatter"
-      }
+      ]
+    },
+    "chart": {
+      "type": "scatter"
     }
   }
 ]
