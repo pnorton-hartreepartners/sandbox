@@ -1,0 +1,131 @@
+[
+  {
+    "help1": "analysis in [collection, calculation, curve]",
+    "help2": "where",
+    "help3": "calculation means evaluate as a linear combination of terms",
+    "help4": "collection means return individually so we can chart as outrights",
+    "help5": "curve means this is the end of the tree, expect a single element in the collection"
+  },
+  {
+    "help": "this is a collection of simple outrights",
+    "builder": {
+      "analysis": "collection",
+      "curves": [
+        {
+          "analysis": "curve",
+          "curves": [
+            {
+              "symbol": "BR_F",
+              "contract": "202103",
+              "factor": 1
+            }
+          ]
+        },
+        {
+          "analysis": "curve",
+          "curves": [
+            {
+              "symbol": "WTI_F",
+              "contract": "202103",
+              "factor": 1
+            }
+          ]
+        },
+        {
+          "analysis": "curve",
+          "curves": [
+            {
+              "symbol": "BR_F",
+              "contract": "202106",
+              "factor": 1
+            }
+          ]
+        }
+      ]
+    },
+    "chart": {
+      "type": "timeseries",
+      "seasonality": {
+        "offset": "expiry",
+        "base": {
+          "symbol": "BR_F",
+          "contract": "202103"
+        }
+      }
+    }
+  },
+  {
+    "help": "a single cross-product timespread",
+    "builder": {
+      "analysis": "calculation",
+      "curves": [
+        {
+          "analysis": "curve",
+          "curves": [{
+            "symbol": "BR_F",
+            "contract": "202103",
+            "factor": 1
+          }]
+        },
+        {
+          "analysis": "curve",
+          "curves": [{
+            "symbol": "WTI_F",
+            "contract": "202106",
+            "factor": -1
+          }]
+        }
+      ]
+    },
+    "chart": {
+      "type": "timeseries",
+      "seasonality": {
+        "offset": "expiry",
+        "base": {
+          "symbol": "BR_F",
+          "contract": "202103"
+        }
+      }
+    }
+  },
+  {
+    "help": "a single cross-product timespread; versus/and an outright",
+    "builder": {
+      "analysis": "collection",
+      "curves": [
+        {
+          "analysis": "curve",
+          "curves": [{
+            "symbol": "BR_F",
+            "contract": "202103",
+            "factor": 1
+          }]
+        },
+        {
+          "analysis": "calculation",
+          "curves": [
+            {
+              "analysis": "curve",
+              "curves": [{
+                "symbol": "BR_F",
+                "contract": "202103",
+                "factor": 1
+              }]
+            },
+            {
+              "analysis": "curve",
+              "curves": [{
+                "symbol": "WTI_F",
+                "contract": "202106",
+                "factor": -1
+              }]
+            }
+          ]
+        }
+      ]
+    },
+    "chart": {
+      "type": "scatter"
+    }
+  }
+]

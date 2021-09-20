@@ -1,4 +1,5 @@
-[
+[{"help1": "analysis in [collection, calculation] where calculation means evaluate as a linear combination of terms",
+  "help2": "definition in [curve, builder] where builder means expect a nested data structure, once it's nested, it must be a calculation rather than a collection"},
   {
     "help": "this is a collection of simple outrights",
     "builder": {
