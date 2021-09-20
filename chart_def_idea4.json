@@ -19,7 +19,8 @@
               "contract": "202103",
               "factor": 1
             }
-          ]
+          ],
+          "legend": "Brent Mar21"
         },
         {
           "analysis": "curve",
@@ -29,7 +30,8 @@
               "contract": "202103",
               "factor": 1
             }
-          ]
+          ],
+          "legend": "WTI Mar21"
         },
         {
           "analysis": "curve",
@@ -39,7 +41,8 @@
               "contract": "202106",
               "factor": 1
             }
-          ]
+          ],
+          "legend": "Brent Jun21"
         }
       ]
     },
@@ -75,7 +78,8 @@
             "factor": -1
           }]
         }
-      ]
+      ],
+      "legend": "Brent-WTI Mar21"
     },
     "chart": {
       "type": "timeseries",
@@ -99,7 +103,8 @@
             "symbol": "BR_F",
             "contract": "202103",
             "factor": 1
-          }]
+          }],
+          "legend": "Brent Mar21"
         },
         {
           "analysis": "calculation",
@@ -120,7 +125,8 @@
                 "factor": -1
               }]
             }
-          ]
+          ],
+          "legend": "Brent Mar21 - WTI Jun21"
         }
       ]
     },
