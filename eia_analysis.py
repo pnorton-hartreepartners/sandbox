@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
 
 DESCRIPTION = 'description'
 CLEAN_DESCRIPTION = 'clean description'
