@@ -1,5 +1,24 @@
 import os
 import pandas as pd
+from collections import namedtuple
+
+SOURCE_KEY = 'Sourcekey'
+DESCRIPTION = 'description'
+REMAINING_DESCRIPTION = 'remaining description'
+TAB_DESCRIPTION = 'TabDescription'
+LOCATION = 'Location'
+UNIT = 'Unit'
+MAP_PRODUCT = 'map_product'
+MAP_MEASURE = 'map_measure'
+MAP_LOCATION = 'map_location'
+MAP_SUBPRODUCT = 'map_sub_product'
+MAP_UNIT = 'map_unit'
+
+# hartree mapping keys
+COUNTRY = 'country'
+INTRA_COUNTRY_REGION = 'intra_country_region'
+MEASURE = 'measure'
+SUB_MEASURE = 'sub_measure'
 
 product_mapping = {
     # category to list of members
@@ -40,54 +59,51 @@ sub_product_mapping = {'conventional': 'conventional',
                        'gtab': 'gtab',
                        'kerosene-type jet fuel': 'kerosene-type jet fuel'}
 
+
 location_mapping = {
-    'East Coast (PADD 1)': 'East Coast (PADD 1)',
-    'Gulf Coast (PADD 3)': 'Gulf Coast (PADD 3)',
-    'Midwest (PADD 2)': 'Midwest (PADD 2)',  # spacing change here
-    'Midwest (PADD2)': 'Midwest (PADD 2)',
-    'West Coast (PADD 5)': 'West Coast (PADD 5)',
-    'Rocky Mountain (PADD 4)': 'Rocky Mountain (PADD 4)',
-    'Rocky Mountains (PADD 4)': 'Rocky Mountain (PADD 4)',  # spelling change here
-    'Lower 48 States': 'Lower 48 States',
-    'U.S.': 'U.S.'
+    'East Coast (PADD 1)': {INTRA_COUNTRY_REGION: 'PADD I'},
+    'Gulf Coast (PADD 3)': {INTRA_COUNTRY_REGION: 'PADD III'},
+    'Midwest (PADD 2)': {INTRA_COUNTRY_REGION: 'PADD II'},
+    'Midwest (PADD2)': {INTRA_COUNTRY_REGION: 'PADD II'},
+    'West Coast (PADD 5)': {INTRA_COUNTRY_REGION: 'PADD IV & V'},
+    'Rocky Mountain (PADD 4)': {INTRA_COUNTRY_REGION: 'PADD IV & V'},
+    'Rocky Mountains (PADD 4)': {INTRA_COUNTRY_REGION: 'PADD IV & V'},
+    'Lower 48 States': {COUNTRY: 'United States', INTRA_COUNTRY_REGION: ''},
+    'U.S.': {COUNTRY: 'United States'},
 }
 
 measure_mapping = {
-    'Imports': 'Imports',
-    'Crude Oil Production': 'Production',
-    'Days of Supply (Number of Days)': 'Days of Supply',
-    'Ethanol Plant Production': 'Production',
-    'Exports': 'Exports',
-    'Lower 48 Weekly Supply Estimates': 'Supply',
-    'Net Imports (Including SPR)': 'Imports',
-    'Product Supplied': 'Supply',
-    'Refiner and Blender Net Inputs': 'Inputs',
-    'Refiner and Blender Net Production': 'Production',
-    'Refiner Inputs and Utilization': 'Inputs',
-    'Stocks': 'Stocks',
-    'Ultra Low Sulfur Distillate': 'Supply',
-    'Weekly Preliminary Crude Imports by Top 10 Countries of Origin (ranking based on 2018 Petroleum Supply Monthly data)': 'Imports',
+    'Imports': {MEASURE: 'imports', SUB_MEASURE: ''},  # this is new
+    'Crude Oil Production': {MEASURE: 'imports', SUB_MEASURE: ''},
+    'Days of Supply (Number of Days)': {MEASURE: 'supply', SUB_MEASURE: ''},
+    'Ethanol Plant Production': {MEASURE: 'production', SUB_MEASURE: 'refinery output'},
+    'Exports': {MEASURE: 'exports', SUB_MEASURE: ''},
+    'Lower 48 Weekly Supply Estimates': {MEASURE: 'supply', SUB_MEASURE: ''},
+    'Net Imports (Including SPR)': {MEASURE: 'imports', SUB_MEASURE: ''},
+    'Product Supplied': {MEASURE: 'supply', SUB_MEASURE: ''},
+    'Refiner and Blender Net Inputs': {MEASURE: 'input', SUB_MEASURE: 'refinery output'},
+    'Refiner and Blender Net Production': {MEASURE: 'production', SUB_MEASURE: 'refinery output'},
+    'Refiner Inputs and Utilization': {MEASURE: 'input', SUB_MEASURE: 'refinery output'},
+    'Stocks': {MEASURE: 'stocks', SUB_MEASURE: 'closing'},
+    'Ultra Low Sulfur Distillate': {MEASURE: 'supply', SUB_MEASURE: ''},
+    'Weekly Preliminary Crude Imports by Top 10 Countries of Origin (ranking based on 2018 Petroleum Supply Monthly data)': {MEASURE: 'imports', SUB_MEASURE: ''},
 }
 
 unit_mapping = {
-    'Thousand Barrels per Day': 'Thousand Barrels per Day',
-    'Thousand Barrels': 'Thousand Barrels',
-    'Thousand Barrels per Calendar Day': 'Thousand Barrels per Day',
-    'Percent': 'Percent',
-    'Number of Days': 'Days',
+    'Thousand Barrels per Day': {'unit': 'kbd'},
+    'Thousand Barrels': {'unit': 'kb'},
+    'Thousand Barrels per Calendar Day': {'unit', 'kbd'},
+    'Percent': {'unit': '%'},
+    'Number of Days': {'unit': 'd'},  #  this one is new
 }
 
-SOURCE_KEY = 'Sourcekey'
-DESCRIPTION = 'description'
-REMAINING_DESCRIPTION = 'remaining description'
-TAB_DESCRIPTION = 'TabDescription'
-LOCATION = 'Location'
-UNIT = 'Unit'
-MAP_PRODUCT = 'map_product'
-MAP_MEASURE = 'map_measure'
-MAP_LOCATION = 'map_location'
-MAP_SUBPRODUCT = 'map_sub_product'
-MAP_UNIT = 'map_unit'
+# define some post-event corrections for any mapping
+# the order of this list is important; corrections will be applied in sequence
+SearchReplace = namedtuple('SearchReplace', ['search', 'replace'])
+corrections_mapping = {
+    MAP_MEASURE: [SearchReplace('capacity', 'Capacity'), SearchReplace('utilization', 'Utilization')],
+}
+
 
 if __name__ == '__main__':
     filepath = r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\jira\doe mapping'
@@ -132,10 +148,9 @@ if __name__ == '__main__':
     df_analysis[MAP_UNIT] = df_analysis[UNIT].map(unit_mapping)
 
     # corrections
-    pattern = 'capacity'
-    replace = 'Capacity'
-    df = df_analysis[DESCRIPTION].str.contains(pattern)
-    df_analysis.loc[df.values, MAP_MEASURE] = replace
+    for correction in corrections_mapping[MAP_MEASURE]:
+        df = df_analysis[DESCRIPTION].str.contains(correction.search)
+        df_analysis.loc[df.values, MAP_MEASURE] = correction.replace
 
     for key, search in sub_product_mapping.items():
         df = df_analysis[DESCRIPTION].str.contains(search)
