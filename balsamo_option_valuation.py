@@ -1,7 +1,4 @@
 import requests
-import pandas as pd
-import datetime as dt
-import argparse
 from constants import PROD, DEV, BALSAMO, PORT, hosts
 
 template_url_dict = {
