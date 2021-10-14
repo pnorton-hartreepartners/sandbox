@@ -11,7 +11,7 @@ template_url_dict = {
 
 payload_dict = {
     'User': 'PNO',
-    'Pwd': 'Gazprom1',
+    'Pwd': 'mypassword',
     'Company': 'Hartree Partners',
     'Commodity': 'METAL CONCENTRATES',
     'PutCall': 'P',  # Put = Sell = S; Call = Purchase = P
