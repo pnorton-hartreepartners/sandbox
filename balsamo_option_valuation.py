@@ -15,7 +15,7 @@ balsamo_headers_dict = {
     'Content-Type': 'application/json'
 }
 
-balsamo_body_dict = {
+balsamo_payload = {
     'Putcall': 'P',  # Put = Sell = S; Call = Purchase = P
     'PriceCode': 'LMEZNCB',
     'Strike': '6662.23',
@@ -55,6 +55,7 @@ if __name__ == '__main__':
                                                              stamp=mosaic_url_dict['stamp'],
                                                              scheme=mosaic_url_dict['scheme'],
                                                              rf_rate=mosaic_url_dict['rf_rate'])
+
     response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)
     mosaic_results = json.loads(response.content)[0]
     print(mosaic_results)
@@ -64,9 +65,11 @@ if __name__ == '__main__':
     balsamo_url = balsamo_template_url_dict[balsamo_api].format(host=hosts[BALSAMO][env],
                                                                 port=hosts[BALSAMO][PORT],
                                                                 api=balsamo_api)
-    params_dict = {}
-    params_dict.update(balsamo_body_dict)
-    params_dict.update(balsamo_headers_dict)
-    response = requests.get(balsamo_url, json=params_dict, verify=False)
+
+    response = requests.get(balsamo_url, json=balsamo_payload, headers=balsamo_headers_dict, verify=False)
     print(response)
+    print(response.request.url)
+    print(response.request.headers)
+    print(response.request.body)
+
     print('hello world')
