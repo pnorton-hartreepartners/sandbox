@@ -1,9 +1,10 @@
 import requests
+import json
 from constants import PROD, DEV, BALSAMO, PORT, SETTLES, hosts
 
 balsamo_template_url_dict = {
-    'getEuropeanOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/getEuropeanOptionValuation',
-    'getAsianOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/getAsianOptionValuation',
+    'getEuropeanOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/{api}',
+    'getAsianOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/{api}',
 }
 
 balsamo_headers_dict = {
@@ -55,11 +56,13 @@ if __name__ == '__main__':
                                                              stamp=mosaic_url_dict['stamp'],
                                                              scheme=mosaic_url_dict['scheme'],
                                                              rf_rate=mosaic_url_dict['rf_rate'])
-    response = requests.post(mosaic_url, data=mosaic_payload_dict)
-    print(response)
+    response = requests.post(mosaic_url, data=json.dumps([mosaic_payload_dict]))
+    mosaic_results = json.loads(response.content)[0]
+    print(mosaic_results)
 
     balsamo_url = balsamo_template_url_dict[balsamo_api].format(host=hosts[BALSAMO][env],
-                                                                port=hosts[BALSAMO][PORT])
+                                                                port=hosts[BALSAMO][PORT],
+                                                                api=balsamo_api)
     params_dict = {}
     params_dict.update(balsamo_body_dict)
     params_dict.update(balsamo_headers_dict)
