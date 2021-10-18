@@ -2,6 +2,10 @@ import requests
 import json
 from constants import PROD, DEV, BALSAMO, PORT, SETTLES, hosts
 
+'''
+activate mosaic2
+'''
+
 balsamo_template_url_dict = {
     'getEuropeanOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/{api}',
     'getAsianOptionValuation': r'{host}:{port}/balsacore/balsarest/risk/{api}',
