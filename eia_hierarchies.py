@@ -33,8 +33,14 @@ if __name__ == '__main__':
     # sub_product: blending components @ conventional
     # sub_product: gasoline @ reformulated
 
-
-
+    ee = [(d.split(':')[0], d.split(':')[1]) for d in dd]
+    descendents = [{e[0]:e[1]} for e in ee]
+    print('start here')
+    categories = ['product_group', 'product', 'sub_product']
+    for category in categories:
+        for descendent in descendents:
+            if list(descendent.keys()) == [category]:
+                print(descendent)
 
 
     print('hello world')

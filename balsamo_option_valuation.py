@@ -12,14 +12,13 @@ balsamo_headers_dict = {
     'Pwd': 'Gazprom1',
     'Company': 'Hartree Partners',
     'Commodity': 'METAL CONCENTRATES',
-    'Content-Type': 'application/json'
+    #'Content-Type': 'application/json'
 }
 
 balsamo_payload = {
     'Putcall': 'P',  # Put = Sell = S; Call = Purchase = P
     'PriceCode': 'LMEZNCB',
     'Strike': '6662.23',
-    # 'MaturityDate': '2027-01-06'
     'Maturity': '06/01/2027'
 }
 
@@ -72,9 +71,12 @@ if __name__ == '__main__':
         balsamo_url = balsamo_template_url_dict[balsamo_api].format(host=hosts[BALSAMO][env],
                                                                     port=hosts[BALSAMO][PORT],
                                                                     api=balsamo_api)
+        # all content is added to the headers
+        balsamo_headers_dict.update(balsamo_payload)
+        response = requests.get(balsamo_url, headers=balsamo_headers_dict, verify=False)
 
-        response = requests.get(balsamo_url, json=balsamo_payload, headers=balsamo_headers_dict, verify=False)
         print(response)
+        print(response.content)
         print(response.request.url)
         print(response.request.headers)
         print(response.request.body)
