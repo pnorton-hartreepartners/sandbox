@@ -9,7 +9,7 @@ balsamo_template_url_dict = {
 
 balsamo_headers_dict = {
     'User': 'PNO',
-    'Pwd': 'xxxxx',
+    'Pwd': 'Gazprom1',
     'Company': 'Hartree Partners',
     'Commodity': 'METAL CONCENTRATES',
     'Content-Type': 'application/json'
@@ -20,7 +20,7 @@ balsamo_payload = {
     'PriceCode': 'LMEZNCB',
     'Strike': '6662.23',
     # 'MaturityDate': '2027-01-06'
-    'MaturityDate': '06/01/2027'
+    'Maturity': '06/01/2027'
 }
 
 mosaic_template_url_dict = {
@@ -46,30 +46,37 @@ if __name__ == '__main__':
     mosaic_api = 'getOptionPricesFromVolCurves'
     env = DEV
 
+    mosaic_valuation = False
+    balsamo_valuation = True
+
     # ==================================================================================================================
     # mosaic valuation
-    mosaic_url = mosaic_template_url_dict[mosaic_api].format(host=hosts[SETTLES][env],
-                                                             api=mosaic_api,
-                                                             symbol=mosaic_url_dict['symbol'],
-                                                             exchange=mosaic_url_dict['exchange'],
-                                                             stamp=mosaic_url_dict['stamp'],
-                                                             scheme=mosaic_url_dict['scheme'],
-                                                             rf_rate=mosaic_url_dict['rf_rate'])
 
-    response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)
-    mosaic_results = json.loads(response.content)[0]
-    print(mosaic_results)
+    if mosaic_valuation:
+        mosaic_url = mosaic_template_url_dict[mosaic_api].format(host=hosts[SETTLES][env],
+                                                                 api=mosaic_api,
+                                                                 symbol=mosaic_url_dict['symbol'],
+                                                                 exchange=mosaic_url_dict['exchange'],
+                                                                 stamp=mosaic_url_dict['stamp'],
+                                                                 scheme=mosaic_url_dict['scheme'],
+                                                                 rf_rate=mosaic_url_dict['rf_rate'])
+
+        response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)
+        mosaic_results = json.loads(response.content)[0]
+        print(mosaic_results)
 
     # ==================================================================================================================
     # balsamo valuation
-    balsamo_url = balsamo_template_url_dict[balsamo_api].format(host=hosts[BALSAMO][env],
-                                                                port=hosts[BALSAMO][PORT],
-                                                                api=balsamo_api)
 
-    response = requests.get(balsamo_url, json=balsamo_payload, headers=balsamo_headers_dict, verify=False)
-    print(response)
-    print(response.request.url)
-    print(response.request.headers)
-    print(response.request.body)
+    if balsamo_valuation:
+        balsamo_url = balsamo_template_url_dict[balsamo_api].format(host=hosts[BALSAMO][env],
+                                                                    port=hosts[BALSAMO][PORT],
+                                                                    api=balsamo_api)
 
-    print('hello world')
+        response = requests.get(balsamo_url, json=balsamo_payload, headers=balsamo_headers_dict, verify=False)
+        print(response)
+        print(response.request.url)
+        print(response.request.headers)
+        print(response.request.body)
+
+        print('hello world')

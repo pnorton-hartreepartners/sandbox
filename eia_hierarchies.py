@@ -6,20 +6,35 @@ from oil_data_etl.default_entities.products import getDefaultHierarchy as produc
 from oil_data_etl.default_entities.measures import getDefaultHierarchy as measuresHierarchy
 
 if __name__ == '__main__':
-    filepath = r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\jira\doe mapping'
-    filename = r'hierarchies'
-    filetype = r'.txt'
+    p = productsHierarchy()
 
-    # load the xls
-    file = os.path.join(filepath, filename + filetype)
-    with open(file, 'r') as file:
-        lines = file.readlines()
+    # explore
+    for e in p.edges:
+        if e['parent'] == 'ROOT:ROOT':
+            print(e)
 
-    columns = [lines[0]]
-    # columns = columns.replace('"', '').replace('\n', '').split(',')
+    # this one is interesting
+    # {'parent': 'ROOT:ROOT', 'child': 'product_group:gasoline & naphtha'}
 
-    data = lines[1:]
-    # rows = [r.split('"') for r in data]
+    aa = p.getAttributes(node='product_group:gasoline & naphtha')
+    print(aa)
+    # {'conversion': 8.45, 'source_unit': 'bbl', 'destination_unit': 'mt'}
 
-    df = pd.DataFrame(data=data, columns=columns)
+    ee = p.getEntity(node='product_group:gasoline & naphtha')
+    print(ee)
+    # {'node': 'product_group:gasoline & naphtha', 'conversion': 8.45, 'source_unit': 'bbl', 'destination_unit': 'mt'}
+
+    dd = p.getDescendants(node='product_group:gasoline & naphtha', strict=False)
+    print(dd)
+    # ['product_group:gasoline & naphtha', 'product:blending components', 'sub_product:blending components@reformulated', 'product_grade:blending components@reformulated@rbob', 'sub_product:blending components@conventional', 'product_grade:blending components@conventional@cbob', 'product_grade:gtab', 'product:gasoline', 'sub_product:gasoline@reformulated', 'product_grade:gasoline@reformulated@rbob', 'sub_product:gasoline@conventional', 'product_grade:gasoline@conventional@cbob', 'contract:rbob', 'contract_spec:nymex rbob', 'product_grade:a', 'product_grade:c', 'product:naphtha']
+
+    [print(d) for d in dd if d.startswith('sub_product')]
+    # sub_product: blending components @ reformulated
+    # sub_product: blending components @ conventional
+    # sub_product: gasoline @ reformulated
+
+
+
+
+
     print('hello world')
