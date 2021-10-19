@@ -10,7 +10,7 @@ soup = BeautifulSoup(html, 'html.parser')
 tds = soup.find_all('td', {'class': 'DataStub1'})
 
 # find the text and the indent
-texts = [td.contents[0] for td in tds]
+texts = [str(td.contents[0]) for td in tds]
 indents = [td.find_previous('td').get('width') for td in tds]
 indents = [int(ii) for ii in indents]
 
@@ -31,7 +31,35 @@ triples = list(triples)
 columns = ['text', 'level', 'source_key']
 df = pd.DataFrame(data=triples, columns=columns)
 
+# first order difference
+df['level_change'] = df['level'] - df['level'].shift(periods=1, axis='index', fill_value=0)
 
+# initialise column and change type to accept list
+df['hierarchy'] = None
+df['hierarchy'] = df['hierarchy'].astype('object')
+
+content = []
+for i, row in df.iterrows():
+    # extend the list
+    if row['level_change'] >= 1:
+        pop_count = 0
+
+    # even if the list length is unchanged, we pop once to replace with the new value
+    else:
+        pop_count = abs(row['level_change']) + 1
+
+    # pop from the list
+    for _ in range(pop_count):
+        try:
+            content.pop()
+        except:
+            pass
+
+    # update the list and the df
+    content.append(row['text'])
+    df.at[i, 'hierarchy'] = content.copy()
+
+df.to_clipboard()
 print('hello world')
 
 
