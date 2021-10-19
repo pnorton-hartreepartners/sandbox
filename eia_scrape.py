@@ -28,6 +28,7 @@ level_lookup = dict(zip(uniques, levels))
 triples = zip(texts, [level_lookup[indent] for indent in indents], source_keys)
 triples = list(triples)
 
+# create a dataframe to set up the analysis
 columns = ['text', 'level', 'source_key']
 df = pd.DataFrame(data=triples, columns=columns)
 
@@ -40,7 +41,7 @@ df['hierarchy'] = df['hierarchy'].astype('object')
 
 content = []
 for i, row in df.iterrows():
-    # extend the list
+    # extend the list ie dont pop
     if row['level_change'] >= 1:
         pop_count = 0
 
@@ -48,7 +49,7 @@ for i, row in df.iterrows():
     else:
         pop_count = abs(row['level_change']) + 1
 
-    # pop from the list
+    # pop the required number of times
     for _ in range(pop_count):
         try:
             content.pop()
