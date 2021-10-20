@@ -4,6 +4,7 @@ import datetime as dt
 from enum import Enum
 import argparse
 from mosaic_sql.crate import EngineInstance, get_engine
+from constants import db_connections, TTDA, PROD, DEV, PORT
 
 
 sql_checksum_template = """
@@ -157,8 +158,8 @@ if __name__ == "__main__":
 
     # ============================
     # some config
-    prod_str = 'ttda.storage.mosaic.hartreepartners.com:4200'
-    dev_str = 'ttda.cratedb-dev-cluster.mosaic.hartreepartners.com:4200'
+    prod_str = db_connections[TTDA][PROD] + ':' + str(db_connections[TTDA][PORT])
+    dev_str = db_connections[TTDA][DEV] + ':' + str(db_connections[TTDA][PORT])
 
     ice_symbols = ['TTF', 'UKF', 'NBP', 'G', 'EUA', 'B']
     cme_symbols = ['CL', 'NG', 'HO', 'XAU']
