@@ -104,7 +104,7 @@ def get_single_metadata_for_all_symbols(metadata_df, label):
     return list(metadata_df[label].values)
 
 
-def get_metadata_df(df, columns):
+def get_metadata_df(df, columns, selection):
     metadata_df = df[columns].drop_duplicates()
     metadata_df.set_index(SOURCE_KEY, drop=True, inplace=True)
     mask = metadata_df.index.isin(selection)
@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     # extract metadata from the original dataset
     columns = [SOURCE_KEY, 'Description', 'TabDescription', 'Location']
-    metadata_df = get_metadata_df(df, columns)
+    metadata_df = get_metadata_df(df, columns, selection)
     metadata = get_single_metadata_for_all_symbols(metadata_df, label='Description')
 
     # collect ts for all the component symbols and pivot
