@@ -2,24 +2,8 @@ import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import PROD, DEV, SETTLES, hosts
-
-template_url_dict = {
-    # time series of all results for a single contract
-    'getSettlementTS': r'{host}/settles/api/v1/getSettlementTS/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}',
-
-    # latest result for a single contract
-    'getSettlement': r'{host}/settles/api/v1/getSettlement/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}',
-
-    # latest result for a collection of symbols on a given observation date
-    'getFutureCurveSettlement': r'{host}/settles/api/v1/getFutureCurveSettlement/{symbols}/{exchange}/{stamp}?allow_indicative={allow_indicative}',
-
-    # use regex to filter instruments and parse instrument name to contract month
-    'getSettlementTSWithRegex': r'{host}/settles/api/v1/getSettlementTSWithRegex/{symbol}/{contract_regex}/{exchange}',
-
-    # vol surface for balsamo
-    'getVolSurface': r'{host}/settles/api/v1/getVolSurface/{symbol}/{exchange}/{stamp}?allow_cached_vols={allow_cached_vols}'
-}
+from constants import SETTLES, hosts
+from mosaic_api_templates import template_url_dict
 
 # example call data works by api
 kwargs_dict = {
@@ -121,25 +105,10 @@ if __name__ == '__main__':
     template_url = template_url_dict[api_name]
     kwargs = kwargs_dict[api_name]
     kwargs['host'] = host
+    kwargs['api_name'] = api_name
 
-    if api_name == 'getVolSurface':
-        url = template_url.format(**kwargs)
-        print(f'\nurl is:\n{url}')
-        data_dict = requests.get(url).json()
-        if data_dict.get('detail') == 'error : no vol slice was built':
-            df = pd.DataFrame()
-        else:
-            contracts = map(lambda x: dt.datetime.strptime(x, '%Y%m'), data_dict['contracts'])
-            value_date = dt.datetime.strptime(data_dict['dt'], '%Y-%m-%d')
-            time_to_maturity = [c - value_date for c in contracts]
-            columns = data_dict['moneyness']
-            surface = data_dict['volatilities']
-            df = pd.DataFrame(data=surface, index=[t.days for t in time_to_maturity], columns=columns)
-            print()
-    else:
-        df = get_any_api(template_url=template_url, kwargs=kwargs)
+    df = get_any_api(template_url=template_url, kwargs=kwargs)
     print(df)
-    import pdb; pdb.set_trace()
 
     cme_european_naphtha_calendar_swap = ('CME', 'UN')
     ice_brent_1st_line_future = ('ICE', 'I')
