@@ -51,8 +51,9 @@ hierarchy_dict = {
 }
 
 path = r'C:\Temp'
-file = 'eia-weekly.pkl'
-pathfile = os.path.join(path, file)
+file_for_data = 'eia-weekly.pkl'
+file_for_norm_data = 'eia-weekly-norm-data.pkl'
+file_for_pivot_data = 'eia-weekly-pivot-data.pkl'
 
 
 def build_comparison(df, source_key, source_keys):
@@ -115,6 +116,7 @@ if __name__ == '__main__':
     data_mode = LOAD
     source_key = 'WTTSTUS1'
 
+    pathfile = os.path.join(path, file_for_data)
     if data_mode == SAVE:
         df = getFlatRawDF(source='eia-weekly')
         df.to_pickle(pathfile)
@@ -133,17 +135,21 @@ if __name__ == '__main__':
     metadata = get_single_metadata_for_all_symbols(metadata_df, label='Description')
 
     # collect ts for all the component symbols and pivot
-    df = get_components_df(df, selection)
-    df.set_index(DATE, drop=True, inplace=True)
-    df = df[[SOURCE_KEY, VALUE]]
-    df = get_components_pivot_df(df)
+    df_norm = get_components_df(df, selection)
+    df_norm.set_index(DATE, drop=True, inplace=True)
+    df_norm = df_norm[[SOURCE_KEY, VALUE]]
+    df_pivot = get_components_pivot_df(df_norm)
 
-    # rename columns
+    # rename columns on pivot
     metadata = [m.replace('Ending Stocks of ', '') for m in metadata]
     metadata = [m.replace('Ending Stocks ', '') for m in metadata]
     mapper = dict(zip(selection, metadata))
-    df.rename(columns=mapper, inplace=True)
+    df_pivot.rename(columns=mapper, inplace=True)
 
-    df.to_clipboard()
+    # save locally
+    pathfile = os.path.join(path, file_for_norm_data)
+    df_norm.to_pickle(pathfile)
+    pathfile = os.path.join(path, file_for_pivot_data)
+    df_pivot.to_pickle(pathfile)
 
     print('hello world')
