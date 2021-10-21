@@ -28,32 +28,48 @@ hierarchy_dict = {
          'WUOSTUS1'],
     'WTTSTUS1':  # Ending Stocks of Crude Oil and Petroleum Products
         ['WCESTUS1',
-            'WCSSTUS1',
-            'WG1ST_NUS_1',
-            'WG3ST_NUS_1',
-            'W_EPM0CAL55_SAE_NUS_MBBL',
-            'W_EPM0CAG55_SAE_NUS_MBBL',
-            'WG6ST_NUS_1',
-            'W_EPOBGRR_SAE_NUS_MBBL',
-            'WO4ST_NUS_1',
-            'WO3ST_NUS_1',
-            'WO6ST_NUS_1',
-            'WO7ST_NUS_1',
-            'WO9ST_NUS_1',
-            'W_EPOOXE_SAE_NUS_MBBL',
-            'WKJSTUS1',
-            'WD0ST_NUS_1',
-            'WD1ST_NUS_1',
-            'WDGSTUS1',
-            'WRESTUS1',
-            'WPRSTUS1',
-            'W_EPPO6_SAE_NUS_MBBL']
+         'WCSSTUS1',
+         'WG1ST_NUS_1',
+         'WG3ST_NUS_1',
+         'W_EPM0CAL55_SAE_NUS_MBBL',
+         'W_EPM0CAG55_SAE_NUS_MBBL',
+         'WG6ST_NUS_1',
+         'W_EPOBGRR_SAE_NUS_MBBL',
+         'WO4ST_NUS_1',
+         'WO3ST_NUS_1',
+         'WO6ST_NUS_1',
+         'WO7ST_NUS_1',
+         'WO9ST_NUS_1',
+         'W_EPOOXE_SAE_NUS_MBBL',
+         'WKJSTUS1',
+         'WD0ST_NUS_1',
+         'WD1ST_NUS_1',
+         'WDGSTUS1',
+         'WRESTUS1',
+         'WPRSTUS1',
+         'W_EPPO6_SAE_NUS_MBBL'],
+    'WBCSTUS1':  # Motor Gasoline Blending Components
+        ['W_EPOBGRR_SAE_NUS_MBBL',
+         'WO4ST_NUS_1',
+         'WO3ST_NUS_1',
+         'WO6ST_NUS_1',
+         'WO7ST_NUS_1',
+         'WO9ST_NUS_1'],
+    'WGFSTUS1':  # Finished Motor Gasoline
+        ['WG1ST_NUS_1',
+         'WG3ST_NUS_1',
+         'W_EPM0CAL55_SAE_NUS_MBBL',
+         'W_EPM0CAG55_SAE_NUS_MBBL',
+         'WG6ST_NUS_1']
+
+
 }
 
 path = r'C:\Temp'
 file_for_data = 'eia-weekly.pkl'
-file_for_norm_data = 'eia-weekly-norm-data.pkl'
-file_for_pivot_data = 'eia-weekly-pivot-data.pkl'
+# we add the aggregation details to the filename here
+file_for_norm_data = 'eia-weekly-norm-data '
+file_for_pivot_data = 'eia-weekly-pivot-data '
 
 
 def build_comparison(df, source_key, source_keys):
@@ -114,7 +130,7 @@ def get_metadata_df(df, columns, selection):
 
 if __name__ == '__main__':
     data_mode = LOAD
-    source_key = 'WTTSTUS1'
+    source_key = 'WGFSTUS1'
 
     pathfile = os.path.join(path, file_for_data)
     if data_mode == SAVE:
@@ -147,9 +163,10 @@ if __name__ == '__main__':
     df_pivot.rename(columns=mapper, inplace=True)
 
     # save locally
+    suffix = source_key + '.pkl'
     pathfile = os.path.join(path, file_for_norm_data)
-    df_norm.to_pickle(pathfile)
+    df_norm.to_pickle(pathfile + suffix)
     pathfile = os.path.join(path, file_for_pivot_data)
-    df_pivot.to_pickle(pathfile)
+    df_pivot.to_pickle(pathfile + suffix)
 
     print('hello world')
