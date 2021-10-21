@@ -134,7 +134,7 @@ if __name__ == '__main__':
     # print some results
 
     print('=============================================================================')
-    pp(f'valuation_date: {stamp_as_date}')
+    print(f'valuation_date: {stamp_as_date}')
 
     print('\n\n=============================================================================')
     print('mosaic')
