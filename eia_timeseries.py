@@ -5,6 +5,7 @@ os.environ['CRATE_HOST'] = 'ttda.cratedb-dev-cluster.mosaic.hartreepartners.com:
 os.environ['MOSAIC_ENV'] = 'DEV'
 
 import pandas as pd
+import datetime as dt
 from analyst_data_views.common.db_flattener import getFlatRawDF
 
 SOURCE_KEY = 'Sourcekey'
@@ -15,18 +16,18 @@ CALCULATED = 'calculated'
 DATE = 'date'
 VALUE = 'value'
 
-hierarchy_dict = {
+other_dict = {
     'WBCRI_NUS_2':  # 'Refiner and Blender Net Input of Gasoline Blending Components'
         ['W_EPOBGRR_YIR_NUS_MBBLD',
          'WO6RI_NUS_2',
          'WO7RI_NUS_2',
          'WO9RI_NUS_2'],
-    'W_EPPO6_SAE_NUS_MBBL':  # Ending Stocks of Other Oils
+    'W_EPPO6_SAE_NUS_MBBL':  # Ending Stocks of Other Oils; this one doesn't add up
         ['W_EPPA_SAE_NUS_MBBL',
          'W_EPPK_SAE_NUS_MBBL',
          'W_EPL0XP_SAE_NUS_MBBL',
          'WUOSTUS1'],
-    'WTTSTUS1':  # Ending Stocks of Crude Oil and Petroleum Products
+    'WTTSTUS1':  # Ending Stocks of Crude Oil and Petroleum Products; at the most granular level
         ['WCESTUS1',
          'WCSSTUS1',
          'WG1ST_NUS_1',
@@ -47,21 +48,53 @@ hierarchy_dict = {
          'WDGSTUS1',
          'WRESTUS1',
          'WPRSTUS1',
-         'W_EPPO6_SAE_NUS_MBBL'],
-    'WBCSTUS1':  # Motor Gasoline Blending Components
+         'W_EPPO6_SAE_NUS_MBBL']}
+
+hierarchy_dict = {
+    # ======================================
+    'WTTSTUS1':
+        ['WCESTUS1',  # Commercial (Excl. Lease Stock )
+         'WCSSTUS1',  # SPR
+         'WGTSTUS1',  # Total Motor Gasoline
+         'W_EPOOXE_SAE_NUS_MBBL',  # Fuel Ethanol
+         'WKJSTUS1',  # Kerosene-Type Jet Fuel
+         'WDISTUS1',  # Distillate Fuel Oil
+         'WRESTUS1',  # Residual Fuel Oil
+         'WPRSTUS1',  # Propane/Propylene (Excl. Propylene at Terminal)
+         'W_EPPO6_SAE_NUS_MBBL'  # Other Oils (Excluding Ethanol)
+         ],
+    # ======================================
+    # Total Motor Gasoline
+    'WGTSTUS1':
+        ['WGFSTUS1'
+         'WBCSTUS1'],
+    # ======================================
+    # Finished Motor Gasoline
+    'WGFSTUS1':
+        ['WGRSTUS1',
+         'WG4ST_NUS_1'],
+    'WGRSTUS1':
+        ['WG1ST_NUS_1',
+         'WG3ST_NUS_1'],
+    'WG4ST_NUS_1':
+        ['W_EPM0CAL55_SAE_NUS_MBBL',
+         'W_EPM0CAG55_SAE_NUS_MBBL',
+         'WG6ST_NUS_1'],
+    # ======================================
+    # Motor Gasoline Blending Components
+    'WBCSTUS1':
         ['W_EPOBGRR_SAE_NUS_MBBL',
          'WO4ST_NUS_1',
          'WO3ST_NUS_1',
          'WO6ST_NUS_1',
          'WO7ST_NUS_1',
          'WO9ST_NUS_1'],
-    'WGFSTUS1':  # Finished Motor Gasoline
-        ['WG1ST_NUS_1',
-         'WG3ST_NUS_1',
-         'W_EPM0CAL55_SAE_NUS_MBBL',
-         'W_EPM0CAG55_SAE_NUS_MBBL',
-         'WG6ST_NUS_1']
-
+    # ======================================
+    # Distillate Fuel Oil
+    'WDISTUS1':
+        ['WD0ST_NUS_1',
+         'WD1ST_NUS_1',
+         'WDGSTUS1']
 
 }
 
@@ -110,6 +143,7 @@ def get_subtotal_df(df, source_key):
     mask = df[SOURCE_KEY] == source_key
     sub_total_df = df.loc[mask, [DATE, VALUE]]
     sub_total_df.set_index(DATE, drop=True, inplace=True)
+    sub_total_df.columns = [source_key]
     return sub_total_df
 
 
@@ -117,8 +151,8 @@ def get_all_metadata_for_symbol(metadata_df, source_key):
     return list(metadata_df.loc[metadata_df[SOURCE_KEY] == source_key].values[0])
 
 
-def get_single_metadata_for_all_symbols(metadata_df, label):
-    return list(metadata_df[label].values)
+def get_single_metadata_dict_for_all_symbols(metadata_df, label):
+    return dict(zip(metadata_df.index, metadata_df[label].values))
 
 
 def get_metadata_df(df, columns, selection):
@@ -130,7 +164,7 @@ def get_metadata_df(df, columns, selection):
 
 if __name__ == '__main__':
     data_mode = LOAD
-    source_key = 'WGFSTUS1'
+    source_key = 'WTTSTUS1'
 
     pathfile = os.path.join(path, file_for_data)
     if data_mode == SAVE:
@@ -143,30 +177,48 @@ if __name__ == '__main__':
 
     # select which hierarchy mapping to look at and build comparison to calc diffs
     selection = hierarchy_dict[source_key]
-    result_df = build_comparison(df, source_key=source_key, source_keys=selection)
+    comparison_df = build_comparison(df, source_key=source_key, source_keys=selection)
+    mask = comparison_df.index > dt.date(2015, 1, 1)
+    comparison_df[mask].to_clipboard()
 
-    # extract metadata from the original dataset
+    # get all metadata for all keys
+    all_keys = selection + [source_key]
     columns = [SOURCE_KEY, 'Description', 'TabDescription', 'Location']
-    metadata_df = get_metadata_df(df, columns, selection)
-    metadata = get_single_metadata_for_all_symbols(metadata_df, label='Description')
+    metadata_df = get_metadata_df(df, columns, all_keys)
 
-    # collect ts for all the component symbols and pivot
+    # select just one field here and get a dict mapping source_key to label
+    label = 'Description'
+    metadata_dict = get_single_metadata_dict_for_all_symbols(metadata_df, label=label)
+
+    # collect timeseries for all the component symbols and pivot
     df_norm = get_components_df(df, selection)
     df_norm.set_index(DATE, drop=True, inplace=True)
     df_norm = df_norm[[SOURCE_KEY, VALUE]]
     df_pivot = get_components_pivot_df(df_norm)
 
+    # get total
+    df_total = get_subtotal_df(df, source_key)
+
+    # append the total to the pivot
+    df_combo = pd.concat([df_pivot, df_total], axis='columns')
+
     # rename columns on pivot
-    metadata = [m.replace('Ending Stocks of ', '') for m in metadata]
-    metadata = [m.replace('Ending Stocks ', '') for m in metadata]
-    mapper = dict(zip(selection, metadata))
-    df_pivot.rename(columns=mapper, inplace=True)
+    mapper = {k: v.replace('Ending Stocks of ', '') for k, v in metadata_dict.items()}
+    mapper = {k: v.replace('Ending Stocks of ', '') for k, v in mapper.items()}
+    df_combo.rename(columns=mapper, inplace=True)
+
+    # sort on date & filter to remove dodgy history
+    df_combo.sort_index(inplace=True)
+    mask = df_combo.index > dt.date(2015, 1, 1)
+    df_combo[mask].to_clipboard()
 
     # save locally
     suffix = source_key + '.pkl'
     pathfile = os.path.join(path, file_for_norm_data)
     df_norm.to_pickle(pathfile + suffix)
     pathfile = os.path.join(path, file_for_pivot_data)
-    df_pivot.to_pickle(pathfile + suffix)
+    df_combo.to_pickle(pathfile + suffix)
+
+    chart_title = metadata_dict[source_key]
 
     print('hello world')
