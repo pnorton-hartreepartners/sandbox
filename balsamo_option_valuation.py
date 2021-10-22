@@ -44,7 +44,8 @@ mosaic_headers_dict = {'accept': 'application/json',
 
 mosaic_payload_dict = {'term': '202701',
                    'parity': 'Call',
-                   'strike': '3000'}
+                'strike': '5500'}
+  #                 'strike': '3159.8913'}
 
 mosaic_vol_surface_kwargs_dict = {
     'getVolSurface': {
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     balsamo_valuation = True
 
     # value date
-    stamp = '2021-10-20'
+    stamp = '2021-10-21'
     stamp_as_date = dt.datetime.strptime(stamp, '%Y-%m-%d').date()
 
     # date munging
@@ -110,8 +111,10 @@ if __name__ == '__main__':
     smile = mosaic_vol_surface_df.loc[term_as_date]
 
     # date format munging
-    maturity_date_as_date = dt.datetime.strptime(maturity_date, '%Y-%m-%d').date()
-    maturity_date_for_balsamo = dt.datetime.strftime(maturity_date_as_date, '%d/%m/%Y')
+    # maturity_date_as_date = dt.datetime.strptime(maturity_date, '%Y-%m-%d').date()
+    # maturity_date_for_balsamo = dt.datetime.strftime(maturity_date_as_date, '%d/%m/%Y')
+    maturity_date_for_balsamo = dt.date(2027, 1, 7)
+    maturity_date_for_balsamo = dt.datetime.strftime(maturity_date_for_balsamo, '%d/%m/%Y')
 
     # add to payload for inputs that need to match mosaic
     balsamo_payload['Maturity'] = maturity_date_for_balsamo
@@ -164,6 +167,8 @@ if __name__ == '__main__':
     print('\n\nbalsamo_results:')
     pp(balsamo_option_valuation_results)
 
-    days_to_maturity = maturity_date_as_date - stamp_as_date
-    print(f'\n\ndays_to_maturity: {days_to_maturity.days}')
+    # days_to_maturity = maturity_date_for_balsamo - stamp_as_date
+    # print(f'\n\ndays_to_maturity: {days_to_maturity.days}')
+
+    print()
 

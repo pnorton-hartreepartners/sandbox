@@ -53,8 +53,7 @@ other_dict = {
 hierarchy_dict = {
     # ======================================
     'WTTSTUS1':
-        ['WCESTUS1',  # Commercial (Excl. Lease Stock )
-         'WCSSTUS1',  # SPR
+        ['WCRSTUS1',  # Crude Oil (Including SPR)
          'WGTSTUS1',  # Total Motor Gasoline
          'W_EPOOXE_SAE_NUS_MBBL',  # Fuel Ethanol
          'WKJSTUS1',  # Kerosene-Type Jet Fuel
@@ -62,6 +61,12 @@ hierarchy_dict = {
          'WRESTUS1',  # Residual Fuel Oil
          'WPRSTUS1',  # Propane/Propylene (Excl. Propylene at Terminal)
          'W_EPPO6_SAE_NUS_MBBL'  # Other Oils (Excluding Ethanol)
+         ],
+    # ======================================
+    # Crude Oil (Including SPR)
+    'WCRSTUS1':
+        ['WCESTUS1',  # Commercial (Excl. Lease Stock )
+        'WCSSTUS1',   # SPR
          ],
     # ======================================
     # Total Motor Gasoline
@@ -204,7 +209,7 @@ if __name__ == '__main__':
 
     # rename columns on pivot
     mapper = {k: v.replace('Ending Stocks of ', '') for k, v in metadata_dict.items()}
-    mapper = {k: v.replace('Ending Stocks of ', '') for k, v in mapper.items()}
+    mapper = {k: v.replace('Ending Stocks', '') for k, v in mapper.items()}
     df_combo.rename(columns=mapper, inplace=True)
 
     # sort on date & filter to remove dodgy history
