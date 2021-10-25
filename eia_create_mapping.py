@@ -1,4 +1,8 @@
-from treelib import Node, Tree, exceptions
+'''
+conda install -c conda-forge treelib
+'''
+
+from treelib import Tree
 import pandas as pd
 from eia_hierarchy_definitions import hierarchy_dict_us_stocks
 
