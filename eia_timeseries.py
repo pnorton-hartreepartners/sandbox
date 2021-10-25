@@ -22,6 +22,7 @@ file_for_data = 'eia-weekly.pkl'
 # we add the aggregation details to the filename here
 file_for_norm_data = 'eia-weekly-norm-data '
 file_for_pivot_data = 'eia-weekly-pivot-data '
+file_for_metadata = 'eia-weekly-metadata '
 
 
 def build_comparison(df, source_key, source_keys):
@@ -77,8 +78,8 @@ def get_single_metadata_dict_for_all_symbols(metadata_df, label):
 def get_metadata_df(df, columns, selection):
     metadata_df = df[columns].drop_duplicates()
     metadata_df.set_index(SOURCE_KEY, drop=True, inplace=True)
-    mask = metadata_df.index.isin(selection)
-    return metadata_df[mask]
+    #mask = metadata_df.index.isin(selection)
+    return metadata_df
 
 
 if __name__ == '__main__':
@@ -137,6 +138,8 @@ if __name__ == '__main__':
     df_norm.to_pickle(pathfile + suffix)
     pathfile = os.path.join(path, file_for_pivot_data)
     df_combo.to_pickle(pathfile + suffix)
+    pathfile = os.path.join(path, file_for_metadata)
+    metadata_df.to_pickle(pathfile + suffix)
 
     chart_title = metadata_dict[source_key]
 
