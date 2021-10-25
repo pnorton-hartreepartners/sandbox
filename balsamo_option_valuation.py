@@ -70,7 +70,7 @@ if __name__ == '__main__':
     stamp_as_date = dt.date(2021, 10, 22)
     mosaic_url_dict['stamp'] = dt.datetime.strftime(stamp_as_date, '%Y-%m-%d')
 
-    # date munging
+    # term date
     term_as_date = dt.datetime.strptime(mosaic_payload_dict['term'], '%Y%m')
 
     # ==================================================================================================================

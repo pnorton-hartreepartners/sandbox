@@ -19,7 +19,7 @@ hierarchy_dict_us_stocks = {
     # ======================================
     # Total Motor Gasoline
     'WGTSTUS1':
-        ['WGFSTUS1'
+        ['WGFSTUS1',
          'WBCSTUS1'],
     # ======================================
     # Finished Motor Gasoline
