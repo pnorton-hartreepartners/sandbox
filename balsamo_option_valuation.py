@@ -43,9 +43,8 @@ mosaic_headers_dict = {'accept': 'application/json',
                        'Content-Type': 'application/json'}
 
 mosaic_payload_dict = {'term': '202701',
-                   'parity': 'Call',
-                'strike': '5500'}
-  #                 'strike': '3159.8913'}
+                       'parity': 'Call',
+                       'strike': '2400'}
 
 mosaic_vol_surface_kwargs_dict = {
     'getVolSurface': {
@@ -55,9 +54,11 @@ mosaic_vol_surface_kwargs_dict = {
     }
 }
 
-
 if __name__ == '__main__':
-    balsamo_option_valuation_api = 'getEuropeanOptionValuation'
+    GET_EUROPEAN_OPTION_VALUATION = 'getEuropeanOptionValuation'
+    GET_ASIAN_OPTION_VALUATION = 'getAsianOptionValuation'
+
+    balsamo_option_valuation_api = GET_EUROPEAN_OPTION_VALUATION
     mosaic_option_valuation_api = 'getOptionPricesFromVolCurves'
     mosaic_forward_curve_api = 'getLMEForwardCurveSettlement'
     env = DEV
@@ -66,8 +67,8 @@ if __name__ == '__main__':
     balsamo_valuation = True
 
     # value date
-    stamp = '2021-10-21'
-    stamp_as_date = dt.datetime.strptime(stamp, '%Y-%m-%d').date()
+    stamp_as_date = dt.date(2021, 10, 22)
+    mosaic_url_dict['stamp'] = dt.datetime.strftime(stamp_as_date, '%Y-%m-%d')
 
     # date munging
     term_as_date = dt.datetime.strptime(mosaic_payload_dict['term'], '%Y%m')
@@ -77,23 +78,23 @@ if __name__ == '__main__':
 
     # get the forward curve just to validate results
     mosaic_url = template_url_dict[mosaic_forward_curve_api].format(host=hosts[SETTLES][env],
-                                                                              api_name=mosaic_forward_curve_api,
-                                                                              symbol=mosaic_url_dict['symbol'],
-                                                                              stamp=stamp)
-    response = requests.get(mosaic_url)
-    mosaic_forward_curve_results_df = pd.DataFrame(json.loads(response.content))
+                                                                    api_name=mosaic_forward_curve_api,
+                                                                    symbol=mosaic_url_dict['symbol'],
+                                                                    stamp=mosaic_url_dict['stamp'])
+    mosaic_forward_curve_response = requests.get(mosaic_url)
+    mosaic_forward_curve_results_df = pd.DataFrame(json.loads(mosaic_forward_curve_response.content))
 
     # mosaic can accept a list of options but for now we will send just one
     mosaic_payload = [mosaic_payload_dict]
 
     # create the url
     mosaic_url = template_url_dict[mosaic_option_valuation_api].format(host=hosts[SETTLES][env],
-                                                                              api_name=mosaic_option_valuation_api,
-                                                                              symbol=mosaic_url_dict['symbol'],
-                                                                              exchange=mosaic_url_dict['exchange'],
-                                                                              stamp=stamp,
-                                                                              scheme=mosaic_url_dict['scheme'],
-                                                                              rf_rate=mosaic_url_dict['rf_rate'])
+                                                                       api_name=mosaic_option_valuation_api,
+                                                                       symbol=mosaic_url_dict['symbol'],
+                                                                       exchange=mosaic_url_dict['exchange'],
+                                                                       stamp=mosaic_url_dict['stamp'],
+                                                                       scheme=mosaic_url_dict['scheme'],
+                                                                       rf_rate=mosaic_url_dict['rf_rate'])
 
     # call api and get results
     mosaic_option_valuation_response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)
@@ -103,21 +104,19 @@ if __name__ == '__main__':
     # balsamo valuation
 
     # we need to call mosaic to get the expiry date
-    data_dict, mosaic_vol_surface_df = get_mosaic_surface(date=stamp, kwargs_dict=mosaic_vol_surface_kwargs_dict, env=DEV)
+    data_dict, mosaic_vol_surface_df = get_mosaic_surface(date=mosaic_url_dict['stamp'],
+                                                          kwargs_dict=mosaic_vol_surface_kwargs_dict, env=DEV)
     mapping = zip(data_dict['contracts'], data_dict['maturities'])
-    maturity_date = dict(mapping)[mosaic_payload_dict['term']]
+    maturity_date_from_vol_surface = dict(mapping)[mosaic_payload_dict['term']]
 
     # and get the smile from the surface using the contract date
     smile = mosaic_vol_surface_df.loc[term_as_date]
 
     # date format munging
-    # maturity_date_as_date = dt.datetime.strptime(maturity_date, '%Y-%m-%d').date()
-    # maturity_date_for_balsamo = dt.datetime.strftime(maturity_date_as_date, '%d/%m/%Y')
-    maturity_date_for_balsamo = dt.date(2027, 1, 7)
-    maturity_date_for_balsamo = dt.datetime.strftime(maturity_date_for_balsamo, '%d/%m/%Y')
+    maturity_date_as_datetime = dt.datetime.strptime(maturity_date_from_vol_surface, '%Y-%m-%d')
 
     # add to payload for inputs that need to match mosaic
-    balsamo_payload['Maturity'] = maturity_date_for_balsamo
+    balsamo_payload['Maturity'] = dt.datetime.strftime(maturity_date_as_datetime, '%d/%m/%Y')
     balsamo_payload['Strike'] = mosaic_payload_dict['strike']
 
     # create the url
@@ -167,8 +166,7 @@ if __name__ == '__main__':
     print('\n\nbalsamo_results:')
     pp(balsamo_option_valuation_results)
 
-    # days_to_maturity = maturity_date_for_balsamo - stamp_as_date
-    # print(f'\n\ndays_to_maturity: {days_to_maturity.days}')
+    days_to_maturity = maturity_date_as_datetime.date() - stamp_as_date
+    print(f'\n\ndays_to_maturity: {days_to_maturity.days}')
 
     print()
-

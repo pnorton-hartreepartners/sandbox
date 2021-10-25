@@ -7,6 +7,7 @@ os.environ['MOSAIC_ENV'] = 'DEV'
 import pandas as pd
 import datetime as dt
 from analyst_data_views.common.db_flattener import getFlatRawDF
+from eia_hierarchy_definitions import hierarchy_dict_us_stocks
 
 SOURCE_KEY = 'Sourcekey'
 LOAD = 'load'
@@ -15,93 +16,6 @@ SUBTOTAL = 'subtotal'
 CALCULATED = 'calculated'
 DATE = 'date'
 VALUE = 'value'
-
-other_dict = {
-    'WBCRI_NUS_2':  # 'Refiner and Blender Net Input of Gasoline Blending Components'
-        ['W_EPOBGRR_YIR_NUS_MBBLD',
-         'WO6RI_NUS_2',
-         'WO7RI_NUS_2',
-         'WO9RI_NUS_2'],
-    'W_EPPO6_SAE_NUS_MBBL':  # Ending Stocks of Other Oils; this one doesn't add up
-        ['W_EPPA_SAE_NUS_MBBL',
-         'W_EPPK_SAE_NUS_MBBL',
-         'W_EPL0XP_SAE_NUS_MBBL',
-         'WUOSTUS1'],
-    'WTTSTUS1':  # Ending Stocks of Crude Oil and Petroleum Products; at the most granular level
-        ['WCESTUS1',
-         'WCSSTUS1',
-         'WG1ST_NUS_1',
-         'WG3ST_NUS_1',
-         'W_EPM0CAL55_SAE_NUS_MBBL',
-         'W_EPM0CAG55_SAE_NUS_MBBL',
-         'WG6ST_NUS_1',
-         'W_EPOBGRR_SAE_NUS_MBBL',
-         'WO4ST_NUS_1',
-         'WO3ST_NUS_1',
-         'WO6ST_NUS_1',
-         'WO7ST_NUS_1',
-         'WO9ST_NUS_1',
-         'W_EPOOXE_SAE_NUS_MBBL',
-         'WKJSTUS1',
-         'WD0ST_NUS_1',
-         'WD1ST_NUS_1',
-         'WDGSTUS1',
-         'WRESTUS1',
-         'WPRSTUS1',
-         'W_EPPO6_SAE_NUS_MBBL']}
-
-hierarchy_dict = {
-    # ======================================
-    'WTTSTUS1':
-        ['WCRSTUS1',  # Crude Oil (Including SPR)
-         'WGTSTUS1',  # Total Motor Gasoline
-         'W_EPOOXE_SAE_NUS_MBBL',  # Fuel Ethanol
-         'WKJSTUS1',  # Kerosene-Type Jet Fuel
-         'WDISTUS1',  # Distillate Fuel Oil
-         'WRESTUS1',  # Residual Fuel Oil
-         'WPRSTUS1',  # Propane/Propylene (Excl. Propylene at Terminal)
-         'W_EPPO6_SAE_NUS_MBBL'  # Other Oils (Excluding Ethanol)
-         ],
-    # ======================================
-    # Crude Oil (Including SPR)
-    'WCRSTUS1':
-        ['WCESTUS1',  # Commercial (Excl. Lease Stock )
-        'WCSSTUS1',   # SPR
-         ],
-    # ======================================
-    # Total Motor Gasoline
-    'WGTSTUS1':
-        ['WGFSTUS1'
-         'WBCSTUS1'],
-    # ======================================
-    # Finished Motor Gasoline
-    'WGFSTUS1':
-        ['WGRSTUS1',
-         'WG4ST_NUS_1'],
-    'WGRSTUS1':
-        ['WG1ST_NUS_1',
-         'WG3ST_NUS_1'],
-    'WG4ST_NUS_1':
-        ['W_EPM0CAL55_SAE_NUS_MBBL',
-         'W_EPM0CAG55_SAE_NUS_MBBL',
-         'WG6ST_NUS_1'],
-    # ======================================
-    # Motor Gasoline Blending Components
-    'WBCSTUS1':
-        ['W_EPOBGRR_SAE_NUS_MBBL',
-         'WO4ST_NUS_1',
-         'WO3ST_NUS_1',
-         'WO6ST_NUS_1',
-         'WO7ST_NUS_1',
-         'WO9ST_NUS_1'],
-    # ======================================
-    # Distillate Fuel Oil
-    'WDISTUS1':
-        ['WD0ST_NUS_1',
-         'WD1ST_NUS_1',
-         'WDGSTUS1']
-
-}
 
 path = r'C:\Temp'
 file_for_data = 'eia-weekly.pkl'
@@ -181,7 +95,7 @@ if __name__ == '__main__':
         raise NotImplementedError
 
     # select which hierarchy mapping to look at and build comparison to calc diffs
-    selection = hierarchy_dict[source_key]
+    selection = hierarchy_dict_us_stocks[source_key]
     comparison_df = build_comparison(df, source_key=source_key, source_keys=selection)
     mask = comparison_df.index > dt.date(2015, 1, 1)
     comparison_df[mask].to_clipboard()

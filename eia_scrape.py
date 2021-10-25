@@ -1,3 +1,16 @@
+'''
+this script scrapes the eia weekly report directly from the web
+in order to capture the indentation that defines the hierarchy
+the output is a dataframe with:
+- text description
+- indent level
+- indent change
+- symbol
+- the cumulative text including those from previous levels in the hierarchy
+however, the report table name is missing; this will be derived by mapping the symbols
+to internal metadata
+'''
+
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
