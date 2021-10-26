@@ -14,6 +14,7 @@ to internal metadata
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import os
 
 url = r'https://www.eia.gov/dnav/pet/pet_sum_sndw_dcus_nus_w.htm'
 html = requests.get(url).content
@@ -72,6 +73,23 @@ for i, row in df.iterrows():
     # update the list and the df
     content.append(row['text'])
     df.at[i, 'hierarchy'] = content.copy()
+
+df.set_index('source_key', drop=True, inplace=True)
+
+# get saved metadata
+path = r'C:\Temp'
+file_for_metadata = 'eia-weekly-metadata'
+suffix = '.pkl'
+pathfile = os.path.join(path, file_for_metadata)
+metadata_df = pd.read_pickle(pathfile + suffix)
+
+mask = metadata_df['Location'] == 'U.S.'
+metadata_df = metadata_df[mask]
+
+# add metadata
+df = df.join(metadata_df['TabDescription'])
+mask = df['TabDescription'] == 'Stocks'
+df[mask]
 
 df.to_clipboard()
 print('hello world')

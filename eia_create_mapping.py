@@ -11,8 +11,9 @@ source_key = 'WTTSTUS1'
 
 # get saved metadata
 path = r'C:\Temp'
-file_for_metadata = 'eia-weekly-metadata '
-suffix = source_key + '.pkl'
+file_for_metadata = 'eia-weekly-metadata'
+file_for_mosaic_hierarchy = 'eia-weekly-mosaic_hierarchy'
+suffix = '.pkl'
 pathfile = os.path.join(path, file_for_metadata)
 metadata_df = pd.read_pickle(pathfile + suffix)
 
@@ -57,3 +58,5 @@ description_df = pd.DataFrame(data=padded_descriptions, columns=columns)
 
 # export
 description_df.to_clipboard()
+pathfile = os.path.join(path, file_for_mosaic_hierarchy)
+description_df.to_pickle(pathfile + suffix)

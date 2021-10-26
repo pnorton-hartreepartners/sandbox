@@ -23,25 +23,29 @@ hierarchy_dict_us_stocks = {
          'WBCSTUS1'],
     # ======================================
     # Finished Motor Gasoline
-    'WGFSTUS1':
+    'WGFSTUS1':  # level 1
         ['WGRSTUS1',
          'WG4ST_NUS_1'],
-    'WGRSTUS1':
+    'WGRSTUS1':  # level 2
         ['WG1ST_NUS_1',
          'WG3ST_NUS_1'],
-    'WG4ST_NUS_1':
-        ['W_EPM0CAL55_SAE_NUS_MBBL',
-         'W_EPM0CAG55_SAE_NUS_MBBL',
+    'WG4ST_NUS_1':  # level 2
+        ['WG5ST_NUS_1',
          'WG6ST_NUS_1'],
+    'WG5ST_NUS_1':  # level 3
+        ['W_EPM0CAL55_SAE_NUS_MBBL',
+         'W_EPM0CAG55_SAE_NUS_MBBL'],
     # ======================================
     # Motor Gasoline Blending Components
-    'WBCSTUS1':
+    'WBCSTUS1':  # level 1
         ['W_EPOBGRR_SAE_NUS_MBBL',
-         'WO4ST_NUS_1',
-         'WO3ST_NUS_1',
          'WO6ST_NUS_1',
          'WO7ST_NUS_1',
          'WO9ST_NUS_1'],
+    'W_EPOBGRR_SAE_NUS_MBBL':  # level 2
+        ['WO4ST_NUS_1',
+         'WO3ST_NUS_1'],
+
     # ======================================
     # Distillate Fuel Oil
     'WDISTUS1':
