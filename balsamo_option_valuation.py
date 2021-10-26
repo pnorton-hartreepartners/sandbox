@@ -26,9 +26,17 @@ balsamo_headers_dict = {
     'Commodity': 'METAL CONCENTRATES',
 }
 
-balsamo_payload = {
-    'Putcall': 'P',  # Put = Sell = S; Call = Purchase = P
-    'PriceCode': 'LMEZNCB',
+balsamo_payload_dict = {
+    'EuropeanOption': [
+        {'putcall': 'P',  # Put = Sell = S; Call = Purchase = P
+         'pricecode': 'LMEZNCB',
+         'premium': '12345',
+         'payableqty': '1'
+         }
+    ],
+    'fallbackToHistorical': 'N',
+    'showDetailPrices': 'N',
+    'riskFreeRate': '0.00'
 }
 
 # ======================================================================================================================
@@ -69,9 +77,13 @@ if __name__ == '__main__':
     # value date
     stamp_as_date = dt.date(2021, 10, 22)
     mosaic_url_dict['stamp'] = dt.datetime.strftime(stamp_as_date, '%Y-%m-%d')
+    balsamo_headers_dict['ClosingPeriod'] = dt.datetime.strftime(stamp_as_date, '%d/%m/%Y')
 
     # term date
     term_as_date = dt.datetime.strptime(mosaic_payload_dict['term'], '%Y%m')
+
+
+    balsamo_payload_dict['EuropeanOption'][0]['strike'] = mosaic_payload_dict['strike']
 
     # ==================================================================================================================
     # mosaic valuation
@@ -100,38 +112,31 @@ if __name__ == '__main__':
     mosaic_option_valuation_response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)
     mosaic_option_valuation_results = json.loads(mosaic_option_valuation_response.content)[0]
 
-    # ==================================================================================================================
-    # balsamo valuation
-
-    # we need to call mosaic to get the expiry date
+    # ===========================
+    # get vol surface from mosaic
     data_dict, mosaic_vol_surface_df = get_mosaic_surface(date=mosaic_url_dict['stamp'],
                                                           kwargs_dict=mosaic_vol_surface_kwargs_dict, env=DEV)
     mapping = zip(data_dict['contracts'], data_dict['maturities'])
-    maturity_date_from_vol_surface = dict(mapping)[mosaic_payload_dict['term']]
+    expiry_date_from_vol_surface = dict(mapping)[mosaic_payload_dict['term']]
+    expiry_date_as_datetime = dt.datetime.strptime(expiry_date_from_vol_surface, '%Y-%m-%d')
 
     # and get the smile from the surface using the contract date
     smile = mosaic_vol_surface_df.loc[term_as_date]
 
-    # date format munging
-    maturity_date_as_datetime = dt.datetime.strptime(maturity_date_from_vol_surface, '%Y-%m-%d')
-
-    # add to payload for inputs that need to match mosaic
-    balsamo_payload['Maturity'] = dt.datetime.strftime(maturity_date_as_datetime, '%d/%m/%Y')
-    balsamo_payload['Strike'] = mosaic_payload_dict['strike']
+    # ==================================================================================================================
+    # balsamo valuation
 
     # create the url
     balsamo_url = balsamo_template_url_dict[balsamo_option_valuation_api].format(host=hosts[BALSAMO][env],
                                                                                  port=hosts[BALSAMO][PORT],
                                                                                  api=balsamo_option_valuation_api)
-    # all content is added to the headers
-    headers = {}
-    headers.update(balsamo_headers_dict)
-    headers.update(balsamo_payload)
+
+    # we got this from mosaic
+    balsamo_payload_dict['EuropeanOption'][0]['promptdate'] = dt.datetime.strftime(expiry_date_as_datetime, '%d/%m/%Y')
 
     # call api and get results
-    balsamo_option_valuation_response = requests.get(balsamo_url, headers=headers, verify=False)
+    balsamo_option_valuation_response = requests.post(balsamo_url, headers=balsamo_headers_dict, json=balsamo_payload_dict, verify=False)
     balsamo_option_valuation_results = json.loads(balsamo_option_valuation_response.content)
-
     # ==================================================================================================================
     # print some results
 
@@ -161,12 +166,15 @@ if __name__ == '__main__':
 
     print('\n\nbalsamo_option_valuation_request:')
     print(balsamo_option_valuation_response.request.url)
+    print()
     print(balsamo_option_valuation_response.request.headers)
+    print()
+    print(balsamo_option_valuation_response.request.body)
 
     print('\n\nbalsamo_results:')
     pp(balsamo_option_valuation_results)
 
-    days_to_maturity = maturity_date_as_datetime.date() - stamp_as_date
-    print(f'\n\ndays_to_maturity: {days_to_maturity.days}')
+    days_to_maturity = expiry_date_as_datetime.date() - stamp_as_date
+    print(f'\n\ncalculated days_to_maturity: {days_to_maturity.days}')
 
     print()
