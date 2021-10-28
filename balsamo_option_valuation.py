@@ -31,12 +31,14 @@ balsamo_payload_dict = {
         {'putcall': 'P',  # Put = Sell = S; Call = Purchase = P
          'pricecode': 'LMEZNCB',
          'premium': '12345',
-         'payableqty': '1'
+         'payableqty': '1',
+         'riskFreeRate': '0.00'
          }
     ],
     'fallbackToHistorical': 'N',
     'showDetailPrices': 'N',
-    'riskFreeRate': '0.00'
+    'montecarlo': 'N',
+    'numberOfPaths': '2000'
 }
 
 # ======================================================================================================================
