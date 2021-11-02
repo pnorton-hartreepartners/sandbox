@@ -5,7 +5,7 @@ conda install -c conda-forge treelib
 from treelib import Tree
 import os
 import pandas as pd
-from eia_hierarchy_definitions import hierarchy_dict_us_stocks
+from zzz_eia_hierarchy_definitions import hierarchy_dict_us_stocks
 
 source_key = 'WTTSTUS1'
 

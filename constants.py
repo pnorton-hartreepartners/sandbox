@@ -1,3 +1,6 @@
+path = r'C:\Temp'
+json_for_trader_curves_definitions = 'trader_curves_definitions.json'
+
 PROD = 'prod'
 DEV = 'dev'
 
