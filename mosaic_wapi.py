@@ -8,13 +8,12 @@ from mosaic_api_templates import template_url_dict
 # example call data works by api
 kwargs_dict = {
     'getFutureCurveSettlement': {
-        'instrument_key': 'CL 202012',
-        'exchange': 'CME',
-        'allow_indicative': 'true',
-        'symbols': 'CL%2CHO',
-        'stamp': '2021-09-14',
-        'symbol': 'CL',
-        'contract_regex': '2021SUMMER',
+        URL_KWARGS:
+            {'exchange': 'CME',
+             'symbols': 'CL%2CHO',
+             'stamp': '2021-09-14', },
+        PARAMS_KWARGS:
+            {'allow_indicative': 'true'}
     },
     'getVolSurface': {
         URL_KWARGS:
@@ -140,6 +139,6 @@ if __name__ == '__main__':
     start_date = dt.date(2020, 10, 1)
     periods = 6
 
-    df = build_from_curves_df(host, curves, start_date, periods)
+    # df = build_from_curves_df(host, curves, start_date, periods)
     print()
 
