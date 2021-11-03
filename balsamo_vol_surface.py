@@ -1,31 +1,24 @@
 from mosaic_api_templates import template_url_dict
+from mosaic_wapi import kwargs_dict
 import requests
 import pandas as pd
 import datetime as dt
-from constants import SETTLES, hosts, DEV
-
-vol_surface_kwargs_dict = {
-    'getVolSurface': {
-        'symbol': 'ZN',
-        'exchange': 'LME',
-        'allow_cached_vols': 'true'
-    }
-}
+from constants import SETTLES, hosts, DEV, URL_KWARGS, PARAMS_KWARGS
 
 
 def get_mosaic_surface(date, kwargs_dict, env=DEV):
     api_name = 'getVolSurface'
 
-    kwargs = kwargs_dict[api_name]
-    kwargs['host'] = hosts[SETTLES][env]
-    kwargs['api_name'] = api_name
-    kwargs['stamp'] = date
+    url_kwargs = kwargs_dict[api_name][URL_KWARGS]
+    url_kwargs['host'] = hosts[SETTLES][env]
+    url_kwargs['api_name'] = api_name
+    url_kwargs['stamp'] = date
 
     template_url = template_url_dict[api_name]
-    url = template_url.format(**kwargs)
+    url = template_url.format(**url_kwargs)
 
     print(f'\nurl is:\n{url}')
-    data_dict = requests.get(url).json()
+    data_dict = requests.get(url, params=kwargs_dict[api_name][PARAMS_KWARGS]).json()
     if data_dict.get('detail') == 'error : no vol slice was built':
         df = pd.DataFrame()
     else:
@@ -42,7 +35,7 @@ def get_mosaic_surface(date, kwargs_dict, env=DEV):
 
 if __name__ == '__main__':
     date = '2021-10-20'
-    df = get_mosaic_surface(date, kwargs_dict=vol_surface_kwargs_dict, env=DEV)
+    df = get_mosaic_surface(date, kwargs_dict=kwargs_dict, env=DEV)
     print(df)
 
 

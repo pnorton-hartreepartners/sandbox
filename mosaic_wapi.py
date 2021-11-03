@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import SETTLES, hosts
+from constants import SETTLES, TSDB, hosts, URL_KWARGS, PARAMS_KWARGS
 from mosaic_api_templates import template_url_dict
 
 # example call data works by api
@@ -17,10 +17,19 @@ kwargs_dict = {
         'contract_regex': '2021SUMMER',
     },
     'getVolSurface': {
-        'symbol': 'ZN',
-        'exchange': 'LME',
-        'stamp': '2021-10-12',
-        'allow_cached_vols': 'true'
+        URL_KWARGS:
+            {'symbol': 'ZN',
+             'exchange': 'LME',
+             'stamp': '2021-10-12'},
+        PARAMS_KWARGS:
+            {'allow_cached_vols': 'true'}
+    },
+    'tsdb': {
+        URL_KWARGS:
+            {'stage': 'raw',
+             'source': 'eia_weekly'},
+        PARAMS_KWARGS:
+            {'filters': "sourcekey='WTTSTUS1'"}  # need single quotes
     }
 }
 
@@ -30,6 +39,10 @@ def get_args():
     parser.add_argument('-e', '--env',
                         help='prod or dev',
                         choices=['prod', 'dev'],
+                        required=True)
+    parser.add_argument('--host',
+                        help='settles or tsdb',
+                        choices=['settles', 'tsdb'],
                         required=True)
     parser.add_argument('-a', '--api',
                         help='name of the api',
@@ -49,10 +62,14 @@ def decorate_result(f):
 
 
 @decorate_result
-def get_any_api(template_url, kwargs):
+def get_any_api(url, params):
+    return requests.get(url, params=params)
+
+
+def build_url(template_url, kwargs):
     url = template_url.format(**kwargs)
     print(f'\nurl is:\n{url}')
-    return requests.get(url)
+    return url
 
 
 def build_instrument_key(symbol, forward_date):
@@ -94,20 +111,26 @@ def build_from_curves_df(host, curves, start_date, periods):
 
 if __name__ == '__main__':
     '''
-    >>>python mosaic_wapi.py -e dev --api getVolSurface
+    >>>python mosaic_wapi.py -e dev --host tsdb --api tsdb
     '''
 
     args = get_args()
     env = args.env
     api_name = args.api
-    host = hosts[SETTLES][env]
+    host_name = args.host
+    host = hosts[host_name][env]
 
     template_url = template_url_dict[api_name]
-    kwargs = kwargs_dict[api_name]
-    kwargs['host'] = host
-    kwargs['api_name'] = api_name
+    url_kwargs = kwargs_dict[api_name][URL_KWARGS]
+    url_kwargs['host'] = host
+    url_kwargs['api_name'] = api_name
+    url = build_url(template_url=template_url, kwargs=url_kwargs)
 
-    df = get_any_api(template_url=template_url, kwargs=kwargs)
+    params = kwargs_dict[api_name][PARAMS_KWARGS]
+    # to chain them; something like this
+    # params = {'filters': [f'{k}={v} for k, v in filters.items()]}
+
+    df = get_any_api(url=url, params=params)
     print(df)
 
     cme_european_naphtha_calendar_swap = ('CME', 'UN')
@@ -120,28 +143,3 @@ if __name__ == '__main__':
     df = build_from_curves_df(host, curves, start_date, periods)
     print()
 
-    # exchange = 'ICE'
-    # df = get_symbols(host=host, exchange=exchange)
-    # print(df.head())
-    # print()
-
-    # instrument_key = 'JKM 202110'
-    # exchange = 'ICE'
-    # df = get_settles_ts(host=host, instrument_key=instrument_key, exchange=exchange)
-    # print(df.head())
-
-    # @decorate_result
-    # def get_settles_w_status_ts(host, instrument_key, exchange, allow_indicative):
-    #     url = f'{host}/settles/api/v1/getSettlementTS/{instrument_key}?exchange={exchange}&allow_indicative={allow_indicative}'
-    #     return requests.get(url)
-
-
-    # @decorate_result
-    # def get_symbols(host, exchange):
-    #     url = f'{host}/settles/api/v1/getSymbols/{exchange}'
-    #     return requests.get(url)
-
-    # @decorate_result
-    # def get_settles_ts(host, instrument_key, exchange):
-    #     url = f'{host}/settles/api/v1/getSettlementTS/{instrument_key}?exchange={exchange}'
-    #     return requests.get(url)

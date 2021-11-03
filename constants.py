@@ -5,16 +5,20 @@ PROD = 'prod'
 DEV = 'dev'
 
 SETTLES = 'settles'
+TSDB = 'tsdb'
 BALSAMO = 'balsamo'
 PORT = 'port'
 
 TTDA = 'ttda'
 
+URL_KWARGS = 'url_kwargs'
+PARAMS_KWARGS = 'params_kwargs'
+
 hosts = {
     SETTLES:
         {
-            PROD: 'http://settles-api.mosaic.hartreepartners.com',
-            DEV: 'http://settles-api.dev.mosaic.hartreepartners.com',
+            PROD: 'http://settles-api.mosaic.hartreepartners.com/settles',
+            DEV: 'http://settles-api.dev.mosaic.hartreepartners.com/settles',
             PORT: 123
         },
     BALSAMO:
@@ -22,6 +26,12 @@ hosts = {
             PROD: 'https://192.168.137.10',
             DEV: 'https://balsamotest.commoditiesengineering.com',
             PORT: 8443
+        },
+    TSDB:
+        {
+            PROD: 'http://time-series-api.mosaic.hartreepartners.com/data',
+            DEV: 'http://time-series-api.dev.mosaic.hartreepartners.com/data',
+            PORT: 123
         }
 }
 

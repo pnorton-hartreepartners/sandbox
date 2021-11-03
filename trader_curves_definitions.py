@@ -15,10 +15,22 @@ pathfile = os.path.join(path, json_for_trader_curves_definitions)
 with open(pathfile) as json_file:
     data = json.load(json_file)
 
-keys = list(data.keys())
+keys = sorted(list(data.keys()))
 pp(keys)
+
+types = [data[key]['definition']['type'] for key in keys]
+'''
+set(types)
+{'Combo', 'TimeSpread', 'Dynamic', 'Swap', 'Outright'}
+'''
 
 key = 'BRT-S'
 pp(data[key])
+pp(data[key]['definition']['type'])
 
+keys_not_swap = [key for key in keys if data[key]['definition']['type'] != 'Swap']
 print()
+
+# doesnt work
+key = 'RB-DATED-S'
+
