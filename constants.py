@@ -1,5 +1,6 @@
 path = r'C:\Temp'
 json_for_trader_curves_definitions = 'trader_curves_definitions.json'
+json_for_trader_curves_definitions = 'tempest.json'
 
 PROD = 'prod'
 DEV = 'dev'
