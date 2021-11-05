@@ -41,8 +41,8 @@ def build_kwargs_for_url():
 
 def build_params_list():
     source_keys = eia_weekly_dict[PARAMS_KWARGS][FILTERS][SOURCE_KEY]
-    source_keys_with_quotes = [SINGLE_QUOTE + source_key + SINGLE_QUOTE for source_key in source_keys]
-    return [{FILTERS: SOURCE_KEY + EQUALS_SIGN + source_key} for source_key in source_keys_with_quotes]
+    source_keys_as_filter = [f"{SOURCE_KEY}='{source_key}'" for source_key in source_keys]
+    return [{FILTERS: source_key} for source_key in source_keys_as_filter]
 
 
 def call_api_for_many_and_build_df(url, params_list):
