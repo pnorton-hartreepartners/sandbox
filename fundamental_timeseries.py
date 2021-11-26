@@ -3,9 +3,10 @@ api doesnt support calling a list of symbols because filters use implicit logica
 also cant just request all the data and then post-process because db server runs out of memory
 so instead call one symbol at a time; yawn
 '''
-from constants import TSDB, hosts, URL_KWARGS, PARAMS_KWARGS, DEV, PROD
+from constants import TSDB, hosts, URL_KWARGS, PARAMS_KWARGS, DEV, path, PROD
 from mosaic_api_templates import template_url_dict
 from mosaic_wapi import build_url
+import os
 import requests
 import pandas as pd
 
@@ -70,6 +71,12 @@ if __name__ == '__main__':
 
     # build df for list of symbols
     df = call_api_for_many_and_build_df(url=url, params_list=params_list)
+
+    # save as xls
+    xlsx_for_fundamental_timeseries = 'fundamental_timeseries.xlsx'
+    pathfile = os.path.join(path, xlsx_for_fundamental_timeseries)
+    with pd.ExcelWriter(pathfile) as writer:
+        df.to_excel(writer, sheet_name='timeseries')
 
     pivot_df = df.pivot(index='date', columns=SOURCE_KEY, values='value')
     print(pivot_df)

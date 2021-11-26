@@ -23,6 +23,7 @@ with open(pathfile) as json_file:
 supported_types = ['Combo', 'Pull']
 combo_keys = [d['symbol'] for d in data if d['type'] == 'Combo' and d['symbol'][-2:] != '-S']
 pull_keys = [d['symbol'] for d in data if d['type'] == 'Pull']
+swap_keys = [d['symbol'] for d in data if d['symbol'][-2:] == '-S']
 # keys = [d['symbol'] for d in data if d['type'] in supported_types]
 keys = sorted(pull_keys)
 pp(keys)

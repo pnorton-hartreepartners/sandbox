@@ -6,10 +6,9 @@ import datetime as dt
 from constants import SETTLES, hosts, DEV, URL_KWARGS, PARAMS_KWARGS
 
 
-def get_mosaic_surface(date, kwargs_dict, env=DEV):
+def get_mosaic_surface(date, url_kwargs, env=DEV):
     api_name = 'getVolSurface'
 
-    url_kwargs = kwargs_dict[api_name][URL_KWARGS]
     url_kwargs['host'] = hosts[SETTLES][env]
     url_kwargs['api_name'] = api_name
     url_kwargs['stamp'] = date
@@ -18,7 +17,7 @@ def get_mosaic_surface(date, kwargs_dict, env=DEV):
     url = template_url.format(**url_kwargs)
 
     print(f'\nurl is:\n{url}')
-    data_dict = requests.get(url, params=kwargs_dict[api_name][PARAMS_KWARGS]).json()
+    data_dict = requests.get(url).json()
     if data_dict.get('detail') == 'error : no vol slice was built':
         df = pd.DataFrame()
     else:
