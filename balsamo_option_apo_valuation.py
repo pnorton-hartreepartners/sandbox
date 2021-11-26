@@ -34,6 +34,7 @@ my_model_params = {
 # TODO: calc fixings data
 my_valuation_params = {
     'valuation_date': '2021-11-01',
+    # these are required for mosaic valuation (not for balsamo)
     'acc_days': 0,
     'acc_sum': 0,
     'rem_fixings': '2022-01-01',
@@ -75,7 +76,7 @@ balsamo_template_url_dict = {
 
 balsamo_headers_dict = {
     'User': 'PNO',
-    'Pwd': 'Gazprom2',
+    'Pwd': None,
     'Company': 'Hartree Partners',
     'Commodity': 'METAL CONCENTRATES',
     'ClosingPeriod': balsamo_valuation_date
@@ -135,7 +136,6 @@ mosaic_vol_surface_url_dict = {'host': hosts[SETTLES]['dev'],
                                'exchange': my_option['underlying']['exchange'],
                                'allow_cached_vols': 'true'  # not used... not sure what to do here
                                }
-
 # ======================================================================================================================
 
 
@@ -150,7 +150,7 @@ def get_mosaic_forward_curve(hosts, mosaic_url_dict):
 
 
 def process_response(r):
-    if r.status_code == 200:
+    if 200 <= r.status_code <= 299:
         try:
             results = json.loads(r.content)
         except Exception as e:
@@ -162,8 +162,9 @@ def process_response(r):
 
 if __name__ == '__main__':
     env = DEV
+    balsamo_headers_dict['Pwd'] = input('enter balsamo password')
 
-    mosaic_valuation = True
+    mosaic_valuation = False
     balsamo_valuation = True
 
     # ==================================================================================================================
@@ -200,12 +201,10 @@ if __name__ == '__main__':
     balsamo_option_expiry_date = dt.datetime.strftime(expiry_date_as_datetime, '%d/%m/%Y')
 
     # get the forward price
-    index = 'expiration_date'
-    columns = [index, 'value']
-    df = mosaic_forward_curve_results_df[columns]
-    df[index] = pd.to_datetime(df[index])
-    df = df.set_index(keys=index, drop=True)
-    df = df.resample('D').interpolate('linear')
+    index = pd.to_datetime(mosaic_forward_curve_results_df['expiration_date'])
+    data = mosaic_forward_curve_results_df['value'].values
+    df = pd.DataFrame(data=data, index=index)
+    df = df.resample('D').ffill(limit=1).interpolate('linear')
     future_value = df.loc[pd.to_datetime(term)].values[0]
 
     # update the payload
@@ -276,46 +275,3 @@ if __name__ == '__main__':
         print('\n\nbalsamo_results:')
         pp(balsamo_option_valuation_results)
 
-
-    # ==================================================================================================================
-    # print some results
-'''
-    print('=============================================================================')
-    print(f'valuation_date: {valuation_date}')
-
-    print('\n\n=============================================================================')
-    print('mosaic')
-    print('=============================================================================')
-
-    print('\n\nmosaic_forward_curve_results:')
-    pp(mosaic_forward_curve_results_df.tail())
-
-    print('\n\nmosaic_option_valuation_request:')
-    print(mosaic_option_valuation_response.request.url)
-    print(mosaic_option_valuation_response.request.body)
-
-    print('\n\nmosaic_option_valuation_results:')
-    pp(mosaic_option_valuation_results)
-
-    print('\n\nmosaic smile:')
-    pp(smile)
-
-    print('\n\n=============================================================================')
-    print('balsamo')
-    print('=============================================================================')
-
-    print('\n\nbalsamo_option_valuation_request:')
-    print(balsamo_option_valuation_response.request.url)
-    print()
-    print(balsamo_option_valuation_response.request.headers)
-    print()
-    print(balsamo_option_valuation_response.request.body)
-
-    print('\n\nbalsamo_results:')
-    pp(balsamo_option_valuation_results)
-
-    days_to_maturity = expiry_date_as_datetime.date() - stamp_as_date
-    print(f'\n\ncalculated days_to_maturity: {days_to_maturity.days}')
-
-    print()
-    '''
