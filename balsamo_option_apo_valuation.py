@@ -2,13 +2,17 @@ import requests
 import json
 import pandas as pd
 from balsamo_vol_surface import get_mosaic_surface
-from constants import DEV, BALSAMO, PORT, SETTLES, hosts, URL_KWARGS, PARAMS_KWARGS
+from constants import DEV, BALSAMO, PORT, SETTLES, hosts
 from pprint import pprint as pp
 import datetime as dt
 from mosaic_api_templates import template_url_dict, MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API
 
 '''
 activate mosaic2
+
+example mosaic call
+http://settles-api.dev.mosaic.hartreepartners.com/settles/api/v1/getPriceAPO/2021-11-01/2023-01-04/2400/Call/3138.595714285714/0.2685/0/0/0/2022-01-01
+
 '''
 # ======================================================================================================================
 # my test
@@ -27,7 +31,13 @@ my_model_params = {
     'montecarlo': 'Y',
     'numberOfPaths': '2000'
 }
-valuation_date = '2021-11-01'
+# TODO: calc fixings data
+my_valuation_params = {
+    'valuation_date': '2021-11-01',
+    'acc_days': 0,
+    'acc_sum': 0,
+    'rem_fixings': '2022-01-01',
+}
 
 # ======================================================================================================================
 # mappers
@@ -39,7 +49,7 @@ balsamo_pricecode_mapper = {'ZN': 'LMEZNCB'}
 # ======================================================================================================================
 # dates
 
-valuation_date = dt.date.fromisoformat(valuation_date)
+valuation_date = dt.date.fromisoformat(my_valuation_params['valuation_date'])
 mosaic_valuation_date = dt.datetime.strftime(valuation_date, '%Y-%m-%d')
 balsamo_valuation_date = dt.datetime.strftime(valuation_date, '%d/%m/%Y')
 
@@ -101,9 +111,9 @@ mosaic_url_dict = {'symbol': my_option['underlying']['symbol'],
                    'expiration_date': None,
                    'future_value': None,
                    'ivol': None,
-                   'acc_days': 0,
-                   'acc_sum': 0,
-                   'rem_fixings': '2022-01-01',
+                   'acc_days': my_valuation_params['acc_days'],
+                   'acc_sum': my_valuation_params['acc_sum'],
+                   'rem_fixings': my_valuation_params['rem_fixings'],
                    'stamp': mosaic_valuation_date
                    }
 
@@ -144,10 +154,9 @@ def process_response(r):
         try:
             results = json.loads(r.content)
         except Exception as e:
-            print(f'request successful but failed to parse content with: {e}')
-            results = None
+            results = f'request successful but failed to parse content with: {e}'
     else:
-        results = None
+        results = f'request failed with: {r}'
     return results
 
 
