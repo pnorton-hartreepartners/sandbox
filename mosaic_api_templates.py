@@ -30,6 +30,9 @@ template_url_dict = {
     'getPriceAPO': r'{host}/api/v1/{api_name}/{stamp}/{expiration_date}/{strike}/{parity}/{future_value}/{ivol}/{rf_rate}/{acc_days}/{acc_sum}/{rem_fixings}',
 
     # fundamental data series
-    'tsdb': r'{host}/api/v1/{api_name}/source/{stage}/{source}'
+    'tsdb': r'{host}/api/v1/{api_name}/source/{stage}/{source}',
+
+    # trader curve details incl conversions
+    'getTraderCurvesCatalog': r'{host}/api/v1/{api_name}'
 
 }

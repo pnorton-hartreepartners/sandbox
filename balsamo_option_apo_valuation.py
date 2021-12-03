@@ -29,7 +29,8 @@ my_option = {
 }
 my_model_params = {
     'montecarlo': 'Y',
-    'numberOfPaths': '2000'
+    'numberOfPaths': '100000',
+    "seed": "42"
 }
 # TODO: calc fixings data
 my_valuation_params = {
@@ -98,7 +99,8 @@ balsamo_payload_dict = {
     'fallbackToHistorical': 'N',
     'showDetailPrices': 'N',
     'montecarlo': my_model_params['montecarlo'],
-    'numberOfPaths': my_model_params['numberOfPaths']
+    'numberOfPaths': my_model_params['numberOfPaths'],
+    "seed": my_model_params['seed'],
 }
 
 # ======================================================================================================================

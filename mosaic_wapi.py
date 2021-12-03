@@ -29,7 +29,13 @@ kwargs_dict = {
              'source': 'eia_weekly'},
         PARAMS_KWARGS:
             {'filters': "sourcekey='WTTSTUS1'"}  # need single quotes
-    }
+    },
+    'getTraderCurvesCatalog': {
+        URL_KWARGS:
+            {},
+        PARAMS_KWARGS:
+            {}
+    },
 }
 
 
