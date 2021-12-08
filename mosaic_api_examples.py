@@ -1,6 +1,6 @@
 from constants import URL_KWARGS, PARAMS_KWARGS, hosts, DEV
 from mosaic_api_templates import api_config_dict
-from mosaic_wapi import build_url, get_any_api
+from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs
 
 kwargs_dict = {
     'getFutureCurveSettlement': {
@@ -47,13 +47,10 @@ if __name__ == '__main__':
 
     env = DEV
     for api_name in kwargs_dict:
-        host_name = api_config_dict[api_name]['host']
-        host_string = hosts[host_name][env]
-
         template_url = api_config_dict[api_name]['url_template']
-        url_kwargs = kwargs_dict[api_name][URL_KWARGS]
-        url_kwargs['host'] = host_string
-        url_kwargs['api_name'] = api_name
+
+        url_kwargs = build_partial_url_kwargs(api_name, env=env)
+        url_kwargs.update(kwargs_dict[api_name][URL_KWARGS])
         url = build_url(template_url=template_url, kwargs=url_kwargs)
 
         params = kwargs_dict[api_name][PARAMS_KWARGS]

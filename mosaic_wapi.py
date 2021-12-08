@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import hosts, URL_KWARGS, PARAMS_KWARGS
+from constants import hosts, URL_KWARGS, PARAMS_KWARGS, DEV
 from mosaic_api_templates import api_config_dict
 
 
@@ -29,12 +29,18 @@ def decorate_result(f):
                 return result, pd.DataFrame(result.json()), None
             except Exception as e:
                 return result, pd.DataFrame(), e
-        return decorated
+    return decorated
 
 
 @decorate_result
 def get_any_api(url, params):
     return requests.get(url, params=params)
+
+
+def build_partial_url_kwargs(api_name, env=DEV):
+    host_name = api_config_dict[api_name]['host']
+    host_string = hosts[host_name][env]
+    return {'host': host_string, 'api_name': api_name}
 
 
 def build_url(template_url, kwargs):
@@ -89,18 +95,13 @@ if __name__ == '__main__':
     args = get_args()
     env = args.env
     api_name = args.api
-    host_name = api_config_dict[api_name]['host']
-    host_string = hosts[host_name][env]
 
     template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = kwargs_dict[api_name][URL_KWARGS]
-    url_kwargs['host'] = host_string
-    url_kwargs['api_name'] = api_name
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
+    url_kwargs.update(kwargs_dict[api_name][URL_KWARGS])
     url = build_url(template_url=template_url, kwargs=url_kwargs)
 
     params = kwargs_dict[api_name][PARAMS_KWARGS]
-    # to chain them; something like this
-    # params = {'filters': [f'{k}={v} for k, v in filters.items()]}
 
     result, df, error = get_any_api(url=url, params=params)
     df.to_clipboard()
