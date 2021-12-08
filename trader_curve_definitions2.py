@@ -39,7 +39,6 @@ if __name__ == '__main__':
     # join them
     results_df = trader_curves_catalogue_df.merge(results_df, left_index=True, right_index=True)
 
-    
     print(results_df)
     results_df.to_clipboard()
     pass

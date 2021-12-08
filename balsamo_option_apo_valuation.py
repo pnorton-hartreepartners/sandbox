@@ -1,10 +1,11 @@
 import requests
 import json
 import pandas as pd
+import datetime as dt
+from getpass import getpass
+from pprint import pprint as pp
 from balsamo_vol_surface import get_mosaic_surface
 from constants import DEV, BALSAMO, PORT, SETTLES, hosts
-from pprint import pprint as pp
-import datetime as dt
 from mosaic_api_templates import api_config_dict, MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API
 
 '''
@@ -34,7 +35,7 @@ my_model_params = {
 }
 # TODO: calc fixings data
 my_valuation_params = {
-    'valuation_date': '2021-11-01',
+    'valuation_date': '2021-12-01',
     # these are required for mosaic valuation (not for balsamo)
     'acc_days': 0,
     'acc_sum': 0,
@@ -164,9 +165,9 @@ def process_response(r):
 
 if __name__ == '__main__':
     env = DEV
-    balsamo_headers_dict['Pwd'] = input('enter balsamo password')
+    balsamo_headers_dict['Pwd'] = getpass(prompt='enter balsamo password')
 
-    mosaic_valuation = False
+    mosaic_valuation = True
     balsamo_valuation = True
 
     # ==================================================================================================================
@@ -276,4 +277,5 @@ if __name__ == '__main__':
 
         print('\n\nbalsamo_results:')
         pp(balsamo_option_valuation_results)
+        print()
 
