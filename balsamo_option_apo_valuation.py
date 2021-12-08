@@ -206,9 +206,10 @@ if __name__ == '__main__':
     # get the forward price
     index = pd.to_datetime(mosaic_forward_curve_results_df['expiration_date'])
     data = mosaic_forward_curve_results_df['value'].values
-    df = pd.DataFrame(data=data, index=index)
-    df = df.resample('D').ffill(limit=1).interpolate('linear')
-    future_value = df.loc[pd.to_datetime(term)].values[0]
+    mosaic_forward_curve_interp_df = pd.DataFrame(data=data, index=index)
+    term = pd.to_datetime(term)
+    mosaic_forward_curve_interp_df = mosaic_forward_curve_interp_df.resample('D').ffill()  # (limit=1).interpolate('linear')
+    future_value = mosaic_forward_curve_interp_df.loc[term].values[0]
 
     # update the payload
     mosaic_url_dict['future_value'] = future_value
@@ -233,8 +234,14 @@ if __name__ == '__main__':
         mosaic_option_valuation_results = process_response(mosaic_option_valuation_response)
 
         print('\n\n===========================================================================')
+        print('===========================================================================')
+        print('mosaic valuation\n\n')
+
         print('mosaic_forward_curve_results:')
-        pp(mosaic_forward_curve_results_df.tail())
+        pp(mosaic_forward_curve_interp_df.loc[term])
+
+        print('\n\nmosaic_option_url_dict')
+        pp(mosaic_url_dict)
 
         print('\n\nmosaic_option_valuation_request:')
         print(mosaic_option_valuation_response.request.url)
@@ -265,6 +272,9 @@ if __name__ == '__main__':
         balsamo_option_valuation_results = process_response(balsamo_option_valuation_response)
 
         print('\n\n===========================================================================')
+        print('===========================================================================')
+        print('balsamo valuation\n\n')
+
         print('balsamo_payload_dict:')
         pp(balsamo_payload_dict)
         print()
