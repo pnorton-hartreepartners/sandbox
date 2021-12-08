@@ -1,5 +1,5 @@
 path = r'C:\Temp'
-json_for_trader_curves_definitions = 'trader_curves_definitions.json'
+# json_for_trader_curves_definitions = 'trader_curves_definitions.json'
 json_for_trader_curves_definitions = 'tempest.json'
 
 PROD = 'prod'
@@ -7,6 +7,7 @@ DEV = 'dev'
 
 SETTLES = 'settles'
 TSDB = 'tsdb'
+TRADER_CURVES = 'trader_curves'
 BALSAMO = 'balsamo'
 PORT = 'port'
 
@@ -32,6 +33,12 @@ hosts = {
         {
             PROD: 'http://time-series-api.mosaic.hartreepartners.com/data',
             DEV: 'http://time-series-api.dev.mosaic.hartreepartners.com/data',
+            PORT: 123
+        },
+    TRADER_CURVES:
+        {
+            PROD: 'http://trader-curves-api.mosaic.hartreepartners.com/trader-curves',
+            DEV: 'http://trader-curves-api.dev.mosaic.hartreepartners.com/trader-curves',
             PORT: 123
         }
 }

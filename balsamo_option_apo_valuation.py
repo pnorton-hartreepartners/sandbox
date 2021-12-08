@@ -5,7 +5,7 @@ from balsamo_vol_surface import get_mosaic_surface
 from constants import DEV, BALSAMO, PORT, SETTLES, hosts
 from pprint import pprint as pp
 import datetime as dt
-from mosaic_api_templates import template_url_dict, MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API
+from mosaic_api_templates import api_config_dict, MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API
 
 '''
 activate mosaic2
@@ -142,7 +142,7 @@ mosaic_vol_surface_url_dict = {'host': hosts[SETTLES]['dev'],
 
 
 def get_mosaic_forward_curve(hosts, mosaic_url_dict):
-    mosaic_url = template_url_dict[MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API] \
+    mosaic_url = api_config_dict[MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API]['url_template'] \
         .format(host=hosts[SETTLES][env],
                 api_name=MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API,
                 symbol=mosaic_url_dict['symbol'],
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         mosaic_payload = [mosaic_payload_dict]
 
         # create the url
-        mosaic_url = template_url_dict[mosaic_option_valuation_api] \
+        mosaic_url = api_config_dict[mosaic_option_valuation_api]['url_template'] \
             .format(host=hosts[SETTLES][env],
                     api_name=mosaic_option_valuation_api,
                     **mosaic_url_dict)

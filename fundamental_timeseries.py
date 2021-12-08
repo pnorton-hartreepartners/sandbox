@@ -4,7 +4,7 @@ also cant just request all the data and then post-process because db server runs
 so instead call one symbol at a time; yawn
 '''
 from constants import TSDB, hosts, URL_KWARGS, PARAMS_KWARGS, DEV, path, PROD
-from mosaic_api_templates import template_url_dict
+from mosaic_api_templates import api_config_dict
 from mosaic_wapi import build_url
 import os
 import requests
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     # build url
     kwargs = build_kwargs_for_url()
-    template_url = template_url_dict[api_name]
+    template_url = api_config_dict[api_name]['url_template']
     url = build_url(template_url, kwargs)
 
     # build params

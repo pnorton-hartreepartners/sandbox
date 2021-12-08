@@ -2,41 +2,8 @@ import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import SETTLES, TSDB, hosts, URL_KWARGS, PARAMS_KWARGS
-from mosaic_api_templates import template_url_dict
-
-# example call data works by api
-kwargs_dict = {
-    'getFutureCurveSettlement': {
-        URL_KWARGS:
-            {'exchange': 'CME',
-             'symbols': 'CL%2CHO',
-             'stamp': '2021-09-14', },
-        PARAMS_KWARGS:
-            {'allow_indicative': 'true'}
-    },
-    'getVolSurface': {
-        URL_KWARGS:
-            {'symbol': 'ZN',
-             'exchange': 'LME',
-             'stamp': '2021-10-12'},
-        PARAMS_KWARGS:
-            {'allow_cached_vols': 'true'}
-    },
-    'tsdb': {
-        URL_KWARGS:
-            {'stage': 'raw',
-             'source': 'eia_weekly'},
-        PARAMS_KWARGS:
-            {'filters': "sourcekey='WTTSTUS1'"}  # need single quotes
-    },
-    'getTraderCurvesCatalog': {
-        URL_KWARGS:
-            {},
-        PARAMS_KWARGS:
-            {}
-    },
-}
+from constants import hosts, URL_KWARGS, PARAMS_KWARGS
+from mosaic_api_templates import api_config_dict
 
 
 def get_args():
@@ -44,10 +11,6 @@ def get_args():
     parser.add_argument('-e', '--env',
                         help='prod or dev',
                         choices=['prod', 'dev'],
-                        required=True)
-    parser.add_argument('--host',
-                        help='settles or tsdb',
-                        choices=['settles', 'tsdb'],
                         required=True)
     parser.add_argument('-a', '--api',
                         help='name of the api',
@@ -60,10 +23,13 @@ def decorate_result(f):
         result = f(*args, **kwargs)
         if result.status_code != 200:
             print(result.text)
-            #result.raise_for_status()
-            return pd.DataFrame()
-        return pd.DataFrame(result.json())
-    return decorated
+            return result, pd.DataFrame(), result.status_code
+        else:
+            try:
+                return result, pd.DataFrame(result.json()), None
+            except Exception as e:
+                return result, pd.DataFrame(), e
+        return decorated
 
 
 @decorate_result
@@ -88,9 +54,9 @@ def build_symbol_df(host, exchange, symbol, forward_dates):
     for forward_date in forward_dates:
         instrument_key = build_instrument_key(symbol=symbol,
                                               forward_date=forward_date)
-        template_url = template_url_dict['getSettlementTS']
+        url_template = api_config_dict['getSettlementTS']['url_template']
         kwargs = {'host': host, 'instrument_key': instrument_key, 'exchange': exchange}
-        df = get_any_api(template_url, kwargs)
+        result, df, error = get_any_api(url_template, kwargs)
         if not df.empty:
             df['symbol'] = symbol
             df['forward_date'] = forward_date
@@ -116,18 +82,19 @@ def build_from_curves_df(host, curves, start_date, periods):
 
 if __name__ == '__main__':
     '''
-    >>>python mosaic_wapi.py -e dev --host tsdb --api tsdb
+    >>>python mosaic_wapi.py -e dev --api tsdb
     '''
+    from mosaic_api_examples import kwargs_dict
 
     args = get_args()
     env = args.env
     api_name = args.api
-    host_name = args.host
-    host = hosts[host_name][env]
+    host_name = api_config_dict[api_name]['host']
+    host_string = hosts[host_name][env]
 
-    template_url = template_url_dict[api_name]
+    template_url = api_config_dict[api_name]['url_template']
     url_kwargs = kwargs_dict[api_name][URL_KWARGS]
-    url_kwargs['host'] = host
+    url_kwargs['host'] = host_string
     url_kwargs['api_name'] = api_name
     url = build_url(template_url=template_url, kwargs=url_kwargs)
 
@@ -135,7 +102,8 @@ if __name__ == '__main__':
     # to chain them; something like this
     # params = {'filters': [f'{k}={v} for k, v in filters.items()]}
 
-    df = get_any_api(url=url, params=params)
+    result, df, error = get_any_api(url=url, params=params)
+    df.to_clipboard()
     print(df)
 
     cme_european_naphtha_calendar_swap = ('CME', 'UN')

@@ -5,7 +5,7 @@ from balsamo_vol_surface import get_mosaic_surface
 from constants import PROD, DEV, BALSAMO, PORT, SETTLES, hosts
 from pprint import pprint as pp
 import datetime as dt
-from mosaic_api_templates import template_url_dict
+from mosaic_api_templates import api_config_dict
 
 '''
 activate mosaic2
@@ -91,10 +91,10 @@ if __name__ == '__main__':
     # mosaic valuation
 
     # get the forward curve just to validate results
-    mosaic_url = template_url_dict[mosaic_forward_curve_api].format(host=hosts[SETTLES][env],
-                                                                    api_name=mosaic_forward_curve_api,
-                                                                    symbol=mosaic_url_dict['symbol'],
-                                                                    stamp=mosaic_url_dict['stamp'])
+    mosaic_url = api_config_dict[mosaic_forward_curve_api]['url_template'].format(host=hosts[SETTLES][env],
+                                                                  api_name=mosaic_forward_curve_api,
+                                                                  symbol=mosaic_url_dict['symbol'],
+                                                                  stamp=mosaic_url_dict['stamp'])
     mosaic_forward_curve_response = requests.get(mosaic_url)
     mosaic_forward_curve_results_df = pd.DataFrame(json.loads(mosaic_forward_curve_response.content))
 
@@ -102,13 +102,13 @@ if __name__ == '__main__':
     mosaic_payload = [mosaic_payload_dict]
 
     # create the url
-    mosaic_url = template_url_dict[mosaic_option_valuation_api].format(host=hosts[SETTLES][env],
-                                                                       api_name=mosaic_option_valuation_api,
-                                                                       symbol=mosaic_url_dict['symbol'],
-                                                                       exchange=mosaic_url_dict['exchange'],
-                                                                       stamp=mosaic_url_dict['stamp'],
-                                                                       scheme=mosaic_url_dict['scheme'],
-                                                                       rf_rate=mosaic_url_dict['rf_rate'])
+    mosaic_url = api_config_dict[mosaic_option_valuation_api]['url_template'].format(host=hosts[SETTLES][env],
+                                                                     api_name=mosaic_option_valuation_api,
+                                                                     symbol=mosaic_url_dict['symbol'],
+                                                                     exchange=mosaic_url_dict['exchange'],
+                                                                     stamp=mosaic_url_dict['stamp'],
+                                                                     scheme=mosaic_url_dict['scheme'],
+                                                                     rf_rate=mosaic_url_dict['rf_rate'])
 
     # call api and get results
     mosaic_option_valuation_response = requests.post(mosaic_url, json=mosaic_payload, headers=mosaic_headers_dict)

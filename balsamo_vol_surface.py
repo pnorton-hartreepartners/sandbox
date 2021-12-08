@@ -1,5 +1,5 @@
-from mosaic_api_templates import template_url_dict
-from mosaic_wapi import kwargs_dict
+from mosaic_api_templates import api_config_dict
+from mosaic_api_examples import kwargs_dict
 import requests
 import pandas as pd
 import datetime as dt
@@ -13,7 +13,7 @@ def get_mosaic_surface(date, url_kwargs, env=DEV):
     url_kwargs['api_name'] = api_name
     url_kwargs['stamp'] = date
 
-    template_url = template_url_dict[api_name]
+    template_url = api_config_dict[api_name]['url_template']
     url = template_url.format(**url_kwargs)
 
     print(f'\nurl is:\n{url}')
