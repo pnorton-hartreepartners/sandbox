@@ -34,7 +34,8 @@ def get_mosaic_surface(date, url_kwargs, env=DEV):
 
 if __name__ == '__main__':
     date = '2021-10-20'
-    df = get_mosaic_surface(date, kwargs_dict=kwargs_dict, env=DEV)
+    url_kwargs = kwargs_dict['getVolSurface'][URL_KWARGS]
+    data_dict, df = get_mosaic_surface(date=date, url_kwargs=url_kwargs, env=DEV)
     print(df)
 
 
