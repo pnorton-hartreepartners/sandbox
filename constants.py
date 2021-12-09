@@ -15,6 +15,7 @@ TTDA = 'ttda'
 
 URL_KWARGS = 'url_kwargs'
 PARAMS_KWARGS = 'params_kwargs'
+PAYLOAD = 'payload'
 
 hosts = {
     SETTLES:

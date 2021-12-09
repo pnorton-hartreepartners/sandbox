@@ -61,4 +61,8 @@ api_config_dict = {
         'host': TRADER_CURVES,
         'url_template': r'{host}/api/v1/{api_name}/{symbol}/{source}/{stamp}'},
 
+    'getTraderCurveTS': {'host': SETTLES,
+                         'method': 'post',
+                         'url_template': r'{host}/api/v1/getTraderCurveTS'}
+
 }

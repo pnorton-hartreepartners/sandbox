@@ -37,6 +37,11 @@ def get_any_api(url, params):
     return requests.get(url, params=params)
 
 
+def post_any_api(url, payload):
+    result = requests.post(url, data=payload)
+    return result.json()
+
+
 def build_partial_url_kwargs(api_name, env=DEV):
     host_name = api_config_dict[api_name]['host']
     host_string = hosts[host_name][env]
@@ -47,6 +52,19 @@ def build_url(template_url, kwargs):
     url = template_url.format(**kwargs)
     print(f'\nurl is:\n{url}')
     return url
+
+
+def process_chart_data(response_dict):
+    all_df = pd.DataFrame()
+    for chartlet in response_dict:
+        df = pd.DataFrame.from_dict(chartlet['data'])
+        df['name'] = chartlet['name']
+        all_df = pd.concat([all_df, df], axis='index')
+    all_df['time'] = pd.to_datetime(all_df['time'])
+    pivot_df = all_df.pivot(index='time', columns='name')
+    pivot_df.columns = pivot_df.columns.droplevel(level=None)
+    pivot_df.plot(kind='line')
+    pass
 
 
 def build_instrument_key(symbol, forward_date):
@@ -116,4 +134,5 @@ if __name__ == '__main__':
 
     # df = build_from_curves_df(host, curves, start_date, periods)
     print()
+
 
