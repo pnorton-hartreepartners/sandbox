@@ -38,7 +38,7 @@ def get_any_api(url, params):
 
 
 def post_any_api(url, payload):
-    result = requests.post(url, data=payload)
+    result = requests.post(url, json=payload)
     return result.json()
 
 
@@ -54,17 +54,26 @@ def build_url(template_url, kwargs):
     return url
 
 
-def process_chart_data(response_dict):
-    all_df = pd.DataFrame()
-    for chartlet in response_dict:
-        df = pd.DataFrame.from_dict(chartlet['data'])
-        df['name'] = chartlet['name']
-        all_df = pd.concat([all_df, df], axis='index')
-    all_df['time'] = pd.to_datetime(all_df['time'])
-    pivot_df = all_df.pivot(index='time', columns='name')
-    pivot_df.columns = pivot_df.columns.droplevel(level=None)
-    pivot_df.plot(kind='line')
-    pass
+def process_chart_data(response_dict, seasonality):
+    if response_dict == {'detail': 'There was an error parsing the body'}:
+        print('detail: There was an error parsing the body')
+        pivot_df = None
+    else:
+        if not seasonality:
+            all_df = pd.DataFrame()
+            for chartlet in response_dict:
+                df = pd.DataFrame.from_dict(chartlet['data'])
+                df['name'] = chartlet['name']
+                if chartlet['name'] != 'predicted':
+                    all_df = pd.concat([all_df, df], axis='index')
+            all_df['time'] = pd.to_datetime(all_df['time'])
+            pivot_df = all_df.pivot(index='time', columns='name')
+            pivot_df.columns = pivot_df.columns.droplevel(level=None)
+        else:  # it is a seasonality chart and already a pivot
+            pivot_df = pd.DataFrame.from_dict(response_dict)
+            pivot_df['time'] = pd.to_datetime(pivot_df['time'])
+            pivot_df.set_index(keys=['time'], drop=True, inplace=True)
+    return pivot_df
 
 
 def build_instrument_key(symbol, forward_date):

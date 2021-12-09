@@ -1,0 +1,87 @@
+{
+  "ebob_swap": {
+    "start_date": "2015-01-01",
+    "end_date": "2024-01-01",
+    "seasonality": 0,
+    "chartlets": [
+      {
+        "name": "EBOB-S | 202201",
+        "curves": [
+          {
+            "expression": "EBOB-S",
+            "factor": 1,
+            "type": "Combo",
+            "contracts": [
+              "202201"
+            ]
+          }
+        ],
+        "currency": "USD",
+        "uom": "*",
+        "axis": 0
+      }
+    ]
+  },
+  "brent_and_wti": {
+    "start_date": "2015-01-01",
+    "end_date": "2024-01-01",
+    "seasonality": 0,
+    "chartlets": [
+      {
+        "name": "BRT-F | 202201",
+        "curves": [
+          {
+            "expression": "BRT-F",
+            "factor": 1,
+            "type": "Dynamic",
+            "contracts": [
+              "202201"
+            ]
+          }
+        ],
+        "currency": "USD",
+        "uom": "*",
+        "axis": 0
+      },
+      {
+        "name": "WTI-F | 202201",
+        "curves": [
+          {
+            "expression": "WTI-F",
+            "factor": 1,
+            "type": "Dynamic",
+            "contracts": [
+              "202201"
+            ]
+          }
+        ],
+        "currency": "USD",
+        "uom": "*",
+        "axis": 0
+      }
+    ]
+  },
+  "seasonality": {
+    "start_date": "2015-01-01",
+    "end_date": "2024-01-01",
+    "seasonality": 3,
+    "chartlets": [
+      {
+        "name": "BRT-F | 202202",
+        "curves": [
+          {
+            "expression": "BRT-F",
+            "factor": 1,
+            "type": "Dynamic",
+            "contracts": [
+              "202201"
+            ]
+          }
+        ],
+        "currency": "USD",
+        "uom": "*",
+        "axis": 0
+      }
+    ]
+  }
+}

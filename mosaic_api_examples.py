@@ -1,3 +1,4 @@
+import json
 from constants import URL_KWARGS, PARAMS_KWARGS, DEV
 from mosaic_api_templates import api_config_dict
 from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs, post_any_api, process_chart_data
@@ -48,36 +49,16 @@ kwargs_dict = {
 }
 
 
-j = '''{
-  "start_date": "2021-01-01",
-  "end_date": "2023-01-01",
-  "seasonality": 0,
-  "chartlets": [
-    {
-      "name": "my legend",
-      "curves": [
-        {
-          "expression": "BRT-F",
-          "factor": 1,
-          "type": "Outright",
-          "contracts": [
-            "202201"
-          ]
-        }
-      ],
-      "currency": "USD",
-      "uom": "*",
-      "axis": 0
-    }
-  ]
-}'''
-
 if __name__ == '__main__':
 
     env = DEV
 
     key = 'getTraderCurveTS'
     kwargs_dict = {key: kwargs_dict[key]}
+    with open('mosaic_chart_examples.json') as file:
+        chart_examples = json.load(file)
+    print(chart_examples.keys())
+    payload = chart_examples['seasonality']
 
     for api_name in kwargs_dict:
         template_url = api_config_dict[api_name]['url_template']
@@ -95,10 +76,14 @@ if __name__ == '__main__':
             print(df)
             df.to_clipboard()
         elif method == 'post':
-            payload = j
             result = post_any_api(url, payload=payload)
             if api_name == 'getTraderCurveTS':
-                process_chart_data(result)
+                seasonality = payload['seasonality']
+                seasonality = seasonality > 0
+                df = process_chart_data(result, seasonality)
+                df.to_clipboard()
+                df.plot(kind='line')
+                pass
         else:
             raise NotImplementedError
 

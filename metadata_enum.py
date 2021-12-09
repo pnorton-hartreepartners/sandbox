@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from collections import namedtuple
-import re
 
 
 class Source(Enum):
