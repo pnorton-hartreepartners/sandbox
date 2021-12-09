@@ -42,9 +42,10 @@ my_valuation_params = {
     'rem_fixings': '2022-01-01',
 }
 
+# overrides for mosaic
 my_market_data = {
     'forward_price': 3173.61,
-    'volatility': None,
+    'volatility': 0.28484939933483794,
 }
 
 # ======================================================================================================================
@@ -175,7 +176,8 @@ if __name__ == '__main__':
 
     mosaic_valuation = True
     balsamo_valuation = True
-    use_my_forward_price = True
+    use_my_forward_price_override = True
+    use_my_volatility_override = True
 
     # ==================================================================================================================
     # get forward curve and vol surface from mosaic
@@ -217,14 +219,20 @@ if __name__ == '__main__':
     mosaic_forward_curve_interp_df = mosaic_forward_curve_interp_df.resample('D').ffill()
 
     # get the forward price
-    if use_my_forward_price:
+    if use_my_forward_price_override:
         forward_price = my_market_data['forward_price']
     else:
         forward_price = mosaic_forward_curve_interp_df.loc[term].values[0]
 
+    # get the volatility
+    if use_my_volatility_override:
+        volatility = my_market_data['volatility']
+    else:
+        volatility = smile[0.5]  # is this right?
+
     # update the payload
     mosaic_url_dict['future_value'] = forward_price
-    mosaic_url_dict['ivol'] = smile[0.5]  # is this right?
+    mosaic_url_dict['ivol'] = volatility
     mosaic_url_dict['expiration_date'] = expiry_date_as_datetime.date().isoformat()
 
     # ==================================================================================================================
