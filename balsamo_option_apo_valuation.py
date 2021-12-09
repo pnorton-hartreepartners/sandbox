@@ -42,6 +42,11 @@ my_valuation_params = {
     'rem_fixings': '2022-01-01',
 }
 
+my_market_data = {
+    'forward_price': 3173.61,
+    'volatility': None,
+}
+
 # ======================================================================================================================
 # mappers
 
@@ -58,6 +63,7 @@ balsamo_valuation_date = dt.datetime.strftime(valuation_date, '%d/%m/%Y')
 
 term = my_option['underlying']['term']
 term = dt.date.fromisoformat(term)
+term = pd.to_datetime(term)
 mosaic_term = dt.datetime.strftime(term, '%Y%m')
 
 index_start = dt.date.fromisoformat(my_option['index']['start'])
@@ -169,6 +175,7 @@ if __name__ == '__main__':
 
     mosaic_valuation = True
     balsamo_valuation = True
+    use_my_forward_price = True
 
     # ==================================================================================================================
     # get forward curve and vol surface from mosaic
@@ -187,7 +194,7 @@ if __name__ == '__main__':
     expiry_date_as_datetime = dt.datetime.strptime(expiry_date_from_vol_surface, '%Y-%m-%d')
 
     # and get the smile from the surface using the contract date
-    smile = mosaic_vol_surface_df.loc[pd.to_datetime(term)]
+    smile = mosaic_vol_surface_df.loc[term]
 
     # ==================================================================================================================
     # add the option expiry date to balsamo payload
@@ -203,16 +210,20 @@ if __name__ == '__main__':
     # we got the option expiry date from mosaic
     balsamo_option_expiry_date = dt.datetime.strftime(expiry_date_as_datetime, '%d/%m/%Y')
 
-    # get the forward price
+    # interpolate the forward price
     index = pd.to_datetime(mosaic_forward_curve_results_df['expiration_date'])
     data = mosaic_forward_curve_results_df['value'].values
     mosaic_forward_curve_interp_df = pd.DataFrame(data=data, index=index)
-    term = pd.to_datetime(term)
-    mosaic_forward_curve_interp_df = mosaic_forward_curve_interp_df.resample('D').ffill()  # (limit=1).interpolate('linear')
-    future_value = mosaic_forward_curve_interp_df.loc[term].values[0]
+    mosaic_forward_curve_interp_df = mosaic_forward_curve_interp_df.resample('D').ffill()
+
+    # get the forward price
+    if use_my_forward_price:
+        forward_price = my_market_data['forward_price']
+    else:
+        forward_price = mosaic_forward_curve_interp_df.loc[term].values[0]
 
     # update the payload
-    mosaic_url_dict['future_value'] = future_value
+    mosaic_url_dict['future_value'] = forward_price
     mosaic_url_dict['ivol'] = smile[0.5]  # is this right?
     mosaic_url_dict['expiration_date'] = expiry_date_as_datetime.date().isoformat()
 
