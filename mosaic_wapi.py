@@ -60,13 +60,7 @@ def process_chart_data(response_dict, seasonality):
         pivot_df = None
     else:
         if not seasonality:
-            all_df = pd.DataFrame()
-            for chartlet in response_dict:
-                df = pd.DataFrame.from_dict(chartlet['data'])
-                df['name'] = chartlet['name']
-                if chartlet['name'] != 'predicted':
-                    all_df = pd.concat([all_df, df], axis='index')
-            all_df['time'] = pd.to_datetime(all_df['time'])
+            all_df = process_nonseasonal_data(response_dict)
             pivot_df = all_df.pivot(index='time', columns='name')
             pivot_df.columns = pivot_df.columns.droplevel(level=None)
         else:  # it is a seasonality chart and already a pivot
@@ -74,6 +68,17 @@ def process_chart_data(response_dict, seasonality):
             pivot_df['time'] = pd.to_datetime(pivot_df['time'])
             pivot_df.set_index(keys=['time'], drop=True, inplace=True)
     return pivot_df
+
+
+def process_nonseasonal_data(response_dict):
+    all_df = pd.DataFrame()
+    for chartlet in response_dict:
+        df = pd.DataFrame.from_dict(chartlet['data'])
+        df['name'] = chartlet['name']
+        if chartlet['name'] != 'predicted':
+            all_df = pd.concat([all_df, df], axis='index')
+    all_df['time'] = pd.to_datetime(all_df['time'])
+    return all_df
 
 
 def build_instrument_key(symbol, forward_date):
