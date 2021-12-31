@@ -49,7 +49,7 @@ api_config_dict = {
     # fundamental data series
     'tsdb': {
         'host': TSDB,
-        'url_template': r'{host}/api/v1/{api_name}/source/{stage}/{source}'},
+        'url_template': r'{host}/api/v1/{api_name}/{source}/{stage}/{source}'},
 
     # trader curve details incl conversions
     'getTraderCurvesCatalog': {
@@ -61,9 +61,19 @@ api_config_dict = {
         'host': TRADER_CURVES,
         'url_template': r'{host}/api/v1/{api_name}/{symbol}/{source}/{stamp}'},
 
+    # identical? EOD version
+    'getEODTraderCurveDefinition': {
+        'host': TRADER_CURVES,
+        'url_template': r'{host}/api/v1/{api_name}/{symbol}/{source}/{stamp}'},
+
+    # recipe for evaluating a curve in realtime
+    'getTraderCurveEval': {'host': TRADER_CURVES,
+                           'url_template': r'{host}/api/v1/{api_name}/{symbol}/{source}/{stamp}'
+                           },
+
     # trader curve time-series backed by tempest for history
+    # used for charting
     'getTraderCurveTS': {'host': SETTLES,
                          'method': 'post',
-                         'url_template': r'{host}/api/v1/getTraderCurveTS'}
-
+                         'url_template': r'{host}/api/v1/{api_name}'},
 }
