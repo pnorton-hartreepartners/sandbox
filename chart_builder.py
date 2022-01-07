@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import requests
 
 
 def clean_the_sheets(workbook):
@@ -34,6 +35,20 @@ def build_expressions(df):
         xx = {k: str(v) for (k, v) in xx.items()}
         expressions.append(xx)
     return expressions
+
+
+def create_grafana_panel(data):
+    url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/Y-bj-x2nz/peter-norton'
+
+    headers_dict = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.post(url, headers=headers_dict, json=data, verify=False)
+    print(response.content)
+
+    pass
 
 
 def main():
@@ -76,11 +91,13 @@ def main():
 
         charts_list[i]['targets'][0]['products'] = products_list
 
+        # save json locally
         file = f'chart_{i}.json'
         with open(file, 'w') as f:
             json.dump(charts_list[i], f)
 
+        create_grafana_panel(charts_list[i])
+
 
 if __name__ == '__main__':
     main()
-
