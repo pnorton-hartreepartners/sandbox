@@ -3,22 +3,22 @@ this script calls the various apis related to trader curves
 and the eval api used for global pricer
 '''
 import pandas as pd
-from constants import DEV
+from constants import DEV, PROD
 from mosaic_api_templates import api_config_dict
 from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs
 
 
-def get_trader_curves_catalogue():
+def get_trader_curves_catalogue(env):
     api_name = 'getTraderCurvesCatalog'
     template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = build_partial_url_kwargs(api_name)
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
     url = build_url(template_url=template_url, kwargs=url_kwargs)
     result, trader_curves_catalogue_df, error = get_any_api(url, params={})
     trader_curves_catalogue_df.set_index('symbol', drop=True, inplace=True)
     return trader_curves_catalogue_df
 
 
-def get_trader_curve_definitions(trader_curves_catalogue_df, stamp, eod=False):
+def get_trader_curve_definitions(trader_curves_catalogue_df, stamp, env, eod=False):
 
     if eod:
         api_name = 'getEODTraderCurveDefinition'
@@ -27,7 +27,7 @@ def get_trader_curve_definitions(trader_curves_catalogue_df, stamp, eod=False):
 
     stamp_as_str = stamp.strftime('%Y-%m-%d')
     template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = build_partial_url_kwargs(api_name)
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
     url_kwargs.update({'source': 'hartree', 'stamp': stamp_as_str})
 
     trader_curves_definitions_dict = {}
@@ -58,15 +58,26 @@ def get_trader_curve_definitions_df(trader_curves_definitions_dict):
     return trader_curves_definitions_df
 
 
-def get_trader_curve_eval(symbol, stamp, eval_type, source='Hartree'):
+def get_trader_curve_eval(symbol, stamp, eval_type, env, source='Hartree'):
     api_name = 'getTraderCurveEval'
     stamp_as_str = stamp.strftime('%Y-%m-%d')
     template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = build_partial_url_kwargs(api_name)
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
     url_kwargs.update({'symbol': symbol, 'source': source, 'stamp': stamp_as_str})
     url = build_url(template_url=template_url, kwargs=url_kwargs)
     result, trader_curve_definition_df, error = get_any_api(url, params={'eval_type': eval_type})
     return trader_curve_definition_df
+
+
+def get_etrm_curve_eval(symbol, stamp, eval_type, env, contracts=None):
+    api_name = 'getEtrmCurveEval'
+    stamp_as_str = stamp.strftime('%Y-%m-%d')
+    template_url = api_config_dict[api_name]['url_template']
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
+    url_kwargs.update({'symbol': symbol, 'stamp': stamp_as_str})
+    url = build_url(template_url=template_url, kwargs=url_kwargs)
+    result, etrm_curve_definition_df, error = get_any_api(url, params={'eval_type': eval_type})
+    return etrm_curve_definition_df
 
 
 if __name__ == '__main__':
@@ -76,16 +87,16 @@ if __name__ == '__main__':
     OUTRIGHT = 'Outright'
     TIMESPREAD = 'TimeSpread'
 
-    env = DEV
+    env = PROD
     stamp = pd.to_datetime('2021-12-30')
-    symbol, eval_type = 'SING-GO-TS', OUTRIGHT
+    symbol, eval_type = 'DFL', OUTRIGHT
     search_string = symbol
     select_in_flag = False
     select_equate_flag = True
     eod_mode = False  # calls a v similar (but different) api
 
     # call the catalogue
-    trader_curves_catalogue_df = get_trader_curves_catalogue()
+    trader_curves_catalogue_df = get_trader_curves_catalogue(env=DEV)
     trader_curves_catalogue_df.sort_index(axis='index', inplace=True)
     print(trader_curves_catalogue_df)
 
@@ -100,11 +111,14 @@ if __name__ == '__main__':
         trader_curves_selection_df = trader_curves_catalogue_df
 
     # get the definitions
-    trader_curve_definitions_dict = get_trader_curve_definitions(trader_curves_selection_df, stamp, eod=eod_mode)
+    trader_curve_definitions_dict = get_trader_curve_definitions(trader_curves_selection_df, stamp, eod=eod_mode, env=env)
     trader_curve_definitions_df = get_trader_curve_definitions_df(trader_curve_definitions_dict)
     print(f'eod_mode={eod_mode}')
     trader_curve_definitions_df.to_clipboard()
 
+    # get etrm evaluation
+    etrm_curve_eval_df = get_etrm_curve_eval(symbol=symbol, stamp=stamp, eval_type=eval_type, env=env)
+
     # get an evaluation
-    trader_curve_eval_df = get_trader_curve_eval(symbol=symbol, stamp=stamp, eval_type=eval_type)
+    trader_curve_eval_df = get_trader_curve_eval(symbol=symbol, stamp=stamp, eval_type=eval_type, env=env)
     pass

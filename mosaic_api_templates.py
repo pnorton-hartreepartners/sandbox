@@ -56,6 +56,11 @@ api_config_dict = {
         'host': SETTLES,
         'url_template': r'{host}/api/v1/{api_name}'},
 
+    'getEtrmCurveEval': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}/{symbol}/{stamp}'
+    },
+
     # returns the json recipe for curves
     'getTraderCurveDefinition': {
         'host': TRADER_CURVES,
