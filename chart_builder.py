@@ -67,16 +67,14 @@ def main():
     expressions_df = worksheets['expressions']
 
     products_df = pd.merge(panels_df, products_df, how='inner',
-                           left_on='id', right_on='panel_id',
-                           suffixes=['_panel', '_product']
-                           )
+                           left_on='panel_id', right_on='panel_id')
+
     expressions_df = pd.merge(products_df, expressions_df, how='inner',
-                              left_on='id_product', right_on='product_id',
-                              suffixes=['_product', '_expression'])
+                              left_on='product_id', right_on='product_id')
 
     charts_list = build_from_template(panels_df, chart_template, panel_columns)
     for i, panel in panels_df.iterrows():
-        mask = products_df['panel_id'] == panel['id']
+        mask = products_df['panel_id'] == panel['panel_id']
         products_filtered_df = products_df[mask]
 
         # so that df index matches list slice
@@ -85,7 +83,7 @@ def main():
         products_list = build_from_template(products_filtered_df, product_template, product_columns)
         for j, product in products_filtered_df.iterrows():
             # for each product, build the expression list
-            mask = expressions_df['product_id'] == product['id_product']
+            mask = expressions_df['product_id'] == product['product_id']
             expressions_filtered_df = expressions_df[mask]
             products_list[j]['expressions'] = build_expressions(expressions_filtered_df)
 
