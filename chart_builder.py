@@ -3,10 +3,12 @@ import pandas as pd
 import requests
 
 url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/Y-bj-x2nz/peter-norton'
+url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
 
 headers_dict = {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJrIjoiaHJ6M1B2TUQ5NmZOMFltMkN0TXZSdmlYVlNuYW9YUEkiLCJuIjoiYXBpYWNjZXNzIiwiaWQiOjF9'
 }
 
 
@@ -55,6 +57,7 @@ def search_grafana_panel():
     url = url_template + r'/api/search'
     response = requests.get(url, headers=headers_dict, verify=False)
     print(response.content)
+    pass
 
 
 def main():
@@ -100,8 +103,8 @@ def main():
         with open(file, 'w') as f:
             json.dump(charts_list[i], f)
 
-        # search_grafana_panel()
-        # create_grafana_panel(charts_list[i])
+        search_grafana_panel()
+        create_grafana_panel(charts_list[i])
 
 
 if __name__ == '__main__':
