@@ -2,6 +2,13 @@ import json
 import pandas as pd
 import requests
 
+url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/Y-bj-x2nz/peter-norton'
+
+headers_dict = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+}
+
 
 def clean_the_sheets(workbook):
     for key, df in workbook.items():
@@ -38,17 +45,16 @@ def build_expressions(df):
 
 
 def create_grafana_panel(data):
-    url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/Y-bj-x2nz/peter-norton'
-
-    headers_dict = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-
+    url = url_template
     response = requests.post(url, headers=headers_dict, json=data, verify=False)
     print(response.content)
-
     pass
+
+
+def search_grafana_panel():
+    url = url_template + r'/api/search'
+    response = requests.get(url, headers=headers_dict, verify=False)
+    print(response.content)
 
 
 def main():
@@ -94,7 +100,8 @@ def main():
         with open(file, 'w') as f:
             json.dump(charts_list[i], f)
 
-        create_grafana_panel(charts_list[i])
+        # search_grafana_panel()
+        # create_grafana_panel(charts_list[i])
 
 
 if __name__ == '__main__':

@@ -88,8 +88,8 @@ if __name__ == '__main__':
     TIMESPREAD = 'TimeSpread'
 
     env = PROD
-    stamp = pd.to_datetime('2021-12-30')
-    symbol, eval_type = 'DFL', OUTRIGHT
+    stamp = pd.to_datetime('2022-01-06')
+    symbol, eval_type = 'DUBAI', OUTRIGHT
     search_string = symbol
     select_in_flag = False
     select_equate_flag = True

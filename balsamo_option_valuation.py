@@ -56,12 +56,10 @@ mosaic_payload_dict = {'term': '202701',
                        'parity': 'Call',
                        'strike': '2400'}
 
-mosaic_vol_surface_kwargs_dict = {
-    'getVolSurface': {
+mosaic_vol_surface_url_dict = {
         'symbol': 'ZN',
         'exchange': 'LME',
         'allow_cached_vols': 'true'
-    }
 }
 
 if __name__ == '__main__':
@@ -71,13 +69,13 @@ if __name__ == '__main__':
     balsamo_option_valuation_api = GET_EUROPEAN_OPTION_VALUATION
     mosaic_option_valuation_api = 'getOptionPricesFromVolCurves'
     mosaic_forward_curve_api = 'getLMEForwardCurveSettlement'
-    env = DEV
+    env = PROD
 
     mosaic_valuation = True
     balsamo_valuation = True
 
     # value date
-    stamp_as_date = dt.date(2021, 10, 22)
+    stamp_as_date = dt.date(2022, 1, 5)
     mosaic_url_dict['stamp'] = dt.datetime.strftime(stamp_as_date, '%Y-%m-%d')
     balsamo_headers_dict['ClosingPeriod'] = dt.datetime.strftime(stamp_as_date, '%d/%m/%Y')
 
@@ -86,6 +84,7 @@ if __name__ == '__main__':
 
 
     balsamo_payload_dict['EuropeanOption'][0]['strike'] = mosaic_payload_dict['strike']
+    mosaic_vol_surface_url_dict['stamp'] = dt.datetime.strftime(stamp_as_date, '%Y-%m-%d')
 
     # ==================================================================================================================
     # mosaic valuation
@@ -116,8 +115,7 @@ if __name__ == '__main__':
 
     # ===========================
     # get vol surface from mosaic
-    data_dict, mosaic_vol_surface_df = get_mosaic_surface(date=mosaic_url_dict['stamp'],
-                                                          kwargs_dict=mosaic_vol_surface_kwargs_dict, env=DEV)
+    data_dict, mosaic_vol_surface_df = get_mosaic_surface(url_kwargs=mosaic_vol_surface_url_dict, env=env)
     mapping = zip(data_dict['contracts'], data_dict['maturities'])
     expiry_date_from_vol_surface = dict(mapping)[mosaic_payload_dict['term']]
     expiry_date_as_datetime = dt.datetime.strptime(expiry_date_from_vol_surface, '%Y-%m-%d')

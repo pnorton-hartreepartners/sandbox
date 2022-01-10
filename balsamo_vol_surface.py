@@ -4,19 +4,16 @@ import requests
 import pandas as pd
 import datetime as dt
 from constants import SETTLES, hosts, DEV, URL_KWARGS, PARAMS_KWARGS
+from mosaic_wapi import build_partial_url_kwargs, build_url
 
 
-def get_mosaic_surface(date, url_kwargs, env=DEV):
+def get_mosaic_surface(url_kwargs, env=DEV):
     api_name = 'getVolSurface'
-
-    url_kwargs['host'] = hosts[SETTLES][env]
-    url_kwargs['api_name'] = api_name
-    url_kwargs['stamp'] = date
-
     template_url = api_config_dict[api_name]['url_template']
-    url = template_url.format(**url_kwargs)
+    partial_url_kwargs = build_partial_url_kwargs(api_name, env=env)
+    url_kwargs.update(partial_url_kwargs)
+    url = build_url(template_url=template_url, kwargs=url_kwargs)
 
-    print(f'\nurl is:\n{url}')
     data_dict = requests.get(url).json()
     if data_dict.get('detail') == 'error : no vol slice was built':
         df = pd.DataFrame()
