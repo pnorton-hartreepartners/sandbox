@@ -81,4 +81,7 @@ api_config_dict = {
     'getTraderCurveTS': {'host': SETTLES,
                          'method': 'post',
                          'url_template': r'{host}/api/v1/{api_name}'},
+
+    'getExpiry': {'host': SETTLES,
+                  'url_template': r'{host}/api/v1/{api_name}/{key}'},
 }

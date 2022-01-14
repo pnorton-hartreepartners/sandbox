@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import hosts, URL_KWARGS, PARAMS_KWARGS, DEV
+from constants import hosts, URL_KWARGS, PARAMS_KWARGS, DEV, PROD
 from mosaic_api_templates import api_config_dict
 
 
@@ -118,11 +118,34 @@ def build_from_curves_df(host, curves, start_date, periods):
     return dfs
 
 
+def build_list_of_expiries(symbol, start=None, end=None, periods=None, env=PROD):
+    api_name = 'getExpiry'
+    kwargs = {'start': start, 'end': end, 'periods': periods}
+    months = pd.date_range(**kwargs, freq='MS')
+    expiration_dates = {}
+    for m in months:
+        key = build_instrument_key(symbol, forward_date=m)
+        template_url = api_config_dict[api_name]['url_template']
+        url_kwargs = build_partial_url_kwargs(api_name, env=env)
+        url_kwargs.update({'key': key})
+        url = build_url(template_url=template_url, kwargs=url_kwargs)
+        result, df, e = get_any_api(url=url, params=None)
+        xx = result.json()
+        expiration_dates.update({m: xx['ExpirationDate']})
+    df = pd.DataFrame.from_dict(expiration_dates, orient='index')
+    df.index.name = 'contract'
+    df.columns = ['expiry_date']
+    return df
+
+
 if __name__ == '__main__':
     '''
     >>>python mosaic_wapi.py -e dev --api tsdb
     '''
     from mosaic_api_examples import kwargs_dict
+
+    df = build_list_of_expiries(symbol='G', start='2021-10-01', periods=12)
+    df.to_clipboard()
 
     args = get_args()
     env = args.env
