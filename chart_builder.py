@@ -56,11 +56,11 @@ def build_from_template(df, template, columns):
 
 def build_expressions(df):
     columns = ['factor', 'product', 'front', 'middle', 'back']
-    expressions = []
-    for _, row in df[columns].iterrows():
+    expressions = {}
+    for index, row in df[columns].iterrows():
         xx = row.to_dict(dict)
         xx = {k: str(v) for (k, v) in xx.items()}
-        expressions.append(xx)
+        expressions[index] = xx
     return expressions
 
 
@@ -87,32 +87,40 @@ def build_dashboard(xls_file, dashboard_template):
     worksheets = pd.read_excel(io=xls_file, sheet_name=None)
     worksheets = clean_the_sheets(worksheets)
 
+    # get them
     panels_df = worksheets['panels']
     products_df = worksheets['products']
     expressions_df = worksheets['expressions']
 
+    # join them
     products_df = pd.merge(panels_df, products_df, how='inner',
                            left_on='panel_id', right_on='panel_id')
 
     expressions_df = pd.merge(products_df, expressions_df, how='inner',
                               left_on='product_id', right_on='product_id')
 
+    # set indexes
+    panels_df.set_index(keys='panel_id', drop=True, inplace=True)
+    products_df.set_index(keys='product_id', drop=True, inplace=True)
+    expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
+
     # build new dicts
-    # for each panel build the products info based on the xls
-    panels_content = build_from_template(panels_df, panel_template, panel_columns)
-    for i, panel in panels_df.iloc[:1].iterrows():
-        products_content = build_products_content(products_df, expressions_df, panel, product_template)
+    selection_df = panels_df.iloc[:1]  # only while were playing/fixing/building
+    panels_content = build_from_template(selection_df, panel_template, panel_columns)
+    for panel_id, panel in selection_df.iterrows():
+        products_content = build_products_content_for_panel(products_df, expressions_df,
+                                                            panel_id, product_template)
 
         # add the products list to the targets
-        # in our model we only have one target
         target_content = copy.deepcopy(target_template)
         target_content['backward']['seasonal'] = panel['seasonal']
         target_content['products'] = list(products_content.values())
 
         # add the targets to the panel
         panel_content = copy.deepcopy(panel_template)
+        # in our model we only have one target
         panel_content['targets'] = [target_content]
-        panels_content[i] = panel_content
+        panels_content[panel_id] = panel_content
 
     # add the panels to the dashboard
     dashboard_dict = copy.deepcopy(dashboard_template)
@@ -121,25 +129,23 @@ def build_dashboard(xls_file, dashboard_template):
     return dashboard_dict
 
 
-def build_products_content(products_df, expressions_df, panel, product_template):
-    mask = products_df['panel_id'] == panel['panel_id']
+def build_products_content_for_panel(products_df, expressions_df, panel_id, product_template):
+    mask = products_df['panel_id'] == panel_id
     products_filtered_df = products_df[mask]
 
-    # so that df index matches list slice
-    products_filtered_df.reset_index(drop=True, inplace=True)
-
     products_content = build_from_template(products_filtered_df, product_template, product_columns)
-    for j, product in products_filtered_df.iterrows():
+    for product_id, product in products_filtered_df.iterrows():
         # for each product, build the expression list
-        mask = expressions_df['product_id'] == product['product_id']
+        mask = expressions_df['product_id'] == product_id
         expressions_filtered_df = expressions_df[mask]
-        products_content[j]['expressions'] = build_expressions(expressions_filtered_df)
+        expressions = build_expressions(expressions_filtered_df)
+        products_content[product_id]['expressions'] = list(expressions.values())
 
     return products_content
 
 
 if __name__ == '__main__':
-    build_dashboard_selection = False
+    build_dashboard_selection = True
 
     # build a json comparable to the grafana dashboard settings json
     filename = f'chart.json'
