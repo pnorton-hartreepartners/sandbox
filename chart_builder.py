@@ -1,8 +1,8 @@
 import json
 import pandas as pd
 import requests
+import copy
 
-url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/Y-bj-x2nz/peter-norton'
 url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
 
 headers_dict = {
@@ -11,6 +11,26 @@ headers_dict = {
     'Authorization': 'Bearer eyJrIjoiaHJ6M1B2TUQ5NmZOMFltMkN0TXZSdmlYVlNuYW9YUEkiLCJuIjoiYXBpYWNjZXNzIiwiaWQiOjF9'
 }
 
+dashboard_api_dict = {
+    'dashboard': {
+        # 'id': None,
+        'uid': 'RmBVhP17k',
+        'title': 'test',
+        'tags': ['no tags'],
+        'timezone': 'browser',
+        'schemaVersion': 16,
+        'version': 0,
+        'refresh': '25s'
+    },
+    'folderId': 1,
+    #'folderUid': None,
+    'message': 'PN changes',
+    'overwrite': 'True'
+}
+
+product_columns = ['currency', 'unit', 'legend', 'axis']
+panel_columns = ['title']  # 'seasonal'
+
 
 def clean_the_sheets(workbook):
     for key, df in workbook.items():
@@ -18,22 +38,20 @@ def clean_the_sheets(workbook):
     return workbook
 
 
-def get_templates(file):
+def get_template(file):
     with open(file) as f:
         chart_template = json.load(f)
-    product_template = chart_template['targets'][0]['products'][0]
-    return chart_template, product_template
+    return chart_template
 
 
 def build_from_template(df, template, columns):
-    results = []
-    for _, row in df[columns].iterrows():
-        for _, row in df[columns].iterrows():
-            xx = row.to_dict(dict)
-            yy = template.copy()
-            yy.update(xx)
-            results.append(yy)
-        return results
+    results = {}
+    for index, row in df[columns].iterrows():
+        xx = row.to_dict(dict)
+        yy = copy.deepcopy(template)
+        yy.update(xx)
+        results[index] = yy
+    return results
 
 
 def build_expressions(df):
@@ -48,27 +66,25 @@ def build_expressions(df):
 
 def create_grafana_panel(data):
     url = url_template
-    response = requests.post(url, headers=headers_dict, json=data, verify=False)
-    print(response.content)
-    pass
+    rr = requests.post(url, headers=headers_dict, data=data, verify=False)
+    print(url, '\n', rr)
+    return rr
 
 
 def search_grafana_panel():
     url = url_template + r'/api/search'
-    response = requests.get(url, headers=headers_dict, verify=False)
-    print(response.content)
-    pass
+    rr = requests.get(url, headers=headers_dict, verify=False)
+    print(url, '\n', rr)
 
 
-def main():
-    product_columns = ['currency', 'unit', 'legend', 'axis']
-    panel_columns = ['title', 'seasonal']
+def build_dashboard(xls_file, dashboard_template):
+    # templates from grafana
+    panel_template = dashboard_template['panels'][0]
+    target_template = panel_template['targets'][0]
+    product_template = target_template['products'][0]
 
-    file = 'chart_example.json'
-    chart_template, product_template = get_templates(file)
-
-    file = 'chart_config.xlsx'
-    worksheets = pd.read_excel(io=file, sheet_name=None)
+    # user configured requirements
+    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
     worksheets = clean_the_sheets(worksheets)
 
     panels_df = worksheets['panels']
@@ -81,31 +97,75 @@ def main():
     expressions_df = pd.merge(products_df, expressions_df, how='inner',
                               left_on='product_id', right_on='product_id')
 
-    charts_list = build_from_template(panels_df, chart_template, panel_columns)
-    for i, panel in panels_df.iterrows():
-        mask = products_df['panel_id'] == panel['panel_id']
-        products_filtered_df = products_df[mask]
+    # build new dicts
+    # for each panel build the products info based on the xls
+    panels_content = build_from_template(panels_df, panel_template, panel_columns)
+    for i, panel in panels_df.iloc[:1].iterrows():
+        products_content = build_products_content(products_df, expressions_df, panel, product_template)
 
-        # so that df index matches list slice
-        products_filtered_df.reset_index(drop=True, inplace=True)
+        # add the products list to the targets
+        # in our model we only have one target
+        target_content = copy.deepcopy(target_template)
+        target_content['backward']['seasonal'] = panel['seasonal']
+        target_content['products'] = list(products_content.values())
 
-        products_list = build_from_template(products_filtered_df, product_template, product_columns)
-        for j, product in products_filtered_df.iterrows():
-            # for each product, build the expression list
-            mask = expressions_df['product_id'] == product['product_id']
-            expressions_filtered_df = expressions_df[mask]
-            products_list[j]['expressions'] = build_expressions(expressions_filtered_df)
+        # add the targets to the panel
+        panel_content = copy.deepcopy(panel_template)
+        panel_content['targets'] = [target_content]
+        panels_content[i] = panel_content
 
-        charts_list[i]['targets'][0]['products'] = products_list
+    # add the panels to the dashboard
+    dashboard_dict = copy.deepcopy(dashboard_template)
+    dashboard_dict['panels'] = list(panels_content.values())
 
-        # save json locally
-        file = f'chart_{i}.json'
-        with open(file, 'w') as f:
-            json.dump(charts_list[i], f)
+    return dashboard_dict
 
-        search_grafana_panel()
-        create_grafana_panel(charts_list[i])
+
+def build_products_content(products_df, expressions_df, panel, product_template):
+    mask = products_df['panel_id'] == panel['panel_id']
+    products_filtered_df = products_df[mask]
+
+    # so that df index matches list slice
+    products_filtered_df.reset_index(drop=True, inplace=True)
+
+    products_content = build_from_template(products_filtered_df, product_template, product_columns)
+    for j, product in products_filtered_df.iterrows():
+        # for each product, build the expression list
+        mask = expressions_df['product_id'] == product['product_id']
+        expressions_filtered_df = expressions_df[mask]
+        products_content[j]['expressions'] = build_expressions(expressions_filtered_df)
+
+    return products_content
 
 
 if __name__ == '__main__':
-    main()
+    build_dashboard_selection = False
+
+    # build a json comparable to the grafana dashboard settings json
+    filename = f'chart.json'
+    if build_dashboard_selection:
+        # user configuration is in this xls
+        xls_file = 'chart_config.xlsx'
+        # template copied from grafana app
+        dashboard_template = get_template('chart_template.json')
+        # update it based on user requirements
+        db = build_dashboard(xls_file, dashboard_template)
+        # save it
+        with open(filename, 'w') as f:
+            json.dump(db, f)
+    else:
+        with open(filename) as f:
+            db = json.load(f)
+
+    # add this to the template from here
+    # https://grafana.com/docs/grafana/latest/http_api/dashboard/#create--update-dashboard
+    dashboard_api_dict['dashboard'].update(db)
+    response = create_grafana_panel(dashboard_api_dict)
+    with open('chart_response.html', 'w') as file:
+        file.write(response.content.decode('utf-8'))
+
+    # template = get_template('chart_template.json')
+    # dashboard_api_dict['panels'] = template
+    # response = create_grafana_panel(dashboard_api_dict)
+    # with open('chart_response2.html', 'w') as file:
+    #     file.write(response.content.decode('utf-8'))
