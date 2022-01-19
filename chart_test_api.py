@@ -12,9 +12,9 @@ headers_dict = {
 
 dashboard_api_dict = {
     'dashboard': {
-        'id': '24',
+        #'id': '24',
         #'uid': None,
-        'title': 'test',
+        'title': 'mytest',
         'tags': ['no tags'],
         'timezone': 'browser',
         'schemaVersion': 16,
@@ -22,9 +22,9 @@ dashboard_api_dict = {
         'refresh': '25s',
     },
     'folderId': 1,
-    'folderUid': 'Y-bj-x2nz',
+    'folderUid': '1ei4hE17z',
     'message': 'PN changes',
-    'overwrite': 'True'
+    'overwrite': True
 }
 
 if __name__ == '__main__':
@@ -40,12 +40,6 @@ if __name__ == '__main__':
     pp(dashboard_api_dict)
 
     dashboard_api_dict_json = json.dumps(dashboard_api_dict)
-    r1 = requests.post(url, headers=headers_dict, data=dashboard_api_dict, verify=False)
-    print(r1)
-    r2 = requests.post(url, headers=headers_dict, data=dashboard_api_dict_json, verify=False)
-    print(r2)
-    r3 = requests.post(url, headers=headers_dict, json=dashboard_api_dict_json, verify=False)
-    print(r3)
-
-    with open('chart_response1.html', 'w') as file:
-        file.write(r1.content.decode('utf-8'))
+    rr = requests.post(url, headers=headers_dict, data=dashboard_api_dict_json, verify=False)
+    print(rr)
+    print(rr.content.decode('utf-8'))

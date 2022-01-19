@@ -5,6 +5,7 @@ import copy
 from pprint import pprint as pp
 
 url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
+cleanup_keys = ['id', 'uid', 'title', 'version']
 
 headers_dict = {
     'Accept': 'application/json',
@@ -14,23 +15,22 @@ headers_dict = {
 
 dashboard_api_dict = {
     'dashboard': {
-        'id': '24',
-        #'uid': None,
-        'title': 'test',
-        'tags': ['no tags'],
+        'title': 'crude',
+        'tags': ['none'],
         'timezone': 'browser',
         'schemaVersion': 16,
         'version': 0,
         'refresh': '25s',
     },
-    'folderId': 1,
-    'folderUid': 'Y-bj-x2nz',
+    'folderUid': '1ei4hE17z',
     'message': 'PN changes',
-    'overwrite': 'True'
+    'overwrite': True
 }
 
 product_columns = ['currency', 'unit', 'legend', 'axis']
 panel_columns = ['title']  # 'seasonal'
+panel_type = 'mosaic-grafana-panel'
+panel_type = 'timeseries'  # for seasonal
 
 
 def clean_the_sheets(workbook):
@@ -43,6 +43,12 @@ def get_template(file):
     with open(file) as f:
         chart_template = json.load(f)
     return chart_template
+
+
+def clean_template(dashboard_template, keys):
+    for key in keys:
+        dashboard_template.pop(key, None)
+    return dashboard_template
 
 
 def build_from_template(df, template, columns):
@@ -105,10 +111,11 @@ def build_dashboard(xls_file, dashboard_template):
         target_content['products'] = list(products_content.values())
 
         # add the targets to the panel
-        panel_content = copy.deepcopy(panel_template)
+        panel_content = panels_content[panel_id]
         # in our model we only have one target
         panel_content['targets'] = [target_content]
-        panels_content[panel_id] = panel_content
+        # this is not in the xls config
+        panel_content['type'] = panel_type
 
     # add the panels to the dashboard
     dashboard_dict = copy.deepcopy(dashboard_template)
@@ -135,6 +142,10 @@ def build_products_content_for_panel(products_df, expressions_df, panel_id, prod
 if __name__ == '__main__':
     build_dashboard_selection = False
 
+    # folders = requests.get("https://grafana.charting.dev.mosaic.hartreepartners.com/api/folders", headers=headers_dict,
+    #                        verify=False)
+    # print(folders.content.decode('utf-8'))
+
     # build a json comparable to the grafana dashboard settings json
     filename = f'chart.json'
     if build_dashboard_selection:
@@ -142,6 +153,7 @@ if __name__ == '__main__':
         xls_file = 'chart_config.xlsx'
         # template copied from grafana app
         dashboard_template = get_template('chart_template.json')
+        dashboard_template = clean_template(dashboard_template, keys=cleanup_keys)
         # update it based on user requirements
         db = build_dashboard(xls_file, dashboard_template)
         # save it
@@ -157,7 +169,7 @@ if __name__ == '__main__':
     pp(dashboard_api_dict)
 
     # call the api
-    response = requests.post(url, headers=headers_dict, data=dashboard_api_dict, verify=False)
-    print('\n', response)
-    with open('chart_response.html', 'w') as file:
-        file.write(response.content.decode('utf-8'))
+    dashboard_api_dict_json = json.dumps(dashboard_api_dict)
+    rr = requests.post(url, headers=headers_dict, data=dashboard_api_dict_json, verify=False)
+    print(rr)
+    print(rr.content.decode('utf-8'))
