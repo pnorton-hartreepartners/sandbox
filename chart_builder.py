@@ -2,8 +2,9 @@ import json
 import pandas as pd
 import requests
 import copy
+from pprint import pprint as pp
 
-url_template = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
+url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
 
 headers_dict = {
     'Accept': 'application/json',
@@ -13,17 +14,17 @@ headers_dict = {
 
 dashboard_api_dict = {
     'dashboard': {
-        # 'id': None,
-        'uid': 'RmBVhP17k',
+        'id': '24',
+        #'uid': None,
         'title': 'test',
         'tags': ['no tags'],
         'timezone': 'browser',
         'schemaVersion': 16,
         'version': 0,
-        'refresh': '25s'
+        'refresh': '25s',
     },
     'folderId': 1,
-    #'folderUid': None,
+    'folderUid': 'Y-bj-x2nz',
     'message': 'PN changes',
     'overwrite': 'True'
 }
@@ -62,19 +63,6 @@ def build_expressions(df):
         xx = {k: str(v) for (k, v) in xx.items()}
         expressions[index] = xx
     return expressions
-
-
-def create_grafana_panel(data):
-    url = url_template
-    rr = requests.post(url, headers=headers_dict, data=data, verify=False)
-    print(url, '\n', rr)
-    return rr
-
-
-def search_grafana_panel():
-    url = url_template + r'/api/search'
-    rr = requests.get(url, headers=headers_dict, verify=False)
-    print(url, '\n', rr)
 
 
 def build_dashboard(xls_file, dashboard_template):
@@ -145,7 +133,7 @@ def build_products_content_for_panel(products_df, expressions_df, panel_id, prod
 
 
 if __name__ == '__main__':
-    build_dashboard_selection = True
+    build_dashboard_selection = False
 
     # build a json comparable to the grafana dashboard settings json
     filename = f'chart.json'
@@ -166,12 +154,10 @@ if __name__ == '__main__':
     # add this to the template from here
     # https://grafana.com/docs/grafana/latest/http_api/dashboard/#create--update-dashboard
     dashboard_api_dict['dashboard'].update(db)
-    response = create_grafana_panel(dashboard_api_dict)
+    pp(dashboard_api_dict)
+
+    # call the api
+    response = requests.post(url, headers=headers_dict, data=dashboard_api_dict, verify=False)
+    print('\n', response)
     with open('chart_response.html', 'w') as file:
         file.write(response.content.decode('utf-8'))
-
-    # template = get_template('chart_template.json')
-    # dashboard_api_dict['panels'] = template
-    # response = create_grafana_panel(dashboard_api_dict)
-    # with open('chart_response2.html', 'w') as file:
-    #     file.write(response.content.decode('utf-8'))
