@@ -18,10 +18,11 @@
       }
     ]
   },
+  "description": "",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 35,
+  "id": 39,
   "links": [],
   "panels": [
     {
@@ -97,24 +98,1249 @@
         {
           "backward": {
             "amount": 0,
-            "tenor": "",
-            "seasonal": 0
+            "seasonal": 0,
+            "tenor": ""
           },
-          "curveOptions": [],
+          "curveOptions": [
+            {
+              "currency": "usd",
+              "description": "WTI FUTURE usd bbl",
+              "label": "WTI-F",
+              "search_description": "wti-f wti future usd bbl",
+              "unit": "bbl",
+              "value": "WTI-F"
+            },
+            {
+              "currency": "usd",
+              "description": "ICE BRENT FUTURE usd bbl",
+              "label": "BRT-F",
+              "search_description": "brt-f ice brent future usd bbl",
+              "unit": "bbl",
+              "value": "BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB FUTURE usd gl",
+              "label": "RB-F",
+              "search_description": "rb-f rbob future usd gl",
+              "unit": "gl",
+              "value": "RB-F"
+            },
+            {
+              "currency": "usd",
+              "description": "WTI - BRT FUTURE usd bbl",
+              "label": "WTI-BRT-F",
+              "search_description": "wti-brt-f wti - brt future usd bbl",
+              "unit": "bbl",
+              "value": "WTI-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "DATED SWAP usd bbl",
+              "label": "DATED",
+              "search_description": "dated dated swap usd bbl",
+              "unit": "bbl",
+              "value": "DATED"
+            },
+            {
+              "currency": "usd",
+              "description": "BRENT SWAP usd bbl",
+              "label": "BRT-S",
+              "search_description": "brt-s brent swap usd bbl",
+              "unit": "bbl",
+              "value": "BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "DFL DIFF usd bbl",
+              "label": "DFL",
+              "search_description": "dfl dfl diff usd bbl",
+              "unit": "bbl",
+              "value": "DFL"
+            },
+            {
+              "currency": "usd",
+              "description": "GASOIL-FUTURE usd mt",
+              "label": "GO-F",
+              "search_description": "go-f gasoil-future usd mt",
+              "unit": "mt",
+              "value": "GO-F"
+            },
+            {
+              "currency": "usd",
+              "description": "GASOIL SWAP usd mt",
+              "label": "GO-S",
+              "search_description": "go-s gasoil swap usd mt",
+              "unit": "mt",
+              "value": "GO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "NYMEX HEATING OILFUTURE usd gl",
+              "label": "HO-F",
+              "search_description": "ho-f nymex heating oilfuture usd gl",
+              "unit": "gl",
+              "value": "HO-F"
+            },
+            {
+              "currency": "usd",
+              "description": "NYM HEATING OIL SWAP usd gl",
+              "label": "HO-S",
+              "search_description": "ho-s nym heating oil swap usd gl",
+              "unit": "gl",
+              "value": "HO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "WTI SWAP usd bbl",
+              "label": "WTI-S",
+              "search_description": "wti-s wti swap usd bbl",
+              "unit": "bbl",
+              "value": "WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB SWAP usd gl",
+              "label": "RB-S",
+              "search_description": "rb-s rbob swap usd gl",
+              "unit": "gl",
+              "value": "RB-S"
+            },
+            {
+              "currency": "usd",
+              "description": "WTI-BRENT SWAP usd bbl",
+              "label": "WTI-BRT-S",
+              "search_description": "wti-brt-s wti-brent swap usd bbl",
+              "unit": "bbl",
+              "value": "WTI-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "DUBAI SWAP usd bbl",
+              "label": "DUBAI",
+              "search_description": "dubai dubai swap usd bbl",
+              "unit": "bbl",
+              "value": "DUBAI"
+            },
+            {
+              "currency": "usd",
+              "description": "BRENT DUBAI EFS usd bbl",
+              "label": "BRT-DUBAI-EFS",
+              "search_description": "brt-dubai-efs brent dubai efs usd bbl",
+              "unit": "bbl",
+              "value": "BRT-DUBAI-EFS"
+            },
+            {
+              "currency": "usd",
+              "description": "BRENT DUBAI SWAP usd bbl",
+              "label": "BRT-DUBAI",
+              "search_description": "brt-dubai brent dubai swap usd bbl",
+              "unit": "bbl",
+              "value": "BRT-DUBAI"
+            },
+            {
+              "currency": "usd",
+              "description": "DUBAI SWAP TIMING usd bbl",
+              "label": "DUBAI-TS",
+              "search_description": "dubai-ts dubai swap timing usd bbl",
+              "unit": "bbl",
+              "value": "DUBAI-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "GO-BRT FUTURES usd bbl",
+              "label": "GO-BRT-F",
+              "search_description": "go-brt-f go-brt futures usd bbl",
+              "unit": "bbl",
+              "value": "GO-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "GO-BRT SWAP usd bbl",
+              "label": "GO-BRT-S",
+              "search_description": "go-brt-s go-brt swap usd bbl",
+              "unit": "bbl",
+              "value": "GO-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "HO-GO FUTURES usd gl",
+              "label": "HO-GO-F",
+              "search_description": "ho-go-f ho-go futures usd gl",
+              "unit": "gl",
+              "value": "HO-GO-F"
+            },
+            {
+              "currency": "usd",
+              "description": "HEATING OIL - GASOIL  SWAP usd gl",
+              "label": "HO-GO-S",
+              "search_description": "ho-go-s heating oil - gasoil  swap usd gl",
+              "unit": "gl",
+              "value": "HO-GO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "HEATING OIL-BRT CRACK FUTURES usd bbl",
+              "label": "HO-BRT-F",
+              "search_description": "ho-brt-f heating oil-brt crack futures usd bbl",
+              "unit": "bbl",
+              "value": "HO-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "HEATING OIL-BRT SWAP usd bbl",
+              "label": "HO-BRT-S",
+              "search_description": "ho-brt-s heating oil-brt swap usd bbl",
+              "unit": "bbl",
+              "value": "HO-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "HEATING OIL - WTI CRACK usd bbl",
+              "label": "HO-WTI-F",
+              "search_description": "ho-wti-f heating oil - wti crack usd bbl",
+              "unit": "bbl",
+              "value": "HO-WTI-F"
+            },
+            {
+              "currency": "usd",
+              "description": "HO-WTI CRACK usd bbl",
+              "label": "HO-WTI-S",
+              "search_description": "ho-wti-s ho-wti crack usd bbl",
+              "unit": "bbl",
+              "value": "HO-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "HEATING OIL - DATED CRACK usd bbl",
+              "label": "HO-DATED-S",
+              "search_description": "ho-dated-s heating oil - dated crack usd bbl",
+              "unit": "bbl",
+              "value": "HO-DATED-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GASOIL-DUBAI CRACK usd bbl",
+              "label": "GO-DUBAI-S",
+              "search_description": "go-dubai-s gasoil-dubai crack usd bbl",
+              "unit": "bbl",
+              "value": "GO-DUBAI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "C5 SWAP usd gl",
+              "label": "C5",
+              "search_description": "c5 c5 swap usd gl",
+              "unit": "gl",
+              "value": "C5"
+            },
+            {
+              "currency": "usd",
+              "description": "C5-WTI CRACK usd bbl",
+              "label": "C5-WTI",
+              "search_description": "c5-wti c5-wti crack usd bbl",
+              "unit": "bbl",
+              "value": "C5-WTI"
+            },
+            {
+              "currency": "usd",
+              "description": "C5-BRT CRACK usd bbl",
+              "label": "C5-BRT",
+              "search_description": "c5-brt c5-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "C5-BRT"
+            },
+            {
+              "currency": "usd",
+              "description": "EUA FUTURE usd ",
+              "label": "EUA",
+              "search_description": "eua eua future usd ",
+              "unit": "",
+              "value": "EUA"
+            },
+            {
+              "currency": "usd",
+              "description": "LME COPPER FUTURE usd ",
+              "label": "COPPER",
+              "search_description": "copper lme copper future usd ",
+              "unit": "",
+              "value": "COPPER"
+            },
+            {
+              "currency": "usd",
+              "description": "LLS DIFF usd bbl",
+              "label": "LLS",
+              "search_description": "lls lls diff usd bbl",
+              "unit": "bbl",
+              "value": "LLS"
+            },
+            {
+              "currency": "usd",
+              "description": "LLS DIFF (TM) usd bbl",
+              "label": "LLS-TM",
+              "search_description": "lls-tm lls diff (tm) usd bbl",
+              "unit": "bbl",
+              "value": "LLS-TM"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "MARS",
+              "search_description": "mars   ",
+              "unit": "",
+              "value": "MARS"
+            },
+            {
+              "currency": "usd",
+              "description": "MARS DIFF (TM ) usd bbl",
+              "label": "MARS-TM",
+              "search_description": "mars-tm mars diff (tm ) usd bbl",
+              "unit": "bbl",
+              "value": "MARS-TM"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "MEH",
+              "search_description": "meh   ",
+              "unit": "",
+              "value": "MEH"
+            },
+            {
+              "currency": "usd",
+              "description": "MEH DIFF (TM ) usd bbl",
+              "label": "MEH-TM",
+              "search_description": "meh-tm meh diff (tm ) usd bbl",
+              "unit": "bbl",
+              "value": "MEH-TM"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "MID-WTI",
+              "search_description": "mid-wti   ",
+              "unit": "",
+              "value": "MID-WTI"
+            },
+            {
+              "currency": "usd",
+              "description": "MID-WTI DIFF (TM) usd bbl",
+              "label": "MID-WTI-TM",
+              "search_description": "mid-wti-tm mid-wti diff (tm) usd bbl",
+              "unit": "bbl",
+              "value": "MID-WTI-TM"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "MID-WTS",
+              "search_description": "mid-wts   ",
+              "unit": "",
+              "value": "MID-WTS"
+            },
+            {
+              "currency": "usd",
+              "description": "MID-WTS DIFF (TM) usd bbl",
+              "label": "MID-WTS-TM",
+              "search_description": "mid-wts-tm mid-wts diff (tm) usd bbl",
+              "unit": "bbl",
+              "value": "MID-WTS-TM"
+            },
+            {
+              "currency": "usd",
+              "description": "NWE FUEL OIL SWAP usd mt",
+              "label": "NWEFO-S",
+              "search_description": "nwefo-s nwe fuel oil swap usd mt",
+              "unit": "mt",
+              "value": "NWEFO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "NWE FUEL OIL-BRENT CRACK usd bbl",
+              "label": "NWEFO-BRT-CRK",
+              "search_description": "nwefo-brt-crk nwe fuel oil-brent crack usd bbl",
+              "unit": "bbl",
+              "value": "NWEFO-BRT-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "NWEFO SWAP TIMING usd mt",
+              "label": "NWEFO-TS",
+              "search_description": "nwefo-ts nwefo swap timing usd mt",
+              "unit": "mt",
+              "value": "NWEFO-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "NWEJET SWAP usd mt",
+              "label": "NWEJET-S",
+              "search_description": "nwejet-s nwejet swap usd mt",
+              "unit": "mt",
+              "value": "NWEJET-S"
+            },
+            {
+              "currency": "usd",
+              "description": "NWEJET-GASOIL DIFF usd mt",
+              "label": "NWEJET-DIFF",
+              "search_description": "nwejet-diff nwejet-gasoil diff usd mt",
+              "unit": "mt",
+              "value": "NWEJET-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "NWEJET-BRT CRACK usd bbl",
+              "label": "NWEJET-BRT-S",
+              "search_description": "nwejet-brt-s nwejet-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "NWEJET-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCJET SWAP usd gl",
+              "label": "GCJET-S",
+              "search_description": "gcjet-s gcjet swap usd gl",
+              "unit": "gl",
+              "value": "GCJET-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-BRT FUTURES usd bbl",
+              "label": "RB-BRT-F",
+              "search_description": "rb-brt-f rbob-brt futures usd bbl",
+              "unit": "bbl",
+              "value": "RB-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB - BRENT CRACK SWAP usd bbl",
+              "label": "RB-BRT-S",
+              "search_description": "rb-brt-s rbob - brent crack swap usd bbl",
+              "unit": "bbl",
+              "value": "RB-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-WTI CRACK FUTURE usd bbl",
+              "label": "RB-WTI-F",
+              "search_description": "rb-wti-f rbob-wti crack future usd bbl",
+              "unit": "bbl",
+              "value": "RB-WTI-F"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-WTI CRACK SWAP usd bbl",
+              "label": "RB-WTI-S",
+              "search_description": "rb-wti-s rbob-wti crack swap usd bbl",
+              "unit": "bbl",
+              "value": "RB-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB - HEATING OIL FUTURE usd gl",
+              "label": "RB-HO-F",
+              "search_description": "rb-ho-f rbob - heating oil future usd gl",
+              "unit": "gl",
+              "value": "RB-HO-F"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB - HEATING OIL SWAP usd gl",
+              "label": "RB-HO-S",
+              "search_description": "rb-ho-s rbob - heating oil swap usd gl",
+              "unit": "gl",
+              "value": "RB-HO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-DATED CRACK SWAP usd bbl",
+              "label": "RB-DATED-S",
+              "search_description": "rb-dated-s rbob-dated crack swap usd bbl",
+              "unit": "bbl",
+              "value": "RB-DATED-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SINGAPORE GASOIL SWAP usd mt",
+              "label": "SING-GO",
+              "search_description": "sing-go singapore gasoil swap usd mt",
+              "unit": "mt",
+              "value": "SING-GO"
+            },
+            {
+              "currency": "usd",
+              "description": "SING GASOIL EFS usd mt",
+              "label": "SING-GO-EFS",
+              "search_description": "sing-go-efs sing gasoil efs usd mt",
+              "unit": "mt",
+              "value": "SING-GO-EFS"
+            },
+            {
+              "currency": "usd",
+              "description": "SING GASOIL SWAP TIMING usd bbl",
+              "label": "SING-GO-TS",
+              "search_description": "sing-go-ts sing gasoil swap timing usd bbl",
+              "unit": "bbl",
+              "value": "SING-GO-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "E-W GASOIL SWAP usd mt",
+              "label": "SING-GO-GO-S",
+              "search_description": "sing-go-go-s e-w gasoil swap usd mt",
+              "unit": "mt",
+              "value": "SING-GO-GO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SING GASOIL-BRT CRACK usd bbl",
+              "label": "SING-GO-BRT-S",
+              "search_description": "sing-go-brt-s sing gasoil-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "SING-GO-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SING GASOIL - DUBAI CRACK usd bbl",
+              "label": "SING-GO-DUBAI",
+              "search_description": "sing-go-dubai sing gasoil - dubai crack usd bbl",
+              "unit": "bbl",
+              "value": "SING-GO-DUBAI"
+            },
+            {
+              "currency": "usd",
+              "description": "SING GASOLINE - MOPJ NAPHTHA SWAP usd mt",
+              "label": "MOGAS-MOPJ-S",
+              "search_description": "mogas-mopj-s sing gasoline - mopj naphtha swap usd mt",
+              "unit": "mt",
+              "value": "MOGAS-MOPJ-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB SWAP usd mt",
+              "label": "EBOB-S",
+              "search_description": "ebob-s ebob swap usd mt",
+              "unit": "mt",
+              "value": "EBOB-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB ARB (RBOB-EBOB) usd gl",
+              "label": "EBOB-ARB",
+              "search_description": "ebob-arb ebob arb (rbob-ebob) usd gl",
+              "unit": "gl",
+              "value": "EBOB-ARB"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB SWAP TIMING usd mt",
+              "label": "EBOB-TS",
+              "search_description": "ebob-ts ebob swap timing usd mt",
+              "unit": "mt",
+              "value": "EBOB-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB - BRT CRACK usd bbl",
+              "label": "EBOB-BRT-S",
+              "search_description": "ebob-brt-s ebob - brt crack usd bbl",
+              "unit": "bbl",
+              "value": "EBOB-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB-GO SWAP usd mt",
+              "label": "EBOB-GO-S",
+              "search_description": "ebob-go-s ebob-go swap usd mt",
+              "unit": "mt",
+              "value": "EBOB-GO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB-GASOIL CRACK SWAP usd bbl",
+              "label": "EBOB-CRK-GO-CRK-S",
+              "search_description": "ebob-crk-go-crk-s ebob-gasoil crack swap usd bbl",
+              "unit": "bbl",
+              "value": "EBOB-CRK-GO-CRK-S"
+            },
+            {
+              "currency": "usd",
+              "description": "MOGAS SWAP usd bbl",
+              "label": "MOGAS",
+              "search_description": "mogas mogas swap usd bbl",
+              "unit": "bbl",
+              "value": "MOGAS"
+            },
+            {
+              "currency": "usd",
+              "description": "E-W GASOLINE usd bbl",
+              "label": "MOGAS-EW",
+              "search_description": "mogas-ew e-w gasoline usd bbl",
+              "unit": "bbl",
+              "value": "MOGAS-EW"
+            },
+            {
+              "currency": "usd",
+              "description": "MOGAS SWAP TIMING usd bbl",
+              "label": "MOGAS-TS",
+              "search_description": "mogas-ts mogas swap timing usd bbl",
+              "unit": "bbl",
+              "value": "MOGAS-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "MOGAS-BRT CRACK usd bbl",
+              "label": "MOGAS-BRT-S",
+              "search_description": "mogas-brt-s mogas-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "MOGAS-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "NAPHTHA SWAP usd mt",
+              "label": "NAP",
+              "search_description": "nap naphtha swap usd mt",
+              "unit": "mt",
+              "value": "NAP"
+            },
+            {
+              "currency": "usd",
+              "description": "NAPHTHA-BRT CRACK usd bbl",
+              "label": "NAP-CRK",
+              "search_description": "nap-crk naphtha-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "NAP-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "NAPHTHA SWAP TIMING usd mt",
+              "label": "NAP-TS",
+              "search_description": "nap-ts naphtha swap timing usd mt",
+              "unit": "mt",
+              "value": "NAP-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "MOPJ SWAP usd mt",
+              "label": "MOPJ",
+              "search_description": "mopj mopj swap usd mt",
+              "unit": "mt",
+              "value": "MOPJ"
+            },
+            {
+              "currency": "usd",
+              "description": "E-W NAPHTHA SWAP usd mt",
+              "label": "EW-NAP-S",
+              "search_description": "ew-nap-s e-w naphtha swap usd mt",
+              "unit": "mt",
+              "value": "EW-NAP-S"
+            },
+            {
+              "currency": "usd",
+              "description": "MOPJ NAPHTHA - BRT CRACK usd bbl",
+              "label": "MOPJ-CRK",
+              "search_description": "mopj-crk mopj naphtha - brt crack usd bbl",
+              "unit": "bbl",
+              "value": "MOPJ-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "MOPJ NAPHTHA SWAP TIMING usd mt",
+              "label": "MOPJ-TS",
+              "search_description": "mopj-ts mopj naphtha swap timing usd mt",
+              "unit": "mt",
+              "value": "MOPJ-TS"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB-NAPHTHA SWAP usd mt",
+              "label": "EBOB-NAP-S",
+              "search_description": "ebob-nap-s ebob-naphtha swap usd mt",
+              "unit": "mt",
+              "value": "EBOB-NAP-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EBOB-NAPHTHA SWAP usd bbl",
+              "label": "EBOB-NAP-CRK",
+              "search_description": "ebob-nap-crk ebob-naphtha swap usd bbl",
+              "unit": "bbl",
+              "value": "EBOB-NAP-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-NAPHTHA SWAP usd bbl",
+              "label": "RB-NAP-S",
+              "search_description": "rb-nap-s rbob-naphtha swap usd bbl",
+              "unit": "bbl",
+              "value": "RB-NAP-S"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB -NAPHTHA SWAP usd bbl",
+              "label": "RB-NAP-CRK",
+              "search_description": "rb-nap-crk rbob -naphtha swap usd bbl",
+              "unit": "bbl",
+              "value": "RB-NAP-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "GASOIL-NAP SWAP usd mt",
+              "label": "GO-NAP-S",
+              "search_description": "go-nap-s gasoil-nap swap usd mt",
+              "unit": "mt",
+              "value": "GO-NAP-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GASOIL - NAPHTHA CRACK usd bbl",
+              "label": "GO-NAP-CRK",
+              "search_description": "go-nap-crk gasoil - naphtha crack usd bbl",
+              "unit": "bbl",
+              "value": "GO-NAP-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-GASOIL FUTURES usd gl",
+              "label": "RB-GO-F",
+              "search_description": "rb-go-f rbob-gasoil futures usd gl",
+              "unit": "gl",
+              "value": "RB-GO-F"
+            },
+            {
+              "currency": "usd",
+              "description": "RBOB-GASOIL SWAP usd gl",
+              "label": "RB-GO-S",
+              "search_description": "rb-go-s rbob-gasoil swap usd gl",
+              "unit": "gl",
+              "value": "RB-GO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCULSD SWAP usd gl",
+              "label": "GCULSD-S",
+              "search_description": "gculsd-s gculsd swap usd gl",
+              "unit": "gl",
+              "value": "GCULSD-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCULSD -HEAT DIFF usd gl",
+              "label": "GCULSD-DIFF",
+              "search_description": "gculsd-diff gculsd -heat diff usd gl",
+              "unit": "gl",
+              "value": "GCULSD-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "GCULSD-WTI CRACK usd bbl",
+              "label": "GCULSD-WTI-S",
+              "search_description": "gculsd-wti-s gculsd-wti crack usd bbl",
+              "unit": "bbl",
+              "value": "GCULSD-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCULSD-BRT CRACK usd bbl",
+              "label": "GCULSD-BRT-S",
+              "search_description": "gculsd-brt-s gculsd-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "GCULSD-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCJET DIFF usd gl",
+              "label": "GCJET-DIFF",
+              "search_description": "gcjet-diff gcjet diff usd gl",
+              "unit": "gl",
+              "value": "GCJET-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "GCULSD-WTI CRACK usd bbl",
+              "label": "GCJET-WTI-S",
+              "search_description": "gcjet-wti-s gculsd-wti crack usd bbl",
+              "unit": "bbl",
+              "value": "GCJET-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "GCJET-BRT CRACK usd bbl",
+              "label": "GCJET-BRT-S",
+              "search_description": "gcjet-brt-s gcjet-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "GCJET-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SING JET SWAP usd bbl",
+              "label": "SINGJET-S",
+              "search_description": "singjet-s sing jet swap usd bbl",
+              "unit": "bbl",
+              "value": "SINGJET-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SINGJET REGRADE SWAP usd bbl",
+              "label": "SINGJET-DIFF",
+              "search_description": "singjet-diff singjet regrade swap usd bbl",
+              "unit": "bbl",
+              "value": "SINGJET-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "SING JET - DUBAI CRACK usd bbl",
+              "label": "SINGJET-DUBAI-S",
+              "search_description": "singjet-dubai-s sing jet - dubai crack usd bbl",
+              "unit": "bbl",
+              "value": "SINGJET-DUBAI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "LSFO SWAP usd mt",
+              "label": "LSFO-S",
+              "search_description": "lsfo-s lsfo swap usd mt",
+              "unit": "mt",
+              "value": "LSFO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "HILO SWAP usd mt",
+              "label": "HILO-S",
+              "search_description": "hilo-s hilo swap usd mt",
+              "unit": "mt",
+              "value": "HILO-S"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "HI5-S",
+              "search_description": "hi5-s   ",
+              "unit": "",
+              "value": "HI5-S"
+            },
+            {
+              "currency": "usd",
+              "description": "LSFO-BRT CRACK usd bbl",
+              "label": "LSFO-BRT-CRK",
+              "search_description": "lsfo-brt-crk lsfo-brt crack usd bbl",
+              "unit": "bbl",
+              "value": "LSFO-BRT-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "SING 380 FO SWAP usd mt",
+              "label": "SING380-S",
+              "search_description": "sing380-s sing 380 fo swap usd mt",
+              "unit": "mt",
+              "value": "SING380-S"
+            },
+            {
+              "currency": "usd",
+              "description": "E-W FUEL SWAP usd mt",
+              "label": "EWFO-S",
+              "search_description": "ewfo-s e-w fuel swap usd mt",
+              "unit": "mt",
+              "value": "EWFO-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SING 380 FUEL - BRT CRACK usd bbl",
+              "label": "SING380-BRT-CRK",
+              "search_description": "sing380-brt-crk sing 380 fuel - brt crack usd bbl",
+              "unit": "bbl",
+              "value": "SING380-BRT-CRK"
+            },
+            {
+              "currency": "usd",
+              "description": "MARINE.5 SWAP usd mt",
+              "label": "MARINE.5-S",
+              "search_description": "marine.5-s marine.5 swap usd mt",
+              "unit": "mt",
+              "value": "MARINE.5-S"
+            },
+            {
+              "currency": "usd",
+              "description": "MARINE.5 DIFF usd mt",
+              "label": "MARINE.5-DIFF",
+              "search_description": "marine.5-diff marine.5 diff usd mt",
+              "unit": "mt",
+              "value": "MARINE.5-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "MARINE.5-BRT SWAP usd bbl",
+              "label": "MARINE.5-BRT-S",
+              "search_description": "marine.5-brt-s marine.5-brt swap usd bbl",
+              "unit": "bbl",
+              "value": "MARINE.5-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "SING HI5 FUEL SWAP usd mt",
+              "label": "SING-HI5-S",
+              "search_description": "sing-hi5-s sing hi5 fuel swap usd mt",
+              "unit": "mt",
+              "value": "SING-HI5-S"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "SING-HI5-DIFF",
+              "search_description": "sing-hi5-diff   ",
+              "unit": "",
+              "value": "SING-HI5-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "SING HI5 FUEL - BRT CRACK usd bbl",
+              "label": "SING-HI5-BRT-S",
+              "search_description": "sing-hi5-brt-s sing hi5 fuel - brt crack usd bbl",
+              "unit": "bbl",
+              "value": "SING-HI5-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "3-2-1 BRT FUTURES usd bbl",
+              "label": "321-BRT-F",
+              "search_description": "321-brt-f 3-2-1 brt futures usd bbl",
+              "unit": "bbl",
+              "value": "321-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "3-2-1 BRT SWAP usd bbl",
+              "label": "321-BRT-S",
+              "search_description": "321-brt-s 3-2-1 brt swap usd bbl",
+              "unit": "bbl",
+              "value": "321-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "3-2-1 WTI FUTURES usd bbl",
+              "label": "321-WTI-F",
+              "search_description": "321-wti-f 3-2-1 wti futures usd bbl",
+              "unit": "bbl",
+              "value": "321-WTI-F"
+            },
+            {
+              "currency": "usd",
+              "description": "3-2-1 WTI SWAP usd bbl",
+              "label": "321-WTI-S",
+              "search_description": "321-wti-s 3-2-1 wti swap usd bbl",
+              "unit": "bbl",
+              "value": "321-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "2-1-1 BRT FUTURES usd bbl",
+              "label": "211-BRT-F",
+              "search_description": "211-brt-f 2-1-1 brt futures usd bbl",
+              "unit": "bbl",
+              "value": "211-BRT-F"
+            },
+            {
+              "currency": "usd",
+              "description": "2-1-1 BRT SWAP usd bbl",
+              "label": "211-BRT-S",
+              "search_description": "211-brt-s 2-1-1 brt swap usd bbl",
+              "unit": "bbl",
+              "value": "211-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "2-1-1 WTI FUTURES usd bbl",
+              "label": "211-WTI-F",
+              "search_description": "211-wti-f 2-1-1 wti futures usd bbl",
+              "unit": "bbl",
+              "value": "211-WTI-F"
+            },
+            {
+              "currency": "usd",
+              "description": "2-1-1 WTI SWAP usd bbl",
+              "label": "211-WTI-S",
+              "search_description": "211-wti-s 2-1-1 wti swap usd bbl",
+              "unit": "bbl",
+              "value": "211-WTI-S"
+            },
+            {
+              "currency": "usd",
+              "description": "2-1-1 DATED SWAP usd bbl",
+              "label": "211-DATED-S",
+              "search_description": "211-dated-s 2-1-1 dated swap usd bbl",
+              "unit": "bbl",
+              "value": "211-DATED-S"
+            },
+            {
+              "currency": "usd",
+              "description": "EUR 2-1-1 BRT SWAP usd bbl",
+              "label": "EUR211-BRT-S",
+              "search_description": "eur211-brt-s eur 2-1-1 brt swap usd bbl",
+              "unit": "bbl",
+              "value": "EUR211-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "NWE FUEL -GAS OIL 50/50 - BRENT SWAP usd bbl",
+              "label": "FOGO5050-BRT-S",
+              "search_description": "fogo5050-brt-s nwe fuel -gas oil 50/50 - brent swap usd bbl",
+              "unit": "bbl",
+              "value": "FOGO5050-BRT-S"
+            },
+            {
+              "currency": "usd",
+              "description": "TOPPING MARGIN usd bbl",
+              "label": "TOPPING",
+              "search_description": "topping topping margin usd bbl",
+              "unit": "bbl",
+              "value": "TOPPING"
+            },
+            {
+              "currency": "usd",
+              "description": "HYDRO MARGIN usd bbl",
+              "label": "HYDRO",
+              "search_description": "hydro hydro margin usd bbl",
+              "unit": "bbl",
+              "value": "HYDRO"
+            },
+            {
+              "currency": "usd",
+              "description": "CRACKING MARGIN usd bbl",
+              "label": "CRACKING",
+              "search_description": "cracking cracking margin usd bbl",
+              "unit": "bbl",
+              "value": "CRACKING"
+            },
+            {
+              "currency": "usd",
+              "description": "COMPLEX EU MARGIN - P usd bbl",
+              "label": "COMPLEX-EU-P",
+              "search_description": "complex-eu-p complex eu margin - p usd bbl",
+              "unit": "bbl",
+              "value": "COMPLEX-EU-P"
+            },
+            {
+              "currency": "usd",
+              "description": "SIMPLE EU MARGIN -P usd bbl",
+              "label": "SIMPLE-EU-P",
+              "search_description": "simple-eu-p simple eu margin -p usd bbl",
+              "unit": "bbl",
+              "value": "SIMPLE-EU-P"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "NG-F",
+              "search_description": "ng-f   ",
+              "unit": "",
+              "value": "NG-F"
+            },
+            {
+              "currency": "usd",
+              "description": "MEDGAS SWAP usd mt",
+              "label": "MEDGAS-S",
+              "search_description": "medgas-s medgas swap usd mt",
+              "unit": "mt",
+              "value": "MEDGAS-S"
+            },
+            {
+              "currency": "usd",
+              "description": "MEDNORTH-GAS DIFF usd mt",
+              "label": "MEDNORTH-GAS-DIFF",
+              "search_description": "mednorth-gas-diff mednorth-gas diff usd mt",
+              "unit": "mt",
+              "value": "MEDNORTH-GAS-DIFF"
+            },
+            {
+              "currency": "usd",
+              "description": "ZINC FUTURE usd ",
+              "label": "ZINC",
+              "search_description": "zinc zinc future usd ",
+              "unit": "",
+              "value": "ZINC"
+            },
+            {
+              "currency": "usd",
+              "description": "LME ALUMINIUM FUTURES usd ",
+              "label": "ALUMINIUM",
+              "search_description": "aluminium lme aluminium futures usd ",
+              "unit": "",
+              "value": "ALUMINIUM"
+            },
+            {
+              "currency": "usd",
+              "description": "WTL SWAP usd bbl",
+              "label": "WTL-S",
+              "search_description": "wtl-s wtl swap usd bbl",
+              "unit": "bbl",
+              "value": "WTL-S"
+            },
+            {
+              "currency": "usd",
+              "description": "WTIL DIFF (TM) usd bbl",
+              "label": "WTL-TM",
+              "search_description": "wtl-tm wtil diff (tm) usd bbl",
+              "unit": "bbl",
+              "value": "WTL-TM"
+            },
+            {
+              "currency": "usd",
+              "description": "TC2 USD/MT usd mt",
+              "label": "TC2_USDMT",
+              "search_description": "tc2_usdmt tc2 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TC2_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TC5 USD/MT usd mt",
+              "label": "TC5_USDMT",
+              "search_description": "tc5_usdmt tc5 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TC5_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TC6 USD/MT usd mt",
+              "label": "TC6_USDMT",
+              "search_description": "tc6_usdmt tc6 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TC6_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TC12 USD/MT usd mt",
+              "label": "TC12_USDMT",
+              "search_description": "tc12_usdmt tc12 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TC12_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TC14 USD/MT usd mt",
+              "label": "TC14_USDMT",
+              "search_description": "tc14_usdmt tc14 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TC14_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TD3 USD/MT usd mt",
+              "label": "TD3_USDMT",
+              "search_description": "td3_usdmt td3 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TD3_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TD7 USD/MT usd mt",
+              "label": "TD7_USDMT",
+              "search_description": "td7_usdmt td7 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TD7_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TD 20 USD/MT usd mt",
+              "label": "TD20_USDMT",
+              "search_description": "td20_usdmt td 20 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TD20_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TD22 USD/MT usd mt",
+              "label": "TD22_USDMT",
+              "search_description": "td22_usdmt td22 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TD22_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "TD 25 USD/MT usd mt",
+              "label": "TD25_USDMT",
+              "search_description": "td25_usdmt td 25 usd/mt usd mt",
+              "unit": "mt",
+              "value": "TD25_USDMT"
+            },
+            {
+              "currency": "usd",
+              "description": "2021 ETH RINS usd ",
+              "label": "ETH_RINS_21",
+              "search_description": "eth_rins_21 2021 eth rins usd ",
+              "unit": "",
+              "value": "ETH_RINS_21"
+            },
+            {
+              "currency": "usd",
+              "description": "2022 ETH RINS usd ",
+              "label": "ETH_RINS_22",
+              "search_description": "eth_rins_22 2022 eth rins usd ",
+              "unit": "",
+              "value": "ETH_RINS_22"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "BIO_RINS_21",
+              "search_description": "bio_rins_21   ",
+              "unit": "",
+              "value": "BIO_RINS_21"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "BIO_RINS_22",
+              "search_description": "bio_rins_22   ",
+              "unit": "",
+              "value": "BIO_RINS_22"
+            },
+            {
+              "currency": "usd",
+              "description": "2021 RVO usd ",
+              "label": "RVO_21",
+              "search_description": "rvo_21 2021 rvo usd ",
+              "unit": "",
+              "value": "RVO_21"
+            },
+            {
+              "currency": "usd",
+              "description": "2022 RVO usd ",
+              "label": "RVO_22",
+              "search_description": "rvo_22 2022 rvo usd ",
+              "unit": "",
+              "value": "RVO_22"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "NWE-Propane",
+              "search_description": "nwe-propane   ",
+              "unit": "",
+              "value": "NWE-Propane"
+            },
+            {
+              "currency": "",
+              "description": "  ",
+              "label": "NWE-Pro-Nap",
+              "search_description": "nwe-pro-nap   ",
+              "unit": "",
+              "value": "NWE-Pro-Nap"
+            }
+          ],
           "products": [
             {
               "axis": "x1",
-              "currency": "usd",
+              "currency": "WTI-F",
               "expressions": [
                 {
+                  "back": "",
                   "factor": "1",
-                  "product": "WTI-F",
-                  "front": "202202",
+                  "front": "202212",
                   "middle": "",
-                  "back": ""
+                  "product": "WTI-F"
                 }
               ],
-              "id": "16426112340556",
+              "id": "16426813256546",
               "legend": "",
               "unit": "*"
             }
@@ -126,7 +1352,6 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -139,7 +1364,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "crude",
-  "uid": "uiSpK9J7z",
-  "version": 8
+  "title": "temp",
+  "uid": "xK-eF3J7z",
+  "version": 3
 }
