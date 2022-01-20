@@ -186,8 +186,11 @@ if __name__ == '__main__':
     build_dashboard_selection = True
     get_folder_details_selection = False
     run_api_selection = True
+
+    # user settings
     dashboard_title = 'crude'
     refresh_interval = ''
+    time_axis = {'from': '2021-01-01', 'to': '2022-06-01'}
 
     # created but not used at the moment
     dashboard_id = dashboard_details[dashboard_title]['id']
@@ -209,6 +212,7 @@ if __name__ == '__main__':
         db = build_dashboard(xls_filename, dashboard_template)
         db['title'] = dashboard_title
         db['refresh'] = refresh_interval
+        db['time'] = time_axis
         # save it
         with open(dashboard_filename, 'w') as f:
             json.dump(db, f)

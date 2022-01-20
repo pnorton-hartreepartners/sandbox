@@ -1358,10 +1358,10 @@
   "templating": {
     "list": []
   },
-  "time": {
-    "from": "now-6M",
-    "to": "now"
-  },
+    "time": {
+      "from": "now-6M",
+      "to": "now"
+    },
   "timepicker": {},
   "timezone": "",
   "title": "temp",
