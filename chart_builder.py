@@ -49,6 +49,7 @@ product_columns = ['currency', 'unit', 'legend', 'axis']
 panel_columns = ['title']
 panel_type_is_seasonal = {True: 'timeseries',
                           False: 'mosaic-grafana-panel'}
+months_forward = 12
 
 
 def clean_the_sheets(workbook):
@@ -98,32 +99,13 @@ def build_dashboard(xls_file, dashboard_template, number=None):
     # remove id's from the old template
     panel_template = clean_template(panel_template, keys=cleanup_keys)
 
-    # =====================================================
-    # build data from xls
+    # collect config data from xls
+    panels_df, products_df, expressions_df = get_chart_config(xls_file)
 
-    # user configured requirements
-    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
-    worksheets = clean_the_sheets(worksheets)
-
-    # get them
-    panels_df = worksheets['panels']
-    products_df = worksheets['products']
-    expressions_df = worksheets['expressions']
-
-    # join them
-    products_df = pd.merge(panels_df, products_df, how='inner',
-                           left_on='panel_id', right_on='panel_id')
-
-    expressions_df = pd.merge(products_df, expressions_df, how='inner',
-                              left_on='product_id', right_on='product_id')
-
-    # set indexes
-    panels_df.set_index(keys='panel_id', drop=True, inplace=True)
-    products_df.set_index(keys='product_id', drop=True, inplace=True)
-    expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
-
-    # =====================================================
-    # build new dictionaries
+    # create the new data
+    data = panels_df.values.repeat(months_forward, axis=0)
+    new_panels_df = pd.DataFrame(data=data, columns=panels_df.columns)
+    new_panels_df.index.name = panels_df.index.name
 
     # create fewer panels if we're testing or developing
     selection_df = panels_df if not number else panels_df.iloc[:number]
@@ -155,6 +137,30 @@ def build_dashboard(xls_file, dashboard_template, number=None):
     dashboard_dict['panels'] = list(panels_content.values())
 
     return dashboard_dict
+
+
+def get_chart_config(xls_file):
+    # user configured requirements
+    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
+    worksheets = clean_the_sheets(worksheets)
+
+    # get them
+    panels_df = worksheets['panels']
+    products_df = worksheets['products']
+    expressions_df = worksheets['expressions']
+
+    # join them
+    products_df = pd.merge(panels_df, products_df, how='inner',
+                           left_on='panel_id', right_on='panel_id')
+    expressions_df = pd.merge(products_df, expressions_df, how='inner',
+                              left_on='product_id', right_on='product_id')
+
+    # set indexes
+    panels_df.set_index(keys='panel_id', drop=True, inplace=True)
+    products_df.set_index(keys='product_id', drop=True, inplace=True)
+    expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
+
+    return panels_df, products_df, expressions_df
 
 
 def build_products_content_for_panel(products_df, expressions_df, panel_id, product_template):
@@ -209,7 +215,7 @@ if __name__ == '__main__':
         # not sure why it needs an id
         dashboard_template = clean_template(dashboard_template, keys=cleanup_keys)
         # update it based on user requirements
-        db = build_dashboard(xls_filename, dashboard_template)
+        db = build_dashboard(xls_file='chart_config2.xlsx', dashboard_template=dashboard_template)
         db['title'] = dashboard_title
         db['refresh'] = refresh_interval
         db['time'] = time_axis
