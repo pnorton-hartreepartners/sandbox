@@ -1,3 +1,10 @@
+'''
+reference this
+https://grafana.com/docs/grafana/latest/http_api/dashboard/#create-update-dashboard
+
+use an xls to build charts
+'''
+
 import json
 import pandas as pd
 import requests
@@ -29,7 +36,7 @@ dashboard_api_dict = {
         'timezone': 'browser',
         'schemaVersion': 16,
         'version': 0,
-        'refresh': '125s',
+        'refresh': '25s',
     },
     'folderUid': None,  # populate this
     'message': 'PN changes',
