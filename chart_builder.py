@@ -7,6 +7,7 @@ use an xls to build charts
 
 import json
 import pandas as pd
+import numpy as np
 import requests
 import copy
 from pprint import pprint as pp
@@ -101,11 +102,8 @@ def build_dashboard(xls_file, dashboard_template, number=None):
 
     # collect config data from xls
     panels_df, products_df, expressions_df = get_chart_config(xls_file)
-
-    # create the new data
-    data = panels_df.values.repeat(months_forward, axis=0)
-    new_panels_df = pd.DataFrame(data=data, columns=panels_df.columns)
-    new_panels_df.index.name = panels_df.index.name
+    # expand for twelve months forward
+    panels_df, products_df, expressions_df = build_expanded_config(panels_df, products_df, expressions_df)
 
     # create fewer panels if we're testing or developing
     selection_df = panels_df if not number else panels_df.iloc[:number]
@@ -139,33 +137,98 @@ def build_dashboard(xls_file, dashboard_template, number=None):
     return dashboard_dict
 
 
-def get_chart_config(xls_file):
-    # user configured requirements
-    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
-    worksheets = clean_the_sheets(worksheets)
+def build_expanded_config(panels_df, products_df, expressions_df):
+    mapper = {
+        'panel_id': 'original_panel_id',
+        'product_id': 'original_product_id',
+        'expression_id': 'original_expression_id'
+    }
+    new_panels_df = pd.DataFrame()
+    for panel_id, row in panels_df.iterrows():
+        # build a new df
+        data = panels_df.values.repeat(months_forward, axis=0)
+        new_panel_df = pd.DataFrame(data=data, columns=panels_df.columns)
+        new_panel_df.index.name = panels_df.index.name
+        # add the original id and we'll join on this later
+        new_panel_df['original_panel_id'] = panel_id
+        # add the month increment column
+        new_panel_df['month_increment'] = range(months_forward)
+        new_panels_df = pd.concat([new_panels_df, new_panel_df], axis='index')
 
-    # get them
+    # products
+    new_products_df = products_df.copy(deep=True)
+    new_products_df.reset_index(inplace=True)
+    new_products_df.rename(columns=mapper, inplace=True)
+    new_products_df = pd.merge(new_panels_df.reset_index(), new_products_df, how='inner',
+                               left_on='original_panel_id', right_on='original_panel_id')
+    new_products_df.index.name = products_df.index.name
+
+    # expressions
+    new_expressions_df = expressions_df.copy(deep=True)
+    new_expressions_df.reset_index(inplace=True)
+    new_expressions_df.rename(columns=mapper, inplace=True)
+    new_expressions_df = pd.merge(new_products_df.reset_index(), new_expressions_df, how='inner',
+                               left_on='original_product_id', right_on='original_product_id')
+    new_expressions_df.index.name = expressions_df.index.name
+
+    # add the month increments
+    for column in ['front', 'middle', 'back']:
+        if not (new_expressions_df[column] == '').any():
+            dates = pd.to_datetime(new_expressions_df[column].astype(str).values, format='%Y%m')
+            month_offsets = new_expressions_df['month_increment'].apply(lambda x: pd.DateOffset(months=x))
+            dates = dates + month_offsets
+            new_expressions_df[column] = dates.dt.strftime('%Y%m')
+
+    # modify the title
+    new_expressions_df['title'] = new_expressions_df.apply(lambda x: x['title'].format(front=x['front'], back=x['back']),
+                                                           axis='columns')
+    new_products_df = pd.merge(new_products_df[[c for c in new_products_df.columns if c != 'title']].reset_index(),
+                               new_expressions_df[['title', 'product_id']],
+                               how='inner',
+                               left_on='product_id',
+                               right_on='product_id')
+    new_products_df.drop_duplicates(ignore_index=True, inplace=True)
+    new_products_df.set_index(keys='product_id', drop=True, inplace=True)
+
+    new_panels_df = pd.merge(new_panels_df[[c for c in new_panels_df.columns if c != 'title']].reset_index(),
+                             new_products_df[['title', 'panel_id']],
+                             how='inner',
+                             left_on='panel_id',
+                             right_on='panel_id')
+    new_panels_df.drop_duplicates(ignore_index=True, inplace=True)
+    new_panels_df.set_index(keys='panel_id', drop=True, inplace=True)
+
+    return new_panels_df, new_products_df, new_expressions_df
+
+
+def get_chart_config(xls_file):
+    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
+    # clean n/a
+    worksheets = clean_the_sheets(worksheets)
+    # get the dataframes
     panels_df = worksheets['panels']
     products_df = worksheets['products']
     expressions_df = worksheets['expressions']
-
-    # join them
-    products_df = pd.merge(panels_df, products_df, how='inner',
-                           left_on='panel_id', right_on='panel_id')
-    expressions_df = pd.merge(products_df, expressions_df, how='inner',
-                              left_on='product_id', right_on='product_id')
-
     # set indexes
     panels_df.set_index(keys='panel_id', drop=True, inplace=True)
     products_df.set_index(keys='product_id', drop=True, inplace=True)
     expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
+    return panels_df, products_df, expressions_df
+
+
+def join_chart_config(panels_df, products_df, expressions_df):
+    products_df = pd.merge(panels_df, products_df, how='inner',
+                           left_index=True, right_on='panel_id')
+    expressions_df = pd.merge(products_df, expressions_df, how='inner',
+                              left_index=True, right_on='product_id')
 
     return panels_df, products_df, expressions_df
 
 
 def build_products_content_for_panel(products_df, expressions_df, panel_id, product_template):
-    mask = products_df['panel_id'] == panel_id
-    products_filtered_df = products_df[mask]
+    products_filtered_df = products_df.loc[panel_id]
+    if isinstance(products_filtered_df, pd.Series):
+        products_filtered_df = products_filtered_df.to_frame().T
 
     products_content = build_from_template(products_filtered_df, product_template, product_columns)
     for product_id, product in products_filtered_df.iterrows():
