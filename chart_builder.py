@@ -50,7 +50,6 @@ product_columns = ['currency', 'unit', 'legend', 'axis']
 panel_columns = ['title']
 panel_type_is_seasonal = {True: 'timeseries',
                           False: 'mosaic-grafana-panel'}
-months_forward = 12
 
 
 def clean_the_sheets(workbook):
@@ -145,15 +144,18 @@ def build_expanded_config(panels_df, products_df, expressions_df):
     }
     new_panels_df = pd.DataFrame()
     for panel_id, row in panels_df.iterrows():
+        months_forward = row['extend_count']
+        df = row.to_frame().T
         # build a new df
-        data = panels_df.values.repeat(months_forward, axis=0)
+        data = df.values.repeat(months_forward, axis=0)
         new_panel_df = pd.DataFrame(data=data, columns=panels_df.columns)
-        new_panel_df.index.name = panels_df.index.name
         # add the original id and we'll join on this later
         new_panel_df['original_panel_id'] = panel_id
         # add the month increment column
         new_panel_df['month_increment'] = range(months_forward)
         new_panels_df = pd.concat([new_panels_df, new_panel_df], axis='index')
+    new_panels_df.reset_index(drop=True, inplace=True)
+    new_panels_df.index.name = panels_df.index.name
 
     # products
     new_products_df = products_df.copy(deep=True)
@@ -168,7 +170,7 @@ def build_expanded_config(panels_df, products_df, expressions_df):
     new_expressions_df.reset_index(inplace=True)
     new_expressions_df.rename(columns=mapper, inplace=True)
     new_expressions_df = pd.merge(new_products_df.reset_index(), new_expressions_df, how='inner',
-                               left_on='original_product_id', right_on='original_product_id')
+                                  left_on='original_product_id', right_on='original_product_id')
     new_expressions_df.index.name = expressions_df.index.name
 
     # add the month increments
@@ -278,7 +280,7 @@ if __name__ == '__main__':
         # not sure why it needs an id
         dashboard_template = clean_template(dashboard_template, keys=cleanup_keys)
         # update it based on user requirements
-        db = build_dashboard(xls_file='chart_config2.xlsx', dashboard_template=dashboard_template)
+        db = build_dashboard(xls_file=xls_filename, dashboard_template=dashboard_template)
         db['title'] = dashboard_title
         db['refresh'] = refresh_interval
         db['time'] = time_axis
