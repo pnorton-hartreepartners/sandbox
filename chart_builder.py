@@ -52,44 +52,6 @@ panel_type_is_seasonal = {True: 'timeseries',
                           False: 'mosaic-grafana-panel'}
 
 
-def clean_the_sheets(workbook):
-    for key, df in workbook.items():
-        df.fillna("", inplace=True)
-    return workbook
-
-
-def get_template(file):
-    with open(file) as f:
-        chart_template = json.load(f)
-    return chart_template
-
-
-def clean_template(dashboard_template, keys):
-    for key in keys:
-        dashboard_template.pop(key, None)
-    return dashboard_template
-
-
-def build_from_template(df, template, columns):
-    results = {}
-    for index, row in df[columns].iterrows():
-        xx = row.to_dict(dict)
-        yy = copy.deepcopy(template)
-        yy.update(xx)
-        results[index] = yy
-    return results
-
-
-def build_expressions(df):
-    columns = ['factor', 'product', 'front', 'middle', 'back']
-    expressions = {}
-    for index, row in df[columns].iterrows():
-        xx = row.to_dict(dict)
-        xx = {k: str(v) for (k, v) in xx.items()}
-        expressions[index] = xx
-    return expressions
-
-
 def build_dashboard(xls_file, dashboard_template, number=None):
     # templates from grafana
     panel_template = dashboard_template['panels'][0]
@@ -134,6 +96,27 @@ def build_dashboard(xls_file, dashboard_template, number=None):
     dashboard_dict['panels'] = list(panels_content.values())
 
     return dashboard_dict
+
+
+def get_chart_config(xls_file):
+    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
+    # clean n/a
+    worksheets = clean_the_sheets(worksheets)
+    # get the dataframes
+    panels_df = worksheets['panels']
+    products_df = worksheets['products']
+    expressions_df = worksheets['expressions']
+    # set indexes
+    panels_df.set_index(keys='panel_id', drop=True, inplace=True)
+    products_df.set_index(keys='product_id', drop=True, inplace=True)
+    expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
+    return panels_df, products_df, expressions_df
+
+
+def clean_the_sheets(workbook):
+    for key, df in workbook.items():
+        df.fillna("", inplace=True)
+    return workbook
 
 
 def build_expanded_config(panels_df, products_df, expressions_df):
@@ -203,28 +186,26 @@ def build_expanded_config(panels_df, products_df, expressions_df):
     return new_panels_df, new_products_df, new_expressions_df
 
 
-def get_chart_config(xls_file):
-    worksheets = pd.read_excel(io=xls_file, sheet_name=None)
-    # clean n/a
-    worksheets = clean_the_sheets(worksheets)
-    # get the dataframes
-    panels_df = worksheets['panels']
-    products_df = worksheets['products']
-    expressions_df = worksheets['expressions']
-    # set indexes
-    panels_df.set_index(keys='panel_id', drop=True, inplace=True)
-    products_df.set_index(keys='product_id', drop=True, inplace=True)
-    expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
-    return panels_df, products_df, expressions_df
+def get_template(file):
+    with open(file) as f:
+        chart_template = json.load(f)
+    return chart_template
 
 
-def join_chart_config(panels_df, products_df, expressions_df):
-    products_df = pd.merge(panels_df, products_df, how='inner',
-                           left_index=True, right_on='panel_id')
-    expressions_df = pd.merge(products_df, expressions_df, how='inner',
-                              left_index=True, right_on='product_id')
+def clean_template(dashboard_template, keys):
+    for key in keys:
+        dashboard_template.pop(key, None)
+    return dashboard_template
 
-    return panels_df, products_df, expressions_df
+
+def build_from_template(df, template, columns):
+    results = {}
+    for index, row in df[columns].iterrows():
+        xx = row.to_dict(dict)
+        yy = copy.deepcopy(template)
+        yy.update(xx)
+        results[index] = yy
+    return results
 
 
 def build_products_content_for_panel(products_df, expressions_df, panel_id, product_template):
@@ -237,10 +218,20 @@ def build_products_content_for_panel(products_df, expressions_df, panel_id, prod
         # for each product, build the expression list
         mask = expressions_df['product_id'] == product_id
         expressions_filtered_df = expressions_df[mask]
-        expressions = build_expressions(expressions_filtered_df)
+        expressions = build_expressions_content_for_product(expressions_filtered_df)
         products_content[product_id]['expressions'] = list(expressions.values())
 
     return products_content
+
+
+def build_expressions_content_for_product(df):
+    columns = ['factor', 'product', 'front', 'middle', 'back']
+    expressions = {}
+    for index, row in df[columns].iterrows():
+        xx = row.to_dict(dict)
+        xx = {k: str(v) for (k, v) in xx.items()}
+        expressions[index] = xx
+    return expressions
 
 
 if __name__ == '__main__':
@@ -262,10 +253,6 @@ if __name__ == '__main__':
     dashboard_title = 'crude'
     refresh_interval = ''
     time_axis = {'from': '2021-01-01', 'to': '2022-06-01'}
-
-    # created but not used at the moment
-    dashboard_id = dashboard_details[dashboard_title]['id']
-    dashboard_uid = dashboard_details[dashboard_title]['uid']
 
     # just to validate the additional api details
     if get_folder_details_selection:
