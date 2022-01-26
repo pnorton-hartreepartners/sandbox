@@ -7,7 +7,6 @@ use an xls to build charts
 
 import json
 import pandas as pd
-import numpy as np
 import requests
 import copy
 from pprint import pprint as pp
@@ -18,10 +17,13 @@ dashboard_filename = 'chart.json'  # modified equivalent; this can be copied dir
 dashboard_api_filename = 'chart_api.json'  # same but with additional api details
 dashboard_api_test_filename = 'chart_api_test.json'  # for manual adjustment and testing
 xls_filename = 'chart_config.xlsx'  # the xls configuration of the new required charts
+email_filename = 'chart_email.html'
 
 # urls
 dashboard_url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/dashboards/db'
 folder_url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/folders'
+search_url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/api/search'
+view_panel_url = r'https://grafana.charting.dev.mosaic.hartreepartners.com/d/{dashboard_uid}/{db_name}?viewPanel={panel_id}'
 
 # api structures
 headers_dict = {
@@ -52,26 +54,20 @@ panel_type_is_seasonal = {True: 'timeseries',
                           False: 'mosaic-grafana-panel'}
 
 
-def build_dashboard(xls_file, dashboard_template, number=None):
-    # templates from grafana
-    panel_template = dashboard_template['panels'][0]
-    target_template = panel_template['targets'][0]
-    product_template = target_template['products'][0]
+def build_dashboard(panels_content, dashboard_template):
+    # add the panels to the dashboard
+    dashboard_dict = copy.deepcopy(dashboard_template)
+    dashboard_dict['panels'] = list(panels_content.values())
+    return dashboard_dict
 
-    # remove id's from the old template
-    panel_template = clean_template(panel_template, keys=cleanup_keys)
 
-    # collect config data from xls
-    panels_df, products_df, expressions_df = get_chart_config(xls_file)
-    # expand for twelve months forward
-    panels_df, products_df, expressions_df = build_expanded_config(panels_df, products_df, expressions_df)
-
-    # create fewer panels if we're testing or developing
-    selection_df = panels_df if not number else panels_df.iloc[:number]
+def build_panels_content(templates, dfs):
+    panel_template, target_template, product_template = templates
+    panels_df, products_df, expressions_df = dfs
 
     # build data for each panel and update panels_content
-    panels_content = build_from_template(selection_df, panel_template, panel_columns)
-    for panel_id, panel in selection_df.iterrows():
+    panels_content = build_from_template(panels_df, panel_template, panel_columns)
+    for panel_id, panel in panels_df.iterrows():
         products_content = build_products_content_for_panel(products_df, expressions_df,
                                                             panel_id, product_template)
 
@@ -80,22 +76,33 @@ def build_dashboard(xls_file, dashboard_template, number=None):
         target_content['backward']['seasonal'] = panel['seasonal']
         target_content['products'] = list(products_content.values())
 
-        # add the targets to the panel
-        panel_content = panels_content[panel_id]
         # in our model we only have one target
-        panel_content['targets'] = [target_content]
+        panels_content[panel_id]['targets'] = [target_content]
 
-        # this is not in the xls config
+        # we need to use a different chart object depending on the chart type
         panel_type = panel_type_is_seasonal[panel['seasonal'] > 0]
-        panel_content['type'] = panel_type
+        panels_content[panel_id]['type'] = panel_type
         # and i own these id's which controls whether i update current or create new
-        panel_content['id'] = panel_id
+        panels_content[panel_id]['id'] = panel_id
 
-    # add the panels to the dashboard
-    dashboard_dict = copy.deepcopy(dashboard_template)
-    dashboard_dict['panels'] = list(panels_content.values())
+    return panels_content
 
-    return dashboard_dict
+
+def build_config_data(xls_file):
+    # collect config data from xls
+    panels_df, products_df, expressions_df = get_chart_config(xls_file)
+    # expand for months forward
+    return build_expanded_config(panels_df, products_df, expressions_df)
+
+
+def get_templates(dashboard_template):
+    # templates from grafana
+    panel_template = dashboard_template['panels'][0]
+    target_template = panel_template['targets'][0]
+    product_template = target_template['products'][0]
+    # remove id's from the old template
+    panel_template = clean_template(panel_template, keys=cleanup_keys)
+    return panel_template, target_template, product_template
 
 
 def get_chart_config(xls_file):
@@ -248,6 +255,7 @@ if __name__ == '__main__':
     build_dashboard_selection = True
     get_folder_details_selection = False
     run_api_selection = True
+    build_html_selection = True
 
     # user settings
     dashboard_title = 'crude'
@@ -261,16 +269,19 @@ if __name__ == '__main__':
 
     # build a json comparable to the grafana dashboard settings json
     if build_dashboard_selection:
-        # user configuration is in this xls
-        # template copied from grafana app
+        # build it
+        dfs = build_config_data(xls_file=xls_filename)
         dashboard_template = get_template(template_filename)
-        # not sure why it needs an id
         dashboard_template = clean_template(dashboard_template, keys=cleanup_keys)
-        # update it based on user requirements
-        db = build_dashboard(xls_file=xls_filename, dashboard_template=dashboard_template)
+        templates = get_templates(dashboard_template)
+        panels_content = build_panels_content(templates, dfs)
+        db = build_dashboard(panels_content, dashboard_template)
+
+        # update some fields
         db['title'] = dashboard_title
         db['refresh'] = refresh_interval
         db['time'] = time_axis
+
         # save it
         with open(dashboard_filename, 'w') as f:
             json.dump(db, f)
@@ -286,7 +297,7 @@ if __name__ == '__main__':
     #  and then add the dashboard json
     dashboard_api_dict['dashboard'].update(db)
 
-    # print it and save it for review/debugging
+    # save it for review/debugging
     with open(dashboard_api_filename, 'w') as f:
         json.dump(dashboard_api_dict, f)
 
@@ -297,5 +308,21 @@ if __name__ == '__main__':
         print(rr)
         print(rr.content.decode('utf-8'))
 
-    print()
+    if build_html_selection and build_dashboard_selection:
+        htmls = []
+        dashboard_uid = dashboard_details[dashboard_title]['uid']
+        for panel in dashboard_api_dict['dashboard']['panels']:
+            panel_id = panel['id']
+            view_panel_dict = {'dashboard_uid': dashboard_uid,
+                               'db_name': dashboard_title,
+                               'panel_id': panel_id}
+            url = view_panel_url.format(**view_panel_dict)
+            title = dashboard_api_dict['dashboard']['panels'][panel_id]['title']
+            html_template = '<a href="{url}">{text}</a>'
+            html = html_template.format(url=url, text=title)
+            htmls.append(html)
+    html_str = '<br>'.join(htmls)
+
+    with open(email_filename, 'w') as f:
+        f.write(html_str)
 
