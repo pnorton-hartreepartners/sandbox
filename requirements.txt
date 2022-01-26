@@ -1,2 +1,3 @@
 conda install -c anaconda xlrd
-
+conda install -c anaconda pandas
+conda install -c anaconda requests
