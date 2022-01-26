@@ -54,45 +54,10 @@ panel_type_is_seasonal = {True: 'timeseries',
                           False: 'mosaic-grafana-panel'}
 
 
-def build_dashboard(panels_content, dashboard_template):
-    # add the panels to the dashboard
-    dashboard_dict = copy.deepcopy(dashboard_template)
-    dashboard_dict['panels'] = list(panels_content.values())
-    return dashboard_dict
-
-
-def build_panels_content(templates, dfs):
-    panel_template, target_template, product_template = templates
-    panels_df, products_df, expressions_df = dfs
-
-    # build data for each panel and update panels_content
-    panels_content = build_from_template(panels_df, panel_template, panel_columns)
-    for panel_id, panel in panels_df.iterrows():
-        products_content = build_products_content_for_panel(products_df, expressions_df,
-                                                            panel_id, product_template)
-
-        # add the products list to the targets
-        target_content = copy.deepcopy(target_template)
-        target_content['backward']['seasonal'] = panel['seasonal']
-        target_content['products'] = list(products_content.values())
-
-        # in our model we only have one target
-        panels_content[panel_id]['targets'] = [target_content]
-
-        # we need to use a different chart object depending on the chart type
-        panel_type = panel_type_is_seasonal[panel['seasonal'] > 0]
-        panels_content[panel_id]['type'] = panel_type
-        # and i own these id's which controls whether i update current or create new
-        panels_content[panel_id]['id'] = panel_id
-
-    return panels_content
-
-
-def build_config_data(xls_file):
-    # collect config data from xls
-    panels_df, products_df, expressions_df = get_chart_config(xls_file)
-    # expand for months forward
-    return build_expanded_config(panels_df, products_df, expressions_df)
+def get_template(file):
+    with open(file) as f:
+        chart_template = json.load(f)
+    return chart_template
 
 
 def get_templates(dashboard_template):
@@ -118,12 +83,6 @@ def get_chart_config(xls_file):
     products_df.set_index(keys='product_id', drop=True, inplace=True)
     expressions_df.set_index(keys='expression_id', drop=True, inplace=True)
     return panels_df, products_df, expressions_df
-
-
-def clean_the_sheets(workbook):
-    for key, df in workbook.items():
-        df.fillna("", inplace=True)
-    return workbook
 
 
 def build_expanded_config(panels_df, products_df, expressions_df):
@@ -193,18 +152,6 @@ def build_expanded_config(panels_df, products_df, expressions_df):
     return new_panels_df, new_products_df, new_expressions_df
 
 
-def get_template(file):
-    with open(file) as f:
-        chart_template = json.load(f)
-    return chart_template
-
-
-def clean_template(dashboard_template, keys):
-    for key in keys:
-        dashboard_template.pop(key, None)
-    return dashboard_template
-
-
 def build_from_template(df, template, columns):
     results = {}
     for index, row in df[columns].iterrows():
@@ -213,6 +160,40 @@ def build_from_template(df, template, columns):
         yy.update(xx)
         results[index] = yy
     return results
+
+
+def build_dashboard(panels_content, dashboard_template):
+    # add the panels to the dashboard
+    dashboard_dict = copy.deepcopy(dashboard_template)
+    dashboard_dict['panels'] = list(panels_content.values())
+    return dashboard_dict
+
+
+def build_panels_content(templates, dfs):
+    panel_template, target_template, product_template = templates
+    panels_df, products_df, expressions_df = dfs
+
+    # build data for each panel and update panels_content
+    panels_content = build_from_template(panels_df, panel_template, panel_columns)
+    for panel_id, panel in panels_df.iterrows():
+        products_content = build_products_content_for_panel(products_df, expressions_df,
+                                                            panel_id, product_template)
+
+        # add the products list to the targets
+        target_content = copy.deepcopy(target_template)
+        target_content['backward']['seasonal'] = panel['seasonal']
+        target_content['products'] = list(products_content.values())
+
+        # in our model we only have one target
+        panels_content[panel_id]['targets'] = [target_content]
+
+        # we need to use a different chart object depending on the chart type
+        panel_type = panel_type_is_seasonal[panel['seasonal'] > 0]
+        panels_content[panel_id]['type'] = panel_type
+        # and i own these id's which controls whether i update current or create new
+        panels_content[panel_id]['id'] = panel_id
+
+    return panels_content
 
 
 def build_products_content_for_panel(products_df, expressions_df, panel_id, product_template):
@@ -239,6 +220,18 @@ def build_expressions_content_for_product(df):
         xx = {k: str(v) for (k, v) in xx.items()}
         expressions[index] = xx
     return expressions
+
+
+def clean_the_sheets(workbook):
+    for key, df in workbook.items():
+        df.fillna("", inplace=True)
+    return workbook
+
+
+def clean_template(dashboard_template, keys):
+    for key in keys:
+        dashboard_template.pop(key, None)
+    return dashboard_template
 
 
 if __name__ == '__main__':
@@ -269,11 +262,15 @@ if __name__ == '__main__':
 
     # build a json comparable to the grafana dashboard settings json
     if build_dashboard_selection:
-        # build it
-        dfs = build_config_data(xls_file=xls_filename)
+        # get the raw config
+        dfs = get_chart_config(xls_file=xls_filename)
+        # expand for months forward
+        dfs = build_expanded_config(*dfs)
+        # templates
         dashboard_template = get_template(template_filename)
         dashboard_template = clean_template(dashboard_template, keys=cleanup_keys)
         templates = get_templates(dashboard_template)
+        # build using xls config applied to templates
         panels_content = build_panels_content(templates, dfs)
         db = build_dashboard(panels_content, dashboard_template)
 
