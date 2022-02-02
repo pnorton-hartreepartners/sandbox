@@ -13,6 +13,7 @@ import pandas as pd
 servers = ['NYFOAPP01', 'NYFOAPP02', 'NYFOAPP04', 'NYFOAPPLEGACY', 'NYFOOPT01']
 date = '2022-01-31'
 path = r'\\gateway\hetco\P003\VisualCron'
+temp_path = r'c:\temp'
 filename_template = 'VCbackup {server} {date}.zip'
 columns = ['server', 'cmd_line', 'arguments', 'active']
 
@@ -32,6 +33,12 @@ for server in servers:
     jobs = jobs.decode('utf-8')
     soup = BeautifulSoup(jobs, 'xml')
     executes = soup.find_all('Execute')
+
+    # save the jobs file locally so you can search/inspect manually
+    xml_filename = 'jobs ' + server + '.xml'
+    xml_pathfile = os.path.join(temp_path, xml_filename)
+    with open(xml_pathfile, mode='w', encoding='utf-8') as f:
+        f.write(jobs)
 
     results = []
     for i, execute in enumerate(executes):
