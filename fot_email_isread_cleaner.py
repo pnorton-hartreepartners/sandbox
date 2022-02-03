@@ -15,8 +15,14 @@ columns = ['Subject or Title',
            'Is Read',
            ]
 
+subject_column = 'Subject or Title'
+cleaned_subject_column = 'Subject or Title... cleaned'
+fot_reports_email = 'FrontOfficeTechReports <FrontOfficeTechReports@Hartreepartners.com>'
+recipients_in_line = 'Recipients in {who} line'
+who_list = ['To', 'Cc', 'Bcc']
 
-def f(x):
+
+def parse_date(x):
     try:
         remaining_texts = parse(x, fuzzy_with_tokens=True)[1]
         return ''.join(remaining_texts).lstrip().rstrip()
@@ -31,9 +37,13 @@ if __name__ == '__main__':
         df = pd.read_csv(pathfile)
 
         # clean the date from the subject to group similar emails
-        subject_column = 'Subject or Title'
-        cleaned_subject_column = 'Subject or Title... cleaned'
-        df[cleaned_subject_column] = df[subject_column].apply(lambda x: f(x))
+        df[cleaned_subject_column] = df[subject_column].apply(lambda x: parse_date(x))
+
+        # check if email is in list
+        recipients_in_lines = [recipients_in_line.format(who=who) for who in who_list]
+        df['fot_reports_email'] = df[recipients_in_lines].apply(lambda row: (row.str.contains(fot_reports_email)).any(),
+                                                                axis='columns')
 
         # save it
-        df[columns].to_excel(excel_writer=r'c:\temp\results.xlsx', index=False)
+        columns = columns + ['fot_reports_email'] + recipients_in_lines
+        df[columns].to_excel(excel_writer=r'c:\temp\fot_email_isread_results.xlsx', index=False)
