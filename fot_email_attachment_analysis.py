@@ -30,15 +30,6 @@ formula_pattern_new = r"(?P<factor>[\+-]?\d+\.?\d*)\*TimeSeries\('(?P<symbol>\w+
 # regex to extract details from symbol
 symbol_pattern = r"(?P<symbol_stem>\w+)(?P<contract_year>\d{2})(?P<month_symbol>\w)"
 
-# columns from new xls
-formula_table_columns = ['Product', 'Def code', 'Factor', 'Period', 'Qty']
-
-# mapper from old/otto xls processor where we parse the formula directly
-column_name_mapper = {'symbol': 'Def code',
-                      'signed_factor': 'Factor',
-                      'quantity': 'Qty',
-                      'formula_component': 'Formula component'}
-
 
 # for when we read the formula
 operator_mapper = {'+': operator.add,
@@ -47,6 +38,31 @@ operator_mapper = {'+': operator.add,
                    r'/': operator.truediv,
                    '': operator.add
                    }
+
+example_spreadsheets = {
+    'new_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Arb CL-CO Fut ($BBL).xlsb',
+    'old_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\Gasoline E-W.xls',
+    'failing_xls_example1': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C4 ex RVO Swap (CPG).xlsb',
+    'failing_xls_example2': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C5 ex RVO Swap (CPG).xlsb'
+}
+
+hdq_mosaic_symbol_mapping = [
+    ('ArgGASFBARA', 'EBOB-S'),
+    ('BRTCalSwap', 'BRT-S'),
+    ('IPEBRT', 'BRT-F'),
+    ('NAPphCIFNWE', 'NAP'),
+    ('NYMHO', 'HO-F'),
+    ('NYMHO_RINIncl', ''),
+    ('NYMRBOB', 'RB-F'),
+    ('NYMRBOBCalSwap', 'RB-S'),
+    ('NYMWTI', 'WTI-F'),
+    ('OPISButneNonTET', ''),
+    ('OPISNonTETNGAS', 'C5'),
+    ('RINRVOCost', 'RVO_21'),
+    ('Sing92Ron', 'MOGAS'),
+    ('TC2_USDMT_', 'TC2_USDMT'),
+    ('DUBAI', 'DUBAI'),
+]
 
 
 def get_stems_from_filename(filenames):
@@ -95,16 +111,19 @@ def parse_full_symbol_into_parts(formula_details):
 
 def get_formula_from_old_xls(filepath):
     worksheet_df = pd.read_excel(filepath, sheet_name='Data', header=None, index_col=None, engine='xlrd')
-    length = 25  # before start of timeseries; varies from workbook to workbook
-    string_search = 'Month:'
 
+    # ============================
     # find the start; the first column having a cell containing the string search text
+    string_search = 'Month:'
+    length = 25  # before start of timeseries; varies from workbook to workbook
+
     table_start_row = None
     for index, row in worksheet_df.T.iterrows():
         if string_search in row[:length].values:
             table_start_row = index
             break
 
+    # ============================
     # find the end; a column of nan's
     table_end_row = None
     if table_start_row:
@@ -122,7 +141,7 @@ def get_formula_from_old_xls(filepath):
         selection_df = selection_df.loc[:length].loc[mask].T
         selection_df.columns = ['formula']
 
-        # start with the first entry
+        # capture the first entry
         formula_string = selection_df.iloc[0].values[0]
 
         # read the formula directly and parse it here
@@ -139,21 +158,25 @@ def get_formula_from_old_xls(filepath):
 def get_formula_from_new_xls(filepath):
     worksheet_df = pd.read_excel(filepath, sheet_name='F', header=None, index_col=None, engine='pyxlsb')
 
-    # find this table within the sheet
+    # ============================
+    # find the start; look for these header columns
+    formula_table_columns = ['Product', 'Def code', 'Factor', 'Period', 'Qty']
     length = len(formula_table_columns)
 
-    # find the start; look for these header columns
     table_start_row = None
     for index, row in worksheet_df.iterrows():
         if (row[:length].values == formula_table_columns).all():
             table_start_row = index
             break
 
-    # find the end; look for this string_search
+    # ============================
+    # find the end; look for a cell containing this string
+    string_search = 'NOTHING'
+
     table_end_row = None
     if table_start_row:
         for index, row in worksheet_df.iloc[table_start_row:].iterrows():
-            if row[0] == 'NOTHING':
+            if row[0] == string_search:
                 table_end_row = index
                 break
 
@@ -163,11 +186,11 @@ def get_formula_from_new_xls(filepath):
         columns = selection_df.iloc[0]
         data = selection_df.iloc[1:].values
         formula_table_df = pd.DataFrame(data=data, columns=columns)
-        # remove columns labelled as nan
+        # remove columns labelled as nan; but actually these are also related definitions
         mask = formula_table_df.columns.isna()
         formula_table_df = formula_table_df.loc[:, ~mask]
 
-        # get the complete formula and parse it
+        # get the complete formula and parse it; from this single column
         formula_string = ''.join(formula_table_df['Formula component'].values)
 
         # read the formula directly and parse it here
@@ -257,9 +280,13 @@ def get_unique_symbols(df):
 
 if __name__ == '__main__':
     build_from_scratch_selection = False
+    build_from_single_spreadsheet_selection = False
+    build_from_single_spreadsheet_path = example_spreadsheets['old_xls_example']
 
     if build_from_scratch_selection:
         df2 = get_file_details()
+        if build_from_single_spreadsheet_selection:
+            df2 = df2.loc[df2['xls_filepath'] == build_from_single_spreadsheet_path]
         df2 = build_base_report(df2)
         symbols = get_unique_symbols(df2)
 
@@ -274,6 +301,3 @@ if __name__ == '__main__':
     else:
         df2 = pd.read_pickle(pkl_filepath)
         pass
-
-
-    pass
