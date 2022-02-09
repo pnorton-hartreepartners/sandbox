@@ -8,6 +8,7 @@ then create a df that associates those pdfs with the source xls as a clickable l
 import os
 import pandas as pd
 import re
+import operator
 
 # this is where i dumped the pdfs from one email
 folder_attachment = r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\work items\jira\TTDA-1499 Charting project\chart example pdf\gasoline email'
@@ -20,6 +21,24 @@ folder_new = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Rep
 folder_results = r'c:\temp'
 xls_results = 'results.xlsx'
 xls_filepath = os.path.join(folder_results, xls_results)
+
+# columns from new xls
+formula_table_columns = ['Product', 'Def code', 'Factor', 'Period', 'Qty']
+# mapper from old/otto xls processor where we parse the formula directly
+column_name_mapper = {'symbol': 'Def code',
+                      'signed_factor': 'Factor',
+                      'quantity': 'Qty',
+                      'formula_component': 'Formula component'}
+
+
+# for when we read the formula
+operator_mapper = {'+': operator.add,
+                   '-': operator.sub,
+                   '*': operator.mul,
+                   r'/': operator.truediv,
+                   '': operator.add
+                   }
+
 
 def get_stems_from_filename(filenames):
     return list(zip(*[file.split('.') for file in filenames]))[0]
@@ -36,17 +55,17 @@ def prepend_pathname(path, filename, file_type):
 
 def get_formula_from_old_xls(filepath):
     worksheet_df = pd.read_excel(filepath, sheet_name='Data', header=None, index_col=None, engine='xlrd')
-    length = 10  # kinda arbitrary cutoff
+    length = 25  # before start of timeseries; varies from workbook to workbook
     string_search = 'Month:'
 
-    # find the start
+    # find the start; the first column having a cell containing the string search text
     table_start_row = None
     for index, row in worksheet_df.T.iterrows():
         if string_search in row[:length].values:
             table_start_row = index
             break
 
-    # find the end
+    # find the end; a column of nan's
     table_end_row = None
     if table_start_row:
         for index, row in worksheet_df.T.iloc[table_start_row:].iterrows():
@@ -57,22 +76,34 @@ def get_formula_from_old_xls(filepath):
     if table_start_row and table_end_row:
         # create a df
         selection_df = worksheet_df.T.iloc[table_start_row:table_end_row].T
-        # look for this string in the first column
-        string_search = 'AUTO_CALC'
-        mask = selection_df.loc[:, selection_df.columns[0]].values == string_search
-        end_of_selection = mask.nonzero()[0][0]
-        selection_df = selection_df.iloc[:end_of_selection].to_dict(orient='records')
+        # find the row where the first column startswith this text
+        string_search = 'TimeSeries'
+        mask = selection_df.loc[:length, selection_df.columns[0]].str.startswith(string_search).fillna(False)
+        selection_df = selection_df.loc[:length].loc[mask].T
+        selection_df.columns = ['formula']
 
-        string = selection_df.iloc[14].iloc[0]
-        pattern = r'(\+)|(\-)'
-        # this split captures the plus or minus operator
-        rr = re.split(pattern, string)
-        rr = [r for r in rr if r]  # exclude None
-        # now we need to recombine the operators
-        
+        # start with the first entry
+        string = selection_df.iloc[0].values[0]
 
+        # read the formula directly and parse it here
+        pattern = r"(?P<sign>[\+-]?)TimeSeries\('(?P<symbol>\w+)','(?P<start_date>\d{5})','(?P<end_date>\d{5})'\)\*(?P<factor>\d+\.?\d*)"
+        p = re.compile(pattern=pattern)
+        results = p.finditer(string)
+        results = [r.groupdict() for r in results]
+        print(string, '\n', results, '\n')
 
-
+        # apply the sign to the factor and build some reporting fields
+        formula_template = "{sign}TimeSeries('{symbol}','{start_date}','{end_date}')*{factor}"
+        for r in results:
+            r['formula_component'] = formula_template.format(**r)
+            r['operator'] = operator_mapper[r['sign']]
+            r['factor'] = float(r['factor'])
+            r['signed_factor'] = r['operator'](0, r['factor'])
+            r['quantity'] = 1
+            
+        # map the key names here to the standard used in the new xls processor
+        return [{column_name_mapper.get(k): r.get(k) for k in r.keys() if column_name_mapper.get(k)}
+                for r in results]
     else:
         return []
 
@@ -81,7 +112,6 @@ def get_formula_from_new_xls(filepath):
     worksheet_df = pd.read_excel(filepath, sheet_name='F', header=None, index_col=None, engine='pyxlsb')
 
     # find this table within the sheet
-    formula_table_columns = ['Product', 'Def code', 'Factor', 'Period', 'Qty']
     length = len(formula_table_columns)
 
     # find the start
@@ -166,6 +196,9 @@ if __name__ == '__main__':
     func_mapper = {'old': get_formula_from_old_xls,
                    'new': get_formula_from_new_xls
                    }
+
+    # single_file_selection = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\RB Futs Butterflies.xls'
+    # df2 = df2.loc[df2['xls_filepath'] == single_file_selection]
 
     for index, row in df2.iterrows():
         print(row['xls_filepath'])
