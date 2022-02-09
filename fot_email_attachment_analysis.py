@@ -20,10 +20,19 @@ folder_new = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Rep
 # dump the results in an xls here
 folder_results = r'c:\temp'
 xls_results = 'results.xlsx'
+pkl_results = 'results.pkl'
 xls_filepath = os.path.join(folder_results, xls_results)
+pkl_filepath = os.path.join(folder_results, pkl_results)
+
+# regex to extract standard formula into grouped variables
+formula_pattern_old = r"(?P<sign>[\+-]?)TimeSeries\('(?P<symbol>\w+)','(?P<start_date>\d{5})','(?P<end_date>\d{5})'\)\*(?P<factor>\d+\.?\d*)"
+formula_pattern_new = r"(?P<factor>[\+-]?\d+\.?\d*)\*TimeSeries\('(?P<symbol>\w+)',(?P<start_date>\d{5}),(?P<end_date>\d{5})\)"
+# regex to extract details from symbol
+symbol_pattern = r"(?P<symbol_stem>\w+)(?P<contract_year>\d{2})(?P<month_symbol>\w)"
 
 # columns from new xls
 formula_table_columns = ['Product', 'Def code', 'Factor', 'Period', 'Qty']
+
 # mapper from old/otto xls processor where we parse the formula directly
 column_name_mapper = {'symbol': 'Def code',
                       'signed_factor': 'Factor',
@@ -51,6 +60,37 @@ def get_file_type_as_dict(filenames):
 
 def prepend_pathname(path, filename, file_type):
     return os.path.join(path, filename + '.' + file_type)
+
+
+def parse_string_to_formula_details(string, formula_pattern):
+    p = re.compile(pattern=formula_pattern)
+    results = p.finditer(string)
+    results = [r.groupdict() for r in results]
+    print(string, '\n', results, '\n')
+
+    # apply the sign to the factor and build some reporting fields
+    formula_template = "{sign}TimeSeries('{symbol}','{start_date}','{end_date}')*{factor}"
+    for r in results:
+        r['sign'] = '+' if not r.get('sign') else r['sign']
+        r['formula_component'] = formula_template.format(**r)
+        r['operator'] = operator_mapper[r['sign']]
+        r['factor'] = float(r['factor'])
+        r['signed_factor'] = r['operator'](0, r['factor'])
+        r['quantity'] = 1
+
+    # map the key names here to the standard used in the new xls processor
+    return results
+
+
+def parse_full_symbol_into_parts(formula_details):
+    for component in formula_details:
+        string = component['symbol']
+        p = re.compile(pattern=symbol_pattern)
+        results = p.finditer(string)
+        # asserts a single result
+        [result] = [r.groupdict() for r in results]
+        component.update(result)
+    return formula_details
 
 
 def get_formula_from_old_xls(filepath):
@@ -83,27 +123,15 @@ def get_formula_from_old_xls(filepath):
         selection_df.columns = ['formula']
 
         # start with the first entry
-        string = selection_df.iloc[0].values[0]
+        formula_string = selection_df.iloc[0].values[0]
 
         # read the formula directly and parse it here
-        pattern = r"(?P<sign>[\+-]?)TimeSeries\('(?P<symbol>\w+)','(?P<start_date>\d{5})','(?P<end_date>\d{5})'\)\*(?P<factor>\d+\.?\d*)"
-        p = re.compile(pattern=pattern)
-        results = p.finditer(string)
-        results = [r.groupdict() for r in results]
-        print(string, '\n', results, '\n')
+        formula_details = parse_string_to_formula_details(string=formula_string, formula_pattern=formula_pattern_old)
+        # and break out the symbols
+        formula_details = parse_full_symbol_into_parts(formula_details)
 
-        # apply the sign to the factor and build some reporting fields
-        formula_template = "{sign}TimeSeries('{symbol}','{start_date}','{end_date}')*{factor}"
-        for r in results:
-            r['formula_component'] = formula_template.format(**r)
-            r['operator'] = operator_mapper[r['sign']]
-            r['factor'] = float(r['factor'])
-            r['signed_factor'] = r['operator'](0, r['factor'])
-            r['quantity'] = 1
-            
-        # map the key names here to the standard used in the new xls processor
-        return [{column_name_mapper.get(k): r.get(k) for k in r.keys() if column_name_mapper.get(k)}
-                for r in results]
+        return formula_details
+
     else:
         return []
 
@@ -114,14 +142,14 @@ def get_formula_from_new_xls(filepath):
     # find this table within the sheet
     length = len(formula_table_columns)
 
-    # find the start
+    # find the start; look for these header columns
     table_start_row = None
     for index, row in worksheet_df.iterrows():
         if (row[:length].values == formula_table_columns).all():
             table_start_row = index
             break
 
-    # find the end
+    # find the end; look for this string_search
     table_end_row = None
     if table_start_row:
         for index, row in worksheet_df.iloc[table_start_row:].iterrows():
@@ -138,8 +166,16 @@ def get_formula_from_new_xls(filepath):
         # remove columns labelled as nan
         mask = formula_table_df.columns.isna()
         formula_table_df = formula_table_df.loc[:, ~mask]
-        # create list of dictionaries
-        return formula_table_df.to_dict(orient='records')
+
+        # get the complete formula and parse it
+        formula_string = ''.join(formula_table_df['Formula component'].values)
+
+        # read the formula directly and parse it here
+        formula_details = parse_string_to_formula_details(string=formula_string, formula_pattern=formula_pattern_new)
+        # and break out the symbols
+        formula_details = parse_full_symbol_into_parts(formula_details)
+
+        return formula_details
     else:
         return []
 
@@ -184,43 +220,60 @@ def get_file_details():
     return df2
 
 
-if __name__ == '__main__':
-    df2 = get_file_details()
+func_mapper = {'old': get_formula_from_old_xls,
+               'new': get_formula_from_new_xls
+               }
 
-    # add some columns
-    df2['formula'] = None
-    df2['formula'] = df2['formula'].astype('object')
-    df2['def_codes'] = None
-    df2['def_codes'] = df2['def_codes'].astype('object')
 
-    func_mapper = {'old': get_formula_from_old_xls,
-                   'new': get_formula_from_new_xls
-                   }
+def build_base_report(df):
+    # add some columns; initialise to accept lists/dictionaries
+    df['formula'] = None
+    df['formula'] = df['formula'].astype('object')
+    df['def_codes'] = None
+    df['def_codes'] = df['def_codes'].astype('object')
 
-    # single_file_selection = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\RB Futs Butterflies.xls'
-    # df2 = df2.loc[df2['xls_filepath'] == single_file_selection]
-
-    for index, row in df2.iterrows():
+    for index, row in df.iterrows():
+        print('\n================')
         print(row['xls_filepath'])
         if row['helper'] in ['old', 'new']:
             # get the formula
             f = func_mapper[row['helper']]
             results = f(row['xls_filepath'])
-            df2.at[index, 'formula'] = results
+            df.at[index, 'formula'] = results
             # get the list of hdq codes
-            df2.at[index, 'def_codes'] = list(set([result['Def code'] for result in results]))
+            df.at[index, 'def_codes'] = list(set([result['symbol_stem'] for result in results]))
+    return df
 
-    # save it locally
-    df2.to_excel(excel_writer=xls_filepath, index=False)
 
-    # get hdq symbols
+def get_unique_symbols(df):
     all_def_codes = []
-    for def_code in df2['def_codes'].values:
+    for def_code in df['def_codes'].values:
         if def_code:
             all_def_codes.extend(def_code)
     all_def_codes = list(set(all_def_codes))
     all_def_codes.sort()
+    return all_def_codes
 
-    pd.DataFrame(data=all_def_codes).to_clipboard(index=False)
+
+if __name__ == '__main__':
+    build_from_scratch_selection = False
+
+    if build_from_scratch_selection:
+        df2 = get_file_details()
+        df2 = build_base_report(df2)
+        symbols = get_unique_symbols(df2)
+
+        # save to excel
+        with pd.ExcelWriter(xls_filepath, mode='w') as f:
+            df2.to_excel(excel_writer=f, sheet_name='reports', index=False)
+            pd.DataFrame(data=symbols).to_excel(excel_writer=f, sheet_name='symbols', index=False)
+
+        # save to pickle
+        df2.to_pickle(pkl_filepath)
+
+    else:
+        df2 = pd.read_pickle(pkl_filepath)
+        pass
+
 
     pass
