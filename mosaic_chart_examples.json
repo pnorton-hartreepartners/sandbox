@@ -83,5 +83,34 @@
         "axis": 0
       }
     ]
+  },
+  "platts": {
+  "seasonality": 0,
+  "chartlets": [
+    {
+      "name": "string",
+      "curves": [
+        {
+          "expression": "platts:DP242BPu",
+          "factor": 1,
+          "type": "string",
+          "contracts": [
+            "SPOT"
+          ]
+        },
+        {
+          "expression": "platts:DP242ZYc",
+          "factor": 1,
+          "type": "string",
+          "contracts": [
+            "SPOT"
+          ]
+        }
+      ],
+      "currency": "string",
+      "uom": "*",
+      "axis": 0
+    }
+  ]
   }
 }

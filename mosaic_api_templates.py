@@ -51,10 +51,6 @@ api_config_dict = {
         'host': TSDB,
         'url_template': r'{host}/api/v1/{api_name}/{source}/{stage}/{source}'},
 
-    # trader curve details incl conversions
-    'getTraderCurvesCatalog': {
-        'host': SETTLES,
-        'url_template': r'{host}/api/v1/{api_name}'},
 
     'getEtrmCurveEval': {
         'host': SETTLES,
@@ -76,12 +72,24 @@ api_config_dict = {
                            'url_template': r'{host}/api/v1/{api_name}/{symbol}/{source}/{stamp}'
                            },
 
+    'getExpiry': {'host': SETTLES,
+                  'url_template': r'{host}/api/v1/{api_name}/{key}'},
+
+    # grafana charting apis
+    # trader curve details incl conversions
+    'getTraderCurvesCatalog': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}'},
+
     # trader curve time-series backed by tempest for history
     # used for charting
     'getTraderCurveTS': {'host': SETTLES,
                          'method': 'post',
                          'url_template': r'{host}/api/v1/{api_name}'},
 
-    'getExpiry': {'host': SETTLES,
-                  'url_template': r'{host}/api/v1/{api_name}/{key}'},
+    # search tool
+    'getMatchingTraderCurves': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}'},
+
 }

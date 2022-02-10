@@ -1,5 +1,5 @@
 from mosaic_api_templates import api_config_dict
-from mosaic_api_examples import kwargs_dict
+from mosaic_api_examples import example_kwargs_dict
 import requests
 import pandas as pd
 import datetime as dt
@@ -30,7 +30,7 @@ def get_mosaic_surface(url_kwargs, env=DEV):
 
 
 if __name__ == '__main__':
-    url_kwargs = kwargs_dict['getVolSurface'][URL_KWARGS]
+    url_kwargs = example_kwargs_dict['getVolSurface'][URL_KWARGS]
     data_dict, df = get_mosaic_surface(url_kwargs=url_kwargs, env=DEV)
     print(df)
 

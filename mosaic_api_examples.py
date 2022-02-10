@@ -3,7 +3,7 @@ from constants import URL_KWARGS, PARAMS_KWARGS, DEV
 from mosaic_api_templates import api_config_dict
 from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs, post_any_api, process_chart_data
 
-kwargs_dict = {
+example_kwargs_dict = {
     'getFutureCurveSettlement': {
         URL_KWARGS:
             {'exchange': 'CME',
@@ -43,10 +43,23 @@ kwargs_dict = {
             {}
     },
     'getTraderCurveTS': {
-        URL_KWARGS:
-            {},
+        URL_KWARGS: {},
+    },
+    'getMatchingTraderCurves': {
+        URL_KWARGS: {},
+        PARAMS_KWARGS: {'search_string': 'BRT-F'}
     }
 }
+
+
+def prepare_inputs_for_api(api_name, env):
+    template_url = api_config_dict[api_name]['url_template']
+    url_kwargs = build_partial_url_kwargs(api_name, env=env)
+    url_kwargs.update(example_kwargs_dict[api_name][URL_KWARGS])
+    url = build_url(template_url=template_url, kwargs=url_kwargs)
+    params = example_kwargs_dict[api_name].get(PARAMS_KWARGS)
+    method = api_config_dict[api_name].get('method', 'get')
+    return url, params, method
 
 
 if __name__ == '__main__':
@@ -54,21 +67,14 @@ if __name__ == '__main__':
     env = DEV
 
     key = 'getTraderCurveTS'
-    kwargs_dict = {key: kwargs_dict[key]}
+    example_kwargs_dict = {key: example_kwargs_dict[key]}
     with open('mosaic_chart_examples.json') as file:
         chart_examples = json.load(file)
     print(chart_examples.keys())
     payload = chart_examples['seasonality']
 
-    for api_name in kwargs_dict:
-        template_url = api_config_dict[api_name]['url_template']
-
-        url_kwargs = build_partial_url_kwargs(api_name, env=env)
-        url_kwargs.update(kwargs_dict[api_name][URL_KWARGS])
-        url = build_url(template_url=template_url, kwargs=url_kwargs)
-
-        params = kwargs_dict[api_name].get(PARAMS_KWARGS)
-        method = api_config_dict[api_name].get('method', 'get')
+    for api_name in example_kwargs_dict:
+        url, params, method = prepare_inputs_for_api(api_name, env)
 
         if method == 'get':
             result, df, error = get_any_api(url, params)

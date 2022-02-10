@@ -142,7 +142,7 @@ if __name__ == '__main__':
     '''
     >>>python mosaic_wapi.py -e dev --api tsdb
     '''
-    from mosaic_api_examples import kwargs_dict
+    from mosaic_api_examples import example_kwargs_dict
 
     df = build_list_of_expiries(symbol='G', start='2021-10-01', periods=12)
     df.to_clipboard()
@@ -153,10 +153,10 @@ if __name__ == '__main__':
 
     template_url = api_config_dict[api_name]['url_template']
     url_kwargs = build_partial_url_kwargs(api_name, env=env)
-    url_kwargs.update(kwargs_dict[api_name][URL_KWARGS])
+    url_kwargs.update(example_kwargs_dict[api_name][URL_KWARGS])
     url = build_url(template_url=template_url, kwargs=url_kwargs)
 
-    params = kwargs_dict[api_name][PARAMS_KWARGS]
+    params = example_kwargs_dict[api_name][PARAMS_KWARGS]
 
     result, df, error = get_any_api(url=url, params=params)
     df.to_clipboard()
