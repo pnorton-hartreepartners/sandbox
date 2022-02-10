@@ -9,6 +9,8 @@ import os
 import pandas as pd
 import re
 import operator
+import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 # this is where i dumped the pdfs from one email
 folder_attachment = r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\work items\jira\TTDA-1499 Charting project\chart example pdf\gasoline email'
@@ -43,7 +45,8 @@ example_spreadsheets = {
     'new_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Arb CL-CO Fut ($BBL).xlsb',
     'old_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\Gasoline E-W.xls',
     'failing_xls_example1': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C4 ex RVO Swap (CPG).xlsb',
-    'failing_xls_example2': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C5 ex RVO Swap (CPG).xlsb'
+    'failing_xls_example2': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C5 ex RVO Swap (CPG).xlsb',
+    'failing_mosaic_mapping': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-Euro Nap Swap (CPG).xlsb'
 }
 
 hdq_mosaic_symbol_mapping = [
@@ -63,6 +66,12 @@ hdq_mosaic_symbol_mapping = [
     ('TC2_USDMT_', 'TC2_USDMT'),
     ('DUBAI', 'DUBAI'),
 ]
+
+
+def month_code_mapping():
+    month_codes = ['F', 'G', 'H', 'J', 'K', 'M', 'N', 'Q', 'U', 'V', 'X', 'Z']
+    month_numbers = range(1, len(month_codes)+1)
+    return zip(month_codes, month_numbers)
 
 
 def get_stems_from_filename(filenames):
@@ -278,26 +287,66 @@ def get_unique_symbols(df):
     return all_def_codes
 
 
+def build_contract_date(year, month_code):
+    mapper = {k: v for (k, v) in month_code_mapping()}
+    year = 2000 + int(year)
+    assert 2000 <= year <= 2030
+    month = mapper[month_code]
+    return dt.datetime(year=year, month=month, day=1).date()
+
+
+def build_mosaic_formula(df):
+    mapper = {k.lower(): v for (k, v) in hdq_mosaic_symbol_mapping}
+
+    # add some columns; initialise to accept lists/dictionaries
+    df['mosaic_formula'] = None
+    df['mosaic_formula'] = df['mosaic_formula'].astype('object')
+    for index, row in df.iterrows():
+        if row['formula']:
+            component_list = []
+            for component in row['formula']:
+                component_dict = {}
+                component_dict.update({'product': mapper[component['symbol_stem'].lower()]})
+                component_dict.update({'front_date': build_contract_date(year=component['contract_year'], month_code=component['month_symbol'])})
+                component_dict.update({'factor': component['factor']})
+                component_list.append(component_dict)
+
+            # rebase the contract periods to current front month
+            front_dates = [component['front_date'] for component in component_list]
+            min_date = min(front_dates)
+            front_month = dt.date.today() - dt.timedelta(days=dt.date.today().day - 1) + relativedelta(months=+1)
+            month_spreads = [relativedelta(min_date, component['front_date']).months for component in component_list]
+            front_month_rebase = [front_month + relativedelta(months=m) for m in month_spreads]
+            for i, component in enumerate(component_list):
+                component['front_date_rebase'] = front_month_rebase[i]
+            df.at[index, 'mosaic_formula'] = component_list
+
+    return df
+
+
 if __name__ == '__main__':
     build_from_scratch_selection = False
     build_from_single_spreadsheet_selection = False
-    build_from_single_spreadsheet_path = example_spreadsheets['old_xls_example']
+    report_from_single_spreadsheet_selection = False
+    build_from_single_spreadsheet_path = example_spreadsheets['failing_mosaic_mapping']
+    report_from_single_spreadsheet_path = example_spreadsheets['failing_mosaic_mapping']
 
     if build_from_scratch_selection:
         df2 = get_file_details()
         if build_from_single_spreadsheet_selection:
             df2 = df2.loc[df2['xls_filepath'] == build_from_single_spreadsheet_path]
         df2 = build_base_report(df2)
-        symbols = get_unique_symbols(df2)
-
-        # save to excel
-        with pd.ExcelWriter(xls_filepath, mode='w') as f:
-            df2.to_excel(excel_writer=f, sheet_name='reports', index=False)
-            pd.DataFrame(data=symbols).to_excel(excel_writer=f, sheet_name='symbols', index=False)
-
-        # save to pickle
         df2.to_pickle(pkl_filepath)
-
     else:
         df2 = pd.read_pickle(pkl_filepath)
-        pass
+
+    if report_from_single_spreadsheet_selection:
+        df2 = df2.loc[df2['xls_filepath'] == report_from_single_spreadsheet_path]
+    symbols = get_unique_symbols(df2)
+    df2 = build_mosaic_formula(df2)
+
+    # save to excel
+    with pd.ExcelWriter(xls_filepath, mode='w') as f:
+        df2.to_excel(excel_writer=f, sheet_name='reports', index=False)
+        pd.DataFrame(data=symbols).to_excel(excel_writer=f, sheet_name='symbols', index=False)
+    pass
