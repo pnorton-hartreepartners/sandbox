@@ -44,9 +44,7 @@ operator_mapper = {'+': operator.add,
 example_spreadsheets = {
     'new_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Arb CL-CO Fut ($BBL).xlsb',
     'old_xls_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\Gasoline E-W.xls',
-    'failing_xls_example1': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C4 ex RVO Swap (CPG).xlsb',
-    'failing_xls_example2': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-C5 ex RVO Swap (CPG).xlsb',
-    'failing_mosaic_mapping': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report\Crs Cmdty RB-Euro Nap Swap (CPG).xlsb'
+    'timespread_example': r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline\RB Futs Butterflies.xls',
 }
 
 hdq_mosaic_symbol_mapping = [
@@ -301,6 +299,8 @@ def build_mosaic_formula(df):
     # add some columns; initialise to accept lists/dictionaries
     df['mosaic_formula'] = None
     df['mosaic_formula'] = df['mosaic_formula'].astype('object')
+    df['time_spreads'] = None
+    df['time_spreads'] = df['time_spreads'].astype('object')
     for index, row in df.iterrows():
         if row['formula']:
             component_list = []
@@ -315,21 +315,80 @@ def build_mosaic_formula(df):
             front_dates = [component['front_date'] for component in component_list]
             min_date = min(front_dates)
             front_month = dt.date.today() - dt.timedelta(days=dt.date.today().day - 1) + relativedelta(months=+1)
-            month_spreads = [relativedelta(min_date, component['front_date']).months for component in component_list]
+            month_spreads = [relativedelta(dt2=min_date, dt1=component['front_date']).months for component in component_list]
             front_month_rebase = [front_month + relativedelta(months=m) for m in month_spreads]
             for i, component in enumerate(component_list):
                 component['front_date_rebase'] = front_month_rebase[i]
+            component_list.sort(key=lambda x: x['front_date_rebase'])
             df.at[index, 'mosaic_formula'] = component_list
+            df.at[index, 'time_spreads'] = month_spreads
 
+    component_counts = df['mosaic_formula'].apply(lambda x: len(x) if x else 0)
+    month_counts = df['time_spreads'].apply(lambda x: len(set(x)) if x else 0)
+    product_counts = df['mosaic_formula'].apply(lambda x: len(set(component['product'] for component in x)) if x else 0)
+    combo = zip(component_counts, month_counts.values, product_counts.values)
+
+    def _chart_type_translator(tt):
+        component_count, month_count, product_count = tt
+        if tt == (0, 0, 0):
+            return 'empty'
+        elif tt == (1, 1, 1):
+            return 'outright'
+        elif component_count == 2 and month_count == 2 and product_count == 1:
+            return 'timespread'
+        elif month_count == 1 and product_count > 1:
+            return 'productspread'
+        elif component_count == 2 and month_count == 2 and product_count == 2:
+            return 'diagspread'
+        elif component_count == 3 and month_count == 3 and product_count == 1:
+            return 'fly'
+        elif component_count == 4 and month_count == 2 and product_count == 2:
+            return 'boxspread'
+        else:
+            return 'unidentified'
+
+    df['component_count'] = component_counts.values
+    df['product_count'] = product_counts.values
+    df['month_count'] = month_counts.values
+    df['chart_type'] = list(map(_chart_type_translator, combo))
+    df['symbol_mapping_good'] = [[]]
     return df
+
+
+def build_grafana_expressions(df2):
+
+    def _outright_component(component):
+        front_date = component['front_date_rebase'].strftime('%Y%m')
+        matching_keys = ['factor', 'product']
+        new_dict = {k: component[k] for k in matching_keys}
+        new_dict.update({'front_date': front_date})
+        return new_dict
+
+    def _timespread(formula):
+        mapping = _outright_component(formula[0])
+        mapping.update({'back_date': formula[1]['front_date_rebase'].strftime('%Y%m')})
+        return [mapping]
+
+    def _call_correct_func(chart_type, mosaic_formula):
+        if not mosaic_formula:
+            return []
+        elif chart_type == 'timespread':
+            return _timespread(mosaic_formula)
+        else:
+            return [_outright_component(f) for f in mosaic_formula]
+
+    df2['grafana_formula'] = df2.apply(
+        lambda x: _call_correct_func(x['chart_type'], x['mosaic_formula']),
+        axis='columns').values
+    return df2
 
 
 if __name__ == '__main__':
     build_from_scratch_selection = False
     build_from_single_spreadsheet_selection = False
     report_from_single_spreadsheet_selection = False
-    build_from_single_spreadsheet_path = example_spreadsheets['failing_mosaic_mapping']
-    report_from_single_spreadsheet_path = example_spreadsheets['failing_mosaic_mapping']
+    build_from_single_spreadsheet_path = example_spreadsheets['timespread_example']
+    report_from_single_spreadsheet_path = example_spreadsheets['timespread_example']
 
     if build_from_scratch_selection:
         df2 = get_file_details()
@@ -344,6 +403,7 @@ if __name__ == '__main__':
         df2 = df2.loc[df2['xls_filepath'] == report_from_single_spreadsheet_path]
     symbols = get_unique_symbols(df2)
     df2 = build_mosaic_formula(df2)
+    df2 = build_grafana_expressions(df2)
 
     # save to excel
     with pd.ExcelWriter(xls_filepath, mode='w') as f:

@@ -1,3 +1,13 @@
+'''
+cd \dev\code\sandbox
+activate mosaic2
+python mosaic_api_grafana_check.py
+
+looking for a happy result like this
+==========
+all api calls succeeded: True
+'''
+
 import json
 import pandas as pd
 from constants import PROD
