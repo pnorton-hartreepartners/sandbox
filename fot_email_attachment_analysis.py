@@ -19,12 +19,16 @@ folder_attachment = r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\wor
 folder_old = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline'
 folder_new = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Report'
 
-# dump the results in an xls here
-folder_results = r'c:\temp'
-xls_results = 'results.xlsx'
-pkl_results = 'results.pkl'
-xls_filepath = os.path.join(folder_results, xls_results)
-pkl_filepath = os.path.join(folder_results, pkl_results)
+# dump the results in an xls/pkl here
+folder_name = r'c:\temp'
+
+pkl_scrape = 'results.pkl'   # result of the initial scrapes of all the xls
+xls_report = 'results.xlsx'  # the giant df report
+xls_grafana = 'chart_config2.xlsx'  # input into grafana charting
+
+pkl_scrape_filepath = os.path.join(folder_name, pkl_scrape)
+xls_report_filepath = os.path.join(folder_name, xls_report)
+xls_grafana_filepath = os.path.join(folder_name, xls_grafana)
 
 # regex to extract standard formula into grouped variables
 formula_pattern_old = r"(?P<sign>[\+-]?)TimeSeries\('(?P<symbol>\w+)','(?P<start_date>\d{5})','(?P<end_date>\d{5})'\)\*(?P<factor>\d+\.?\d*)"
@@ -322,6 +326,7 @@ def build_mosaic_formula(df):
             component_list.sort(key=lambda x: x['front_date_rebase'])
             df.at[index, 'mosaic_formula'] = component_list
             df.at[index, 'time_spreads'] = month_spreads
+            df.at[index, 'symbol_map_healthy'] = not(bool(len([c['product'] for c in component_list if c['product'] == ''])))
 
     component_counts = df['mosaic_formula'].apply(lambda x: len(x) if x else 0)
     month_counts = df['time_spreads'].apply(lambda x: len(set(x)) if x else 0)
@@ -351,17 +356,17 @@ def build_mosaic_formula(df):
     df['product_count'] = product_counts.values
     df['month_count'] = month_counts.values
     df['chart_type'] = list(map(_chart_type_translator, combo))
-    df['symbol_mapping_good'] = [[]]
     return df
 
 
-def build_grafana_expressions(df2):
+def build_grafana_expressions_dict(df2):
 
     def _outright_component(component):
-        front_date = component['front_date_rebase'].strftime('%Y%m')
+        front_date = int(component['front_date_rebase'].strftime('%Y%m'))
         matching_keys = ['factor', 'product']
         new_dict = {k: component[k] for k in matching_keys}
         new_dict.update({'front_date': front_date})
+        new_dict.update({'product_id': None})
         return new_dict
 
     def _timespread(formula):
@@ -377,10 +382,116 @@ def build_grafana_expressions(df2):
         else:
             return [_outright_component(f) for f in mosaic_formula]
 
-    df2['grafana_formula'] = df2.apply(
+    df2['grafana_expressions'] = df2.apply(
         lambda x: _call_correct_func(x['chart_type'], x['mosaic_formula']),
         axis='columns').values
     return df2
+
+
+def get_uom_from_filename(df):
+    # use this to update mapping  --> unique_uoms = uoms.drop_duplicates().dropna().values
+    # mapping from name in title to grafana standard
+    source_labels = ['$BBL', 'CPG', '$MT']
+    grafana_labels = ['bbl', 'gl', 'mt']
+    mapper = dict(zip(source_labels, grafana_labels))
+    # uom is contained in brackets
+    pattern = r'(?P<uom>\(.+\))'
+    uoms = df['attachment'].str.extract(pat=pattern, expand=False)
+    # remove brackets
+    uoms = uoms.str[1:-1]
+    # apply mapping
+    df['uom'] = uoms.map(mapper)
+    # apply default
+    df2['uom'].fillna(value='bbl', axis='index', inplace=True)
+    return df
+
+
+def build_chart_title(df):
+    df['title'] = df['attachment'] + ' {front}'
+    mask = df['chart_type'] == 'timespread'
+    df.loc[mask, 'title'] = df.loc[mask, 'attachment'] + ' {front} - {back}'
+    return df
+
+
+def build_grafana_panels_dict(df):
+    seasonal = 5  # years of history on chart
+    extend_tenor = 'month'
+    extend_count = 12  # months forward
+
+    # add new column; initialise to accept lists/dictionaries
+    df['grafana_panels'] = None
+    df['grafana_panels'] = df['grafana_panels'].astype('object')
+
+    for index, row in df.iterrows():
+        title = row['title']
+        df.at[index, 'grafana_panels'] = {'panel_id': index,
+                                'title': title,
+                                'seasonal': seasonal,
+                                'extend_tenor': extend_tenor,
+                                'extend_count': extend_count
+                                }
+    return df
+
+
+def build_grafana_products_dict(df):
+    # add new column; initialise to accept lists/dictionaries
+    df['grafana_products'] = None
+    df['grafana_products'] = df['grafana_products'].astype('object')
+
+    for index, row in df.iterrows():
+        uom = row['uom']
+        df.at[index, 'grafana_products'] = {'panel_id': row['panel_id'],
+                                          'currency': 'USD',
+                                          'unit': uom,
+                                          'legend': 'x',
+                                          'axis': 'y1'}
+    return df
+
+
+def build_panels_df(df):
+    # remove rows where symbol mapping isnt complete
+    mask = df['symbol_map_healthy'] == True
+    df = df[mask]
+    # create the new df
+    panels_df = pd.DataFrame.from_records(df['grafana_panels'].values)
+    panels_df.set_index('panel_id', drop=True, inplace=True)
+    # assume one entry per row of 'grafana_panels' but check here
+    assert panels_df.shape[0] == df.shape[0]
+    return panels_df
+
+
+def build_products_df(df):
+    products_df = pd.DataFrame.from_records(df['grafana_products'].values)
+    products_df.index.name = 'product_id'
+    return products_df
+
+
+def build_expressions_df(df):
+    all_df = pd.DataFrame()
+    for index, row in df.iterrows():
+        product_id = row['product_id']
+        # add the product id to every dict in the list of expressions
+        for expression in row['grafana_expressions']:
+            expression.update({'product_id': product_id})
+        df = pd.DataFrame.from_records(row['grafana_expressions'])
+        all_df = pd.concat([all_df, df], axis='index')
+    all_df.reset_index(drop=True, inplace=True)
+    all_df.index.name = 'expression_id'
+    return all_df
+
+
+def add_panel_id_to_report(df):
+    for index, row in df.iterrows():
+        df.at[index, 'panel_id'] = row['grafana_panels']['panel_id']
+    df = df.astype({'panel_id': int})
+    return df
+
+
+def add_product_id_to_report(df, products_df):
+    products_df.reset_index(drop=False, inplace=True)
+    combo_df = pd.merge(df, products_df[['product_id', 'panel_id']], left_on='panel_id', right_on='panel_id')
+    products_df.set_index('product_id', drop=True, inplace=True)
+    return combo_df
 
 
 if __name__ == '__main__':
@@ -395,18 +506,39 @@ if __name__ == '__main__':
         if build_from_single_spreadsheet_selection:
             df2 = df2.loc[df2['xls_filepath'] == build_from_single_spreadsheet_path]
         df2 = build_base_report(df2)
-        df2.to_pickle(pkl_filepath)
+        df2.to_pickle(pkl_scrape_filepath)
     else:
-        df2 = pd.read_pickle(pkl_filepath)
+        df2 = pd.read_pickle(pkl_scrape_filepath)
 
     if report_from_single_spreadsheet_selection:
         df2 = df2.loc[df2['xls_filepath'] == report_from_single_spreadsheet_path]
     symbols = get_unique_symbols(df2)
     df2 = build_mosaic_formula(df2)
-    df2 = build_grafana_expressions(df2)
+    df2 = build_grafana_expressions_dict(df2)
+    df2 = get_uom_from_filename(df2)
+    df2 = build_chart_title(df2)
 
-    # save to excel
-    with pd.ExcelWriter(xls_filepath, mode='w') as f:
+    # panels df
+    df2 = build_grafana_panels_dict(df2)
+    panels_df = build_panels_df(df2)
+    df2 = add_panel_id_to_report(df2)
+
+    # products df
+    df2 = build_grafana_products_dict(df2)
+    products_df = build_products_df(df2)
+    df2 = add_product_id_to_report(df2, products_df)
+
+    # expressions df
+    expressions_df = build_expressions_df(df2)
+
+    # save grafana dfs
+    with pd.ExcelWriter(xls_grafana_filepath, mode='w') as f:
+        panels_df.to_excel(excel_writer=f, sheet_name='panels', index=True)
+        products_df.to_excel(excel_writer=f, sheet_name='products', index=True)
+        expressions_df.to_excel(excel_writer=f, sheet_name='expressions', index=True)
+
+    # save report
+    with pd.ExcelWriter(xls_report_filepath, mode='w') as f:
         df2.to_excel(excel_writer=f, sheet_name='reports', index=False)
         pd.DataFrame(data=symbols).to_excel(excel_writer=f, sheet_name='symbols', index=False)
     pass

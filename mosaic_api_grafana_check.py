@@ -20,7 +20,7 @@ grafana_api_names = ['getTraderCurvesCatalog',
 
 with open('mosaic_chart_examples.json') as file:
     chart_examples = json.load(file)
-payload = chart_examples['platts']
+payload = chart_examples['seasonality']
 
 failure = False
 for api_name in grafana_api_names:
