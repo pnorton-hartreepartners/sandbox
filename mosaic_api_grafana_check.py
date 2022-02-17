@@ -10,7 +10,7 @@ all api calls succeeded: True
 
 import json
 import pandas as pd
-from constants import PROD
+from constants import PROD, DEV
 from mosaic_api_examples import prepare_inputs_for_api, example_kwargs_dict
 from mosaic_wapi import get_any_api, post_any_api
 
