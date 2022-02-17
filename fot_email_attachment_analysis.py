@@ -365,13 +365,13 @@ def build_grafana_expressions_dict(df2):
         front_date = int(component['front_date_rebase'].strftime('%Y%m'))
         matching_keys = ['factor', 'product']
         new_dict = {k: component[k] for k in matching_keys}
-        new_dict.update({'front_date': front_date})
+        new_dict.update({'front': front_date})
         new_dict.update({'product_id': None})
         return new_dict
 
     def _timespread(formula):
         mapping = _outright_component(formula[0])
-        mapping.update({'back_date': formula[1]['front_date_rebase'].strftime('%Y%m')})
+        mapping.update({'back': formula[1]['front_date_rebase'].strftime('%Y%m')})
         return [mapping]
 
     def _call_correct_func(chart_type, mosaic_formula):
@@ -514,6 +514,10 @@ if __name__ == '__main__':
         df2 = df2.loc[df2['xls_filepath'] == report_from_single_spreadsheet_path]
     symbols = get_unique_symbols(df2)
     df2 = build_mosaic_formula(df2)
+
+    # hack hack hack
+    df2 = df2[df2['symbol_map_healthy']==True]
+
     df2 = build_grafana_expressions_dict(df2)
     df2 = get_uom_from_filename(df2)
     df2 = build_chart_title(df2)
