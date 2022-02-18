@@ -365,13 +365,14 @@ def build_grafana_expressions_dict(df2):
         front_date = int(component['front_date_rebase'].strftime('%Y%m'))
         matching_keys = ['factor', 'product']
         new_dict = {k: component[k] for k in matching_keys}
-        new_dict.update({'front': front_date})
+        new_dict.update({'front': front_date, 'middle': None, 'back': None})
         new_dict.update({'product_id': None})
         return new_dict
 
     def _timespread(formula):
         mapping = _outright_component(formula[0])
-        mapping.update({'back': formula[1]['front_date_rebase'].strftime('%Y%m')})
+        back_date = int(formula[1]['front_date_rebase'].strftime('%Y%m'))
+        mapping.update({'back': back_date})
         return [mapping]
 
     def _call_correct_func(chart_type, mosaic_formula):
@@ -439,10 +440,9 @@ def build_grafana_products_dict(df):
     df['grafana_products'] = df['grafana_products'].astype('object')
 
     for index, row in df.iterrows():
-        uom = row['uom']
         df.at[index, 'grafana_products'] = {'panel_id': row['panel_id'],
                                           'currency': 'USD',
-                                          'unit': uom,
+                                          'unit': '*',
                                           'legend': 'x',
                                           'axis': 'y1'}
     return df
@@ -496,6 +496,8 @@ def add_product_id_to_report(df, products_df):
 
 if __name__ == '__main__':
     build_from_scratch_selection = False
+
+    # for debugging
     build_from_single_spreadsheet_selection = False
     report_from_single_spreadsheet_selection = False
     build_from_single_spreadsheet_path = example_spreadsheets['timespread_example']
@@ -515,11 +517,11 @@ if __name__ == '__main__':
     symbols = get_unique_symbols(df2)
     df2 = build_mosaic_formula(df2)
 
-    # hack hack hack
+    # hack hack hack; doing this excludes results from the final report and hides the mapping failures
     df2 = df2[df2['symbol_map_healthy']==True]
 
     df2 = build_grafana_expressions_dict(df2)
-    df2 = get_uom_from_filename(df2)
+    # df2 = get_uom_from_filename(df2)
     df2 = build_chart_title(df2)
 
     # panels df
