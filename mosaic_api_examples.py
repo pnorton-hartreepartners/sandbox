@@ -48,6 +48,13 @@ example_kwargs_dict = {
     'getMatchingTraderCurves': {
         URL_KWARGS: {},
         PARAMS_KWARGS: {'search_string': 'BRT-F'}
+    },
+    'getEtrmCurveEval': {
+        URL_KWARGS:
+            {'symbol': 'RVO_22',
+             'stamp': '2022-02-21'
+             },
+        PARAMS_KWARGS: {}
     }
 }
 
@@ -66,7 +73,7 @@ if __name__ == '__main__':
 
     env = DEV
 
-    key = 'getTraderCurveTS'
+    key = 'getEtrmCurveEval'
     example_kwargs_dict = {key: example_kwargs_dict[key]}
     with open('mosaic_chart_examples.json') as file:
         chart_examples = json.load(file)

@@ -1,8 +1,9 @@
 '''
-objective here is to get all spreadsheets from two locations (with different file types)
-and a list of pdfs that were attachments to an email
+get a list of pdfs that were attachments to an email
+get all spreadsheets from two locations (with different file types)
 and match the filename stems to find where the attachments came from
-then create a df that associates those pdfs with the source xls as a clickable link
+create a df that associates those pdfs with the source xls as a clickable link
+then build the grafana data structure to define the required charts
 '''
 
 import os
@@ -22,8 +23,8 @@ folder_new = r'\\gateway\hetco\P003\Tasks\Excel Reports\Gasoline New Reports\Rep
 # dump the results in an xls/pkl here
 folder_name = r'c:\temp'
 
-pkl_scrape = 'results.pkl'   # result of the initial scrapes of all the xls
-xls_report = 'results.xlsx'  # the giant df report
+pkl_scrape = 'fot_email_attachment_scrapes.pkl'   # result of the initial scrapes of all the xls
+xls_report = 'fot_email_attachment_analysis.xlsx'  # the giant df report
 xls_grafana = 'chart_config2.xlsx'  # input into grafana charting
 
 pkl_scrape_filepath = os.path.join(folder_name, pkl_scrape)

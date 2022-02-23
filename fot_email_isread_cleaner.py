@@ -1,3 +1,9 @@
+'''
+IT ran a report to identify email read-receipts for reports that are emailed to users
+this script accesses the report and cleans the data
+lots of emails include a date in the subject; need to clean that
+'''
+
 import os
 import pandas as pd
 from dateutil.parser import parse
@@ -6,6 +12,11 @@ folder_stem = r'\\hetco.com\htp\IT\Reports\Report Mailer_ReportsOnly'
 folders = [r'01.31.2022-1400PM']
 file = r'Results.csv'
 pathfiles = [os.path.join(folder_stem, folder, file) for folder in folders]
+
+# dump the results here
+folder_name = r'c:\temp'
+xls_report = 'fot_email_isread_results.xlsx'
+xls_filepath = os.path.join(folder_name, xls_report)
 
 columns = ['Subject or Title',
            'Subject or Title... cleaned',
@@ -46,4 +57,4 @@ if __name__ == '__main__':
 
         # save it
         columns = columns + ['fot_reports_email'] + recipients_in_lines
-        df[columns].to_excel(excel_writer=r'c:\temp\fot_email_isread_results.xlsx', index=False)
+        df[columns].to_excel(excel_writer=xls_filepath, index=False)
