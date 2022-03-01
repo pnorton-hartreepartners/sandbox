@@ -6,13 +6,11 @@ PROD = 'prod'
 DEV = 'dev'
 
 SETTLES = 'settles'
+CHARTS = 'charts'
 TSDB = 'tsdb'
 TRADER_CURVES = 'trader_curves'
 BALSAMO = 'balsamo'
 PORT = 'port'
-CHARTS = 'charts'
-
-TTDA = 'ttda'
 
 URL_KWARGS = 'url_kwargs'
 PARAMS_KWARGS = 'params_kwargs'
