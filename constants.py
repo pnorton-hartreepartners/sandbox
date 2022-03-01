@@ -10,6 +10,7 @@ TSDB = 'tsdb'
 TRADER_CURVES = 'trader_curves'
 BALSAMO = 'balsamo'
 PORT = 'port'
+CHARTS = 'charts'
 
 TTDA = 'ttda'
 
@@ -40,6 +41,12 @@ hosts = {
         {
             PROD: 'http://trader-curves-api.mosaic.hartreepartners.com/trader-curves',
             DEV: 'http://trader-curves-api.dev.mosaic.hartreepartners.com/trader-curves',
+            PORT: 123
+        },
+    CHARTS:
+        {
+            PROD: 'https://charts-api.mosaic.hartreepartners.com',
+            DEV: 'https://charts-api.dev.mosaic.hartreepartners.com',
             PORT: 123
         }
 }

@@ -1,4 +1,4 @@
-from constants import SETTLES, TSDB, TRADER_CURVES, BALSAMO
+from constants import SETTLES, TSDB, TRADER_CURVES, BALSAMO, CHARTS
 
 MOSAIC_OPTION_VALUATION_API = 'getOptionPricesFromVolCurves'
 MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API = 'getLMEForwardCurveSettlement'
@@ -86,6 +86,11 @@ api_config_dict = {
     'getTraderCurveTS': {'host': SETTLES,
                          'method': 'post',
                          'url_template': r'{host}/api/v1/{api_name}'},
+
+    # the new version
+    # 'getTraderCurveTS': {'host': CHARTS,
+    #                      'method': 'post',
+    #                      'url_template': r'{host}/api/v1/{api_name}'},
 
     # search tool
     'getMatchingTraderCurves': {
