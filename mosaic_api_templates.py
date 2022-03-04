@@ -1,4 +1,4 @@
-from constants import SETTLES, TSDB, TRADER_CURVES, BALSAMO, CHARTS
+from constants import SETTLES, TSDB, TRADER_CURVES, BALSAMO, CHARTING
 
 MOSAIC_OPTION_VALUATION_API = 'getOptionPricesFromVolCurves'
 MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API = 'getLMEForwardCurveSettlement'
@@ -78,23 +78,18 @@ api_config_dict = {
     # grafana charting apis
     # trader curve details incl conversions
     'getTraderCurvesCatalog': {
-        'host': SETTLES,
+        'host': CHARTING,
         'url_template': r'{host}/api/v1/{api_name}'},
 
     # trader curve time-series backed by tempest for history
     # used for charting
-    'getTraderCurveTS': {'host': SETTLES,
+    'getTraderCurveTS': {'host': CHARTING,
                          'method': 'post',
                          'url_template': r'{host}/api/v1/{api_name}'},
 
-    # the new version
-    # 'getTraderCurveTS': {'host': CHARTS,
-    #                      'method': 'post',
-    #                      'url_template': r'{host}/api/v1/{api_name}'},
-
     # search tool
     'getMatchingTraderCurves': {
-        'host': SETTLES,
+        'host': CHARTING,
         'url_template': r'{host}/api/v1/{api_name}'},
 
 }

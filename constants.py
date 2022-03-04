@@ -6,8 +6,9 @@ PROD = 'prod'
 DEV = 'dev'
 
 SETTLES = 'settles'
-CHARTS = 'charts'
+CHARTING = 'charting'
 TSDB = 'tsdb'
+TTDA = 'ttda'
 TRADER_CURVES = 'trader_curves'
 BALSAMO = 'balsamo'
 PORT = 'port'
@@ -41,10 +42,10 @@ hosts = {
             DEV: 'http://trader-curves-api.dev.mosaic.hartreepartners.com/trader-curves',
             PORT: 123
         },
-    CHARTS:
+    CHARTING:
         {
-            PROD: 'https://charts-api.mosaic.hartreepartners.com',
-            DEV: 'https://charts-api.dev.mosaic.hartreepartners.com',
+            PROD: 'https://charting-api.mosaic.hartreepartners.com',
+            DEV: 'https://charting-api.dev.mosaic.hartreepartners.com',
             PORT: 123
         }
 }
