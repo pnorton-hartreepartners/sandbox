@@ -1,5 +1,6 @@
 import json
-from constants import URL_KWARGS, PARAMS_KWARGS, DEV
+import pandas as pd
+from constants import URL_KWARGS, PARAMS_KWARGS, DEV, PROD
 from mosaic_api_templates import api_config_dict
 from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs, post_any_api, process_chart_data
 
@@ -58,6 +59,9 @@ example_kwargs_dict = {
     }
 }
 
+xls_data_filepath = r'c:\temp\getTraderCurveTS.xlsx'
+pkl_data_filepath = r'c:\temp\getTraderCurveTS.pkl'
+
 
 def prepare_inputs_for_api(api_name, env):
     template_url = api_config_dict[api_name]['url_template']
@@ -71,14 +75,15 @@ def prepare_inputs_for_api(api_name, env):
 
 if __name__ == '__main__':
 
-    env = DEV
+    env = PROD
+    key = 'getTraderCurveTS'
+    chart_example = 'brooksbohn'
 
-    key = 'getEtrmCurveEval'
     example_kwargs_dict = {key: example_kwargs_dict[key]}
     with open('mosaic_chart_examples.json') as file:
         chart_examples = json.load(file)
     print(chart_examples.keys())
-    payload = chart_examples['seasonality']
+    payload = chart_examples[chart_example]
 
     for api_name in example_kwargs_dict:
         url, params, method = prepare_inputs_for_api(api_name, env)
@@ -91,13 +96,14 @@ if __name__ == '__main__':
         elif method == 'post':
             result = post_any_api(url, payload=payload)
             if api_name == 'getTraderCurveTS':
-                seasonality = payload['seasonality']
-                seasonality = seasonality > 0
+                seasonality = payload['seasonality'] > 0
                 df = process_chart_data(result, seasonality)
-                df.to_clipboard()
                 df.plot(kind='line')
-                pass
         else:
             raise NotImplementedError
 
+        with pd.ExcelWriter(xls_data_filepath, mode='w') as f:
+            df.to_excel(excel_writer=f, sheet_name=api_name, index=True)
+
+        df.to_pickle(pkl_data_filepath)
 

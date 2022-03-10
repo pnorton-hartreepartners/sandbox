@@ -112,5 +112,42 @@
       "axis": 0
     }
   ]
+  },
+  "brooksbohn": {
+  "seasonality": 0,
+  "chartlets": [
+    {
+      "name": "string",
+      "curves": [
+        {
+          "expression": "RB-F",
+          "factor": 1,
+          "type": "string",
+          "contracts": [
+            "202205", "202206", "202207"
+          ]
+        }
+      ],
+      "currency": "string",
+      "uom": "*",
+      "axis": 0
+    },
+    {
+      "name": "string",
+      "curves": [
+        {
+          "expression": "RB-F",
+          "factor": 1,
+          "type": "string",
+          "contracts": [
+            "202204", "202205"
+          ]
+        }
+      ],
+      "currency": "string",
+      "uom": "*",
+      "axis": 0
+    }
+  ]
   }
 }
