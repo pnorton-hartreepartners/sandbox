@@ -38,18 +38,55 @@ def timeit(f):
 
 def post_any_api(url, payload):
     ts = time.time()
+    result = requests.post(url, json=payload, verify=False)
     try:
-        result = requests.post(url, json=payload, verify=False)
-        result = result.json()
+        shape = pd.read_json(result.content).shape
     except Exception as e:
         print(e)
-        print(payload, '\n')
-        result = 'error'
+        shape = (0, 0)
     te = time.time()
-    return result, te-ts
+    return result.status_code, shape, te-ts
 
 
-def modify_payload(payload):
+def just_one_bad_payloads(payload):
+    payloads = []
+    season = 10
+    for symbol_stem, contract_type, contract_period in ((symbol_stem, contract_type, contract_period)
+                               for symbol_stem in ['BRT-']
+                               for contract_type in ['S']
+                               for contract_period in [contract_periods[1]]):
+
+        expression = symbol_stem + contract_type
+        for period in [contract_period['count']]:
+            new_payload = build_new_payload(payload, contract_period, expression, period, season)
+
+            # future/swap * month/quarter * seasons
+            complexity_score = contract_type_complexity[contract_type] * contract_period['complexity'] * (season + 1)
+
+            payloads.append([new_payload, complexity_score])
+    return payloads
+
+
+def worst_case_payloads(payload):
+    payloads = []
+    season = 10
+    for symbol_stem, contract_type, contract_period in ((symbol_stem, contract_type, contract_period)
+                               for symbol_stem in symbol_stems
+                               for contract_type in ['S']
+                               for contract_period in [contract_periods[1]]):
+
+        expression = symbol_stem + contract_type
+        for period in range(1, contract_period['count'] + 1):
+            new_payload = build_new_payload(payload, contract_period, expression, period, season)
+
+            # future/swap * month/quarter * seasons
+            complexity_score = contract_type_complexity[contract_type] * contract_period['complexity'] * (season + 1)
+
+            payloads.append([new_payload, complexity_score])
+    return payloads
+
+
+def range_of_payloads(payload):
     payloads = []
     for symbol_stem, contract_type, contract_period, season in ((symbol_stem, contract_type, contract_period, season)
                                for symbol_stem in symbol_stems
@@ -59,24 +96,26 @@ def modify_payload(payload):
 
         expression = symbol_stem + contract_type
         for period in range(1, contract_period['count'] + 1):
-            new_payload = copy.deepcopy(payload)
-
-            template = contract_period['template']
-            strf = contract_period['strf']
-            contract = template.format(period=strf.format(period))
-
-            new_payload['chartlets'][0]['curves'][0]['expression'] = expression
-            new_payload['chartlets'][0]['curves'][0]['contracts'] = [contract]
-            new_payload['chartlets'][0]['name'] = expression + ' | ' + contract
-            new_payload['seasonality'] = season
+            new_payload = build_new_payload(payload, contract_period, expression, period, season)
 
             # future/swap * month/quarter * seasons
             complexity_score = contract_type_complexity[contract_type] * contract_period['complexity'] * (season + 1)
 
             payloads.append([new_payload, complexity_score])
-
-            print(expression, contract, period, season)
     return payloads
+
+
+def build_new_payload(payload, contract_period, expression, period, season):
+    new_payload = copy.deepcopy(payload)
+    template = contract_period['template']
+    strf = contract_period['strf']
+    contract = template.format(period=strf.format(period))
+    new_payload['chartlets'][0]['curves'][0]['expression'] = expression
+    new_payload['chartlets'][0]['curves'][0]['contracts'] = [contract]
+    new_payload['chartlets'][0]['name'] = expression + ' | ' + contract
+    new_payload['seasonality'] = season
+    print(expression, contract, period, season)
+    return new_payload
 
 
 if __name__ == '__main__':
@@ -89,12 +128,16 @@ if __name__ == '__main__':
         chart_examples = json.load(file)
     payload = chart_examples['seasonality']
 
-    modified_payloads = modify_payload(payload)
-    # modified_payloads = [modified_payloads[-1]]
+    #modified_payloads = range_of_payloads(payload)
+    modified_payloads = worst_case_payloads(payload)
+    #modified_payloads = just_one_bad_payloads(payload)
+
+    multiplier = 20
+    multiplied_payloads = modified_payloads * multiplier
 
     all_df = pd.DataFrame()
-    for payload, complexity_score in modified_payloads:
-        result, elapsed_time = post_any_api(url, payload=payload)
+    for payload, complexity_score in multiplied_payloads:
+        status_code, shape, elapsed_time = post_any_api(url, payload=payload)
 
         expression = payload['chartlets'][0]['curves'][0]['expression']
         [contract] = payload['chartlets'][0]['curves'][0]['contracts']
@@ -103,6 +146,8 @@ if __name__ == '__main__':
         row = {'expression': expression,
                'contract': contract,
                'seasonality': seasonality,
+               'status_code': status_code,
+               'shape': str(shape),
                'elapsed_time': elapsed_time,
                'complexity_score': complexity_score
                }
