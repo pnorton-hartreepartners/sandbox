@@ -43,6 +43,11 @@ example_kwargs_dict = {
         PARAMS_KWARGS:
             {}
     },
+    'getSettlementTS': {
+        URL_KWARGS: {'instrument_key': 'B 202206'},
+        PARAMS_KWARGS: {'exchange': 'ICE',
+                        'allow_indicative': False}
+    },
     'getTraderCurveTS': {
         URL_KWARGS: {},
     },
@@ -77,14 +82,18 @@ if __name__ == '__main__':
 
     env = PROD
     key = 'getTraderCurveTS'
+    key = 'getSettlementTS'
     chart_example = 'brooksbohn'
 
-    example_kwargs_dict = {key: example_kwargs_dict[key]}
-    with open('mosaic_chart_examples.json') as file:
-        chart_examples = json.load(file)
-    print(chart_examples.keys())
-    payload = chart_examples[chart_example]
+    if key == 'getTraderCurveTS':
+        with open('mosaic_chart_examples.json') as file:
+            chart_examples = json.load(file)
+        print(chart_examples.keys())
+        payload = chart_examples[chart_example]
+    else:
+        payload = None
 
+    example_kwargs_dict = {key: example_kwargs_dict[key]}
     for api_name in example_kwargs_dict:
         url, params, method = prepare_inputs_for_api(api_name, env)
 

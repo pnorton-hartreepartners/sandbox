@@ -8,7 +8,6 @@ api_config_dict = {
     'getSettlementTS': {
         'host': SETTLES,
         'url_template': r'{host}/api/v1/{api_name}/{instrument_key}'},
-    # exchange={exchange}&allow_indicative={allow_indicative}',
 
     # latest result for a single contract
     'getSettlement': {
@@ -49,8 +48,8 @@ api_config_dict = {
     # fundamental data series
     'tsdb': {
         'host': TSDB,
-        'url_template': r'{host}/api/v1/{api_name}/{source}/{stage}/{source}'},
-
+        'url_template': r'{host}/api/v1/{api_name}/{source}/{stage}/{source}'
+    },
 
     'getEtrmCurveEval': {
         'host': SETTLES,
