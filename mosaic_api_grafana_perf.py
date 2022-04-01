@@ -38,14 +38,16 @@ def timeit(f):
 
 def post_any_api(url, payload):
     ts = time.time()
-    result = requests.post(url, json=payload, verify=False)
     try:
+        result = requests.post(url, json=payload, verify=False)
         shape = pd.read_json(result.content).shape
+        status_code = result.status_code
     except Exception as e:
         print(e)
+        status_code = 9999
         shape = (0, 0)
     te = time.time()
-    return result.status_code, shape, te-ts
+    return status_code, shape, te-ts
 
 
 def just_one_bad_payloads(payload):
@@ -54,10 +56,10 @@ def just_one_bad_payloads(payload):
     for symbol_stem, contract_type, contract_period in ((symbol_stem, contract_type, contract_period)
                                for symbol_stem in ['BRT-']
                                for contract_type in ['S']
-                               for contract_period in [contract_periods[1]]):
+                               for contract_period in [contract_periods[0]]):
 
         expression = symbol_stem + contract_type
-        for period in [contract_period['count']]:
+        for period in [9]:
             new_payload = build_new_payload(payload, contract_period, expression, period, season)
 
             # future/swap * month/quarter * seasons
@@ -119,7 +121,7 @@ def build_new_payload(payload, contract_period, expression, period, season):
 
 
 if __name__ == '__main__':
-    env = PROD
+    env = DEV
     api_name = 'getTraderCurveTS'
 
     url, params, method = prepare_inputs_for_api(api_name, env)
@@ -128,11 +130,11 @@ if __name__ == '__main__':
         chart_examples = json.load(file)
     payload = chart_examples['seasonality']
 
-    #modified_payloads = range_of_payloads(payload)
-    modified_payloads = worst_case_payloads(payload)
+    modified_payloads = range_of_payloads(payload)
+    #modified_payloads = worst_case_payloads(payload)
     #modified_payloads = just_one_bad_payloads(payload)
 
-    multiplier = 20
+    multiplier = 10
     multiplied_payloads = modified_payloads * multiplier
 
     all_df = pd.DataFrame()
