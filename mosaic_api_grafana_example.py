@@ -6,7 +6,6 @@ import copy
 
 PROD = 'prod'
 DEV = 'dev'
-
 CHARTING = 'charting'
 
 hosts = {
@@ -47,7 +46,6 @@ chart_examples = {"seasonality": {
 },}
 
 
-
 def build_url(template_url, kwargs):
     url = template_url.format(**kwargs)
     print(f'\nurl is:\n{url}')
@@ -74,15 +72,15 @@ def post_any_api(url, payload):
     except Exception as e:
         print(f'error: {e}')
         df = pd.DataFrame()
+    print(result.status_code)
     return df
 
 
-def build_new_payload(payload, symbol, contract, season):
+def build_new_payload(payload, curves, season, name):
     new_payload = copy.deepcopy(payload)
 
-    new_payload['chartlets'][0]['curves'][0]['expression'] = symbol
-    new_payload['chartlets'][0]['curves'][0]['contracts'] = [contract]
-    new_payload['chartlets'][0]['name'] = symbol + ' | ' + contract
+    new_payload['chartlets'][0]['curves'] = curves
+    new_payload['chartlets'][0]['name'] = name
     new_payload['seasonality'] = season
 
     return new_payload
@@ -92,14 +90,16 @@ if __name__ == '__main__':
     env = PROD
     api_name = 'getTraderCurveTS'
 
-    symbol = 'BRT-F'
-    contract = '202210'
-    season = 0
+    curves = [{'factor': 1, 'expression': 'BRT-F', 'contracts': ['2022Q4']},
+              {'factor': -1, 'expression': 'WTI-F', 'contracts': ['2022Q4']},]
+
+    season = 3
+    name = 'brent-wti swaps q4'
 
     url = prepare_inputs_for_api(api_name, env)
     payload = chart_examples['seasonality']
 
-    modified_payload = build_new_payload(payload, symbol, contract, season)
+    modified_payload = build_new_payload(payload, curves, season, name)
     df = post_any_api(url, payload=modified_payload)
     df.to_clipboard()
     print()
