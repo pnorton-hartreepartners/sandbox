@@ -61,6 +61,22 @@ example_kwargs_dict = {
              'stamp': '2022-02-21'
              },
         PARAMS_KWARGS: {}
+    },
+    'getMatchingArgusCodes': {
+        URL_KWARGS: {'symbol': 'naphtha'},
+        PARAMS_KWARGS: {}
+    },
+    'getArgusQuotes': {
+        URL_KWARGS: {'symbol': 'naphtha'},
+        PARAMS_KWARGS: {}
+    },
+    'getArgusQuoteTS': {
+        URL_KWARGS:
+            {'key': 'PA0001010',
+             'field': 'Midpoint',
+             'label': 'Houston Close'
+             },
+        PARAMS_KWARGS: {}
     }
 }
 
@@ -83,6 +99,7 @@ if __name__ == '__main__':
     env = PROD
     key = 'getTraderCurveTS'
     key = 'getSettlementTS'
+    key = 'getArgusQuoteTS'
     chart_example = 'brooksbohn'
 
     if key == 'getTraderCurveTS':

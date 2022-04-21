@@ -91,4 +91,18 @@ api_config_dict = {
         'host': CHARTING,
         'url_template': r'{host}/api/v1/{api_name}'},
 
+    # search tool
+    'getMatchingArgusCodes': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}/{search_string}'},
+
+    # get metadata
+    'getArgusQuotes': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}/{keys}/{field}/{label}/{stamp}'},
+
+    'getArgusQuoteTS': {
+        'host': SETTLES,
+        'url_template': r'{host}/api/v1/{api_name}/{key}/{field}/{label}'},
+
 }

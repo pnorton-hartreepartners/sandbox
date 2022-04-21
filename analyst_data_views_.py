@@ -10,7 +10,8 @@ from analyst_data_views.common.db_flattener import getFlatRawDF
 
 source = "iea-mods"
 raw_data = getFlatRawDF(source)
-print('cheese')
+df = raw_data[raw_data['FILE'] == 'iea-mods-summary'].sort_values('date', ascending=False)
+print(df)
 pass
 
 
