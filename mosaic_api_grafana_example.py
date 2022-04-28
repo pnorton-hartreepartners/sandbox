@@ -27,7 +27,7 @@ chart_examples = {"seasonality": {
     "seasonality": 3,
     "chartlets": [
         {
-            "name": "BRT-F | 202202",
+            "name": "BRT-F | 202212",
             "curves": [
                 {
                     "expression": "BRT-F",
@@ -68,12 +68,16 @@ def prepare_inputs_for_api(api_name, env):
 def post_any_api(url, payload):
     try:
         result = requests.post(url, json=payload, verify=False)
-        df = pd.read_json(result.content)
+        content = json.loads(result.content.decode())
+        title = content['title']
+        df = content['dataframe']
+        df = pd.DataFrame(df)
     except Exception as e:
         print(f'error: {e}')
+        title = ''
         df = pd.DataFrame()
     print(result.status_code)
-    return df
+    return title, df
 
 
 def build_new_payload(payload, curves, season, name):
@@ -92,15 +96,16 @@ if __name__ == '__main__':
 
     curves = [{'factor': 1, 'expression': 'BRT-F', 'contracts': ['2022Q4']},
               {'factor': -1, 'expression': 'WTI-F', 'contracts': ['2022Q4']},]
+    curves = [{'factor': 1, 'expression': 'BRT-F', 'contracts': ['202212']}]
 
     season = 3
-    name = 'brent-wti swaps q4'
+    name = 'brent futs dec-22'
 
     url = prepare_inputs_for_api(api_name, env)
     payload = chart_examples['seasonality']
 
     modified_payload = build_new_payload(payload, curves, season, name)
-    df = post_any_api(url, payload=modified_payload)
+    title, df = post_any_api(url, payload=modified_payload)
     df.to_clipboard()
     print()
 
