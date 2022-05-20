@@ -1,7 +1,7 @@
 from constants import SETTLES, TSDB, TRADER_CURVES, BALSAMO, CHARTING
 
-MOSAIC_OPTION_VALUATION_API = 'getOptionPricesFromVolCurves'
-MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API = 'getLMEForwardCurveSettlement'
+# MOSAIC_OPTION_VALUATION_API = 'getOptionPricesFromVolCurves'
+# MOSAIC_GET_LME_FORWARD_CURVE_SETTLEMENT_API = 'getLMEForwardCurveSettlement'
 
 api_config_dict = {
     # time series of all results for a single contract
@@ -85,6 +85,11 @@ api_config_dict = {
     'getTraderCurveTS': {'host': CHARTING,
                          'method': 'post',
                          'url_template': r'{host}/api/v1/{api_name}'},
+
+    # new dev version
+    # 'getTraderCurveTS': {'host': CHARTING,
+    #                      'url_template': r'{host}/api/v1/{api_name}/{symbol}/{contract}'},
+
 
     # search tool
     'getMatchingTraderCurves': {

@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import copy
 from constants import PROD, DEV
-from mosaic_api_examples import prepare_inputs_for_api
+from mosaic_api_examples import prepare_inputs_for_api, example_kwargs_dict
 
 filepath = r'c:\temp\charting_performance_results.xlsx'
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     env = DEV
     api_name = 'getTraderCurveTS'
 
-    url, params, method = prepare_inputs_for_api(api_name, env)
+    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=example_kwargs_dict)
 
     with open('mosaic_chart_examples.json') as file:
         chart_examples = json.load(file)

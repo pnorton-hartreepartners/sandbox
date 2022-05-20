@@ -1,9 +1,9 @@
-import requests
 import pandas as pd
 import datetime as dt
 import argparse
-from constants import hosts, URL_KWARGS, PARAMS_KWARGS, DEV, PROD
+from constants import URL_KWARGS, PARAMS_KWARGS, PROD
 from mosaic_api_templates import api_config_dict
+from mosaic_api_utils import get_any_api, build_partial_url_kwargs, build_url
 
 
 def get_args():
@@ -16,53 +16,6 @@ def get_args():
                         help='name of the api',
                         required=True)
     return parser.parse_args()
-
-
-def decorate_result(f):
-    def decorated(*args, **kwargs):
-        result = f(*args, **kwargs)
-        if result.status_code != 200:
-            print(result.text)
-            return result, pd.DataFrame(), result.status_code
-        else:
-            try:
-                return result, pd.DataFrame(result.json()), None
-            except Exception as e:
-                return result, pd.DataFrame(), e
-    return decorated
-
-
-@decorate_result
-def get_any_api(url, params):
-    return requests.get(url, params=params)
-
-
-def post_any_api(url, payload):
-    result = requests.post(url, json=payload, verify=False)
-    return result.json()
-
-
-def build_partial_url_kwargs(api_name, env=DEV):
-    host_name = api_config_dict[api_name]['host']
-    host_string = hosts[host_name][env]
-    return {'host': host_string, 'api_name': api_name}
-
-
-def build_url(template_url, kwargs):
-    url = template_url.format(**kwargs)
-    print(f'\nurl is:\n{url}')
-    return url
-
-
-def process_chart_data(response_dict, seasonality):
-    if response_dict == {'detail': 'There was an error parsing the body'}:
-        print('detail: There was an error parsing the body')
-        pivot_df = None
-    else:
-        pivot_df = pd.DataFrame.from_dict(response_dict)
-        pivot_df['time'] = pd.to_datetime(pivot_df['time'])
-        pivot_df.set_index(keys=['time'], drop=True, inplace=True)
-    return pivot_df
 
 
 def build_instrument_key(symbol, forward_date):

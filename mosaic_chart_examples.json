@@ -28,14 +28,14 @@
     "seasonality": 0,
     "chartlets": [
       {
-        "name": "BRT-F | 202201",
+        "name": "BRT-F | 202212",
         "curves": [
           {
             "expression": "BRT-F",
             "factor": 1,
             "type": "Dynamic",
             "contracts": [
-              "202201"
+              "202212"
             ]
           }
         ],
@@ -44,14 +44,14 @@
         "axis": 0
       },
       {
-        "name": "WTI-F | 202201",
+        "name": "WTI-F | 202212",
         "curves": [
           {
             "expression": "WTI-F",
             "factor": 1,
             "type": "Dynamic",
             "contracts": [
-              "202201"
+              "202212"
             ]
           }
         ],
@@ -67,14 +67,14 @@
     "seasonality": 3,
     "chartlets": [
       {
-        "name": "BRT-F | 202202",
+        "name": "BRT-F | 202212",
         "curves": [
           {
             "expression": "BRT-F",
             "factor": 1,
             "type": "Dynamic",
             "contracts": [
-              "202201"
+              "202212"
             ]
           }
         ],

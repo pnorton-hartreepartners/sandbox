@@ -44,8 +44,8 @@ hosts = {
         },
     CHARTING:
         {
-            PROD: 'https://charting-api.mosaic.hartreepartners.com',
-            DEV: 'https://charting-api.dev.mosaic.hartreepartners.com',
+            PROD: 'http://charting-api.mosaic.hartreepartners.com',
+            DEV: 'http://charting-api.dev.mosaic.hartreepartners.com',
             PORT: 123
         }
 }

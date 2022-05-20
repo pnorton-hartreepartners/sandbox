@@ -1,25 +1,7 @@
 ''' this is intended as a stand alone script to collect data from the charting api'''
-import json
-import pandas as pd
-import requests
-import copy
-
-PROD = 'prod'
-DEV = 'dev'
-CHARTING = 'charting'
-
-hosts = {
-    CHARTING:
-        {
-            PROD: 'https://charting-api.mosaic.hartreepartners.com',
-            DEV: 'https://charting-api.dev.mosaic.hartreepartners.com',
-        }
-}
-
-api_config_dict = {
-    # trader curve time-series backed by tempest for history used for charting
-    'getTraderCurveTS': {'host': CHARTING,
-                         'url_template': r'{host}/api/v1/{api_name}'}, }
+from mosaic_api_examples import example_kwargs_dict
+from mosaic_api_utils import post_any_api, prepare_inputs_for_api, process_new_chart_data, build_new_payload
+from constants import PROD
 
 chart_examples = {"seasonality": {
     "start_date": "2015-01-01",
@@ -45,51 +27,6 @@ chart_examples = {"seasonality": {
     ]
 },}
 
-
-def build_url(template_url, kwargs):
-    url = template_url.format(**kwargs)
-    print(f'\nurl is:\n{url}')
-    return url
-
-
-def build_partial_url_kwargs(api_name, env=DEV):
-    host_name = api_config_dict[api_name]['host']
-    host_string = hosts[host_name][env]
-    return {'host': host_string, 'api_name': api_name}
-
-
-def prepare_inputs_for_api(api_name, env):
-    template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = build_partial_url_kwargs(api_name, env=env)
-    url = build_url(template_url=template_url, kwargs=url_kwargs)
-    return url
-
-
-def post_any_api(url, payload):
-    try:
-        result = requests.post(url, json=payload, verify=False)
-        content = json.loads(result.content.decode())
-        title = content['title']
-        df = content['dataframe']
-        df = pd.DataFrame(df)
-    except Exception as e:
-        print(f'error: {e}')
-        title = ''
-        df = pd.DataFrame()
-    print(result.status_code)
-    return title, df
-
-
-def build_new_payload(payload, curves, season, name):
-    new_payload = copy.deepcopy(payload)
-
-    new_payload['chartlets'][0]['curves'] = curves
-    new_payload['chartlets'][0]['name'] = name
-    new_payload['seasonality'] = season
-
-    return new_payload
-
-
 if __name__ == '__main__':
     env = PROD
     api_name = 'getTraderCurveTS'
@@ -101,11 +38,13 @@ if __name__ == '__main__':
     season = 3
     name = 'brent futs dec-22'
 
-    url = prepare_inputs_for_api(api_name, env)
+    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=example_kwargs_dict)
     payload = chart_examples['seasonality']
 
     modified_payload = build_new_payload(payload, curves, season, name)
-    title, df = post_any_api(url, payload=modified_payload)
+    response_dict = post_any_api(url, payload=modified_payload)
+    title, df = process_new_chart_data(response_dict)
     df.to_clipboard()
+    print(df.head())
     print()
 

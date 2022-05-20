@@ -11,8 +11,8 @@ all api calls succeeded: True
 import json
 import pandas as pd
 from constants import PROD, DEV
-from mosaic_api_examples import prepare_inputs_for_api, example_kwargs_dict
-from mosaic_wapi import get_any_api, post_any_api
+from mosaic_api_utils import prepare_inputs_for_api, get_any_api, post_any_api
+from mosaic_api_examples import example_kwargs_dict
 
 env = DEV
 
@@ -26,7 +26,7 @@ payload = chart_examples['seasonality']  # seasonality  platts
 
 failure = False
 for api_name in grafana_api_names:
-    url, params, method = prepare_inputs_for_api(api_name, env=env)
+    url, params, method = prepare_inputs_for_api(api_name, env=env, kwargs_dict=example_kwargs_dict)
 
     if method == 'get':
         result, df1, error = get_any_api(url, params)

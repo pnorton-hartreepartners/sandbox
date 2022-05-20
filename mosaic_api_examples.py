@@ -1,8 +1,8 @@
 import json
 import pandas as pd
 from constants import URL_KWARGS, PARAMS_KWARGS, DEV, PROD
-from mosaic_api_templates import api_config_dict
-from mosaic_wapi import build_url, get_any_api, build_partial_url_kwargs, post_any_api, process_chart_data
+from mosaic_api_utils import prepare_inputs_for_api, post_any_api, process_new_chart_data
+from mosaic_wapi import get_any_api
 
 example_kwargs_dict = {
     'getFutureCurveSettlement': {
@@ -51,6 +51,9 @@ example_kwargs_dict = {
     'getTraderCurveTS': {
         URL_KWARGS: {},
     },
+    # 'getTraderCurveTS': {
+    #     URL_KWARGS: {'symbol': 'BRT-F',
+    #                  'contract': '202212'}},
     'getMatchingTraderCurves': {
         URL_KWARGS: {},
         PARAMS_KWARGS: {'search_string': 'BRT-F'}
@@ -77,30 +80,25 @@ example_kwargs_dict = {
              'label': 'Houston Close'
              },
         PARAMS_KWARGS: {}
+    },
+    'getExpiry': {
+        URL_KWARGS:
+            {'key': 'CL 202012',
+             },
+        PARAMS_KWARGS: {'exchange': 'CME'}
     }
 }
 
 xls_data_filepath = r'c:\temp\getTraderCurveTS.xlsx'
 pkl_data_filepath = r'c:\temp\getTraderCurveTS.pkl'
 
-
-def prepare_inputs_for_api(api_name, env):
-    template_url = api_config_dict[api_name]['url_template']
-    url_kwargs = build_partial_url_kwargs(api_name, env=env)
-    url_kwargs.update(example_kwargs_dict[api_name][URL_KWARGS])
-    url = build_url(template_url=template_url, kwargs=url_kwargs)
-    params = example_kwargs_dict[api_name].get(PARAMS_KWARGS)
-    method = api_config_dict[api_name].get('method', 'get')
-    return url, params, method
-
-
 if __name__ == '__main__':
 
     env = PROD
-    key = 'getTraderCurveTS'
     key = 'getSettlementTS'
     key = 'getArgusQuoteTS'
-    chart_example = 'brooksbohn'
+    key = 'getTraderCurveTS'
+    chart_example = 'seasonality'
 
     if key == 'getTraderCurveTS':
         with open('mosaic_chart_examples.json') as file:
@@ -112,7 +110,7 @@ if __name__ == '__main__':
 
     example_kwargs_dict = {key: example_kwargs_dict[key]}
     for api_name in example_kwargs_dict:
-        url, params, method = prepare_inputs_for_api(api_name, env)
+        url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=example_kwargs_dict)
 
         if method == 'get':
             result, df, error = get_any_api(url, params)
@@ -123,7 +121,7 @@ if __name__ == '__main__':
             result = post_any_api(url, payload=payload)
             if api_name == 'getTraderCurveTS':
                 seasonality = payload['seasonality'] > 0
-                df = process_chart_data(result, seasonality)
+                title, df = process_new_chart_data(result)
                 df.plot(kind='line')
         else:
             raise NotImplementedError
