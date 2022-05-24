@@ -48,9 +48,11 @@ example_kwargs_dict = {
         PARAMS_KWARGS: {'exchange': 'ICE',
                         'allow_indicative': False}
     },
+    # old POST version
     'getTraderCurveTS': {
         URL_KWARGS: {},
     },
+    # new GET version
     # 'getTraderCurveTS': {
     #     URL_KWARGS: {'symbol': 'BRT-F',
     #                  'contract': '202212'}},
@@ -86,6 +88,11 @@ example_kwargs_dict = {
             {'key': 'CL 202012',
              },
         PARAMS_KWARGS: {'exchange': 'CME'}
+    },
+    'getHolidaysForCalendar': {
+        URL_KWARGS:
+            {},
+        PARAMS_KWARGS: {'calendar': 'ICE'}
     }
 }
 

@@ -46,9 +46,9 @@ def decorate_result(f):
 
 def post_any_api(url, payload):
     try:
-        result = requests.post(url, json=payload, verify=False)
-        content = json.loads(result.content.decode())
-        print(result.status_code)
+        response = requests.post(url, json=payload, verify=False)
+        content = json.loads(response.content.decode())
+        print(response.status_code)
     except Exception as e:
         print(f'error: {e}')
         content = {}
@@ -58,6 +58,18 @@ def post_any_api(url, payload):
 @decorate_result
 def get_any_api(url, params):
     return requests.get(url, params=params)
+
+
+# yeah i know, i think i just wanted to write a decorator
+def get_any_api2(url, params):
+    try:
+        response = requests.get(url, params=params)
+        content = json.loads(response.content.decode())
+        print(response.status_code)
+    except Exception as e:
+        print(f'error: {e}')
+        content = {}
+    return content
 
 
 def process_new_chart_data(response_dict):

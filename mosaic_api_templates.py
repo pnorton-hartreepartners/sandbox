@@ -74,6 +74,9 @@ api_config_dict = {
     'getExpiry': {'host': SETTLES,
                   'url_template': r'{host}/api/v1/{api_name}/{key}'},
 
+    'getHolidaysForCalendar': {'host': SETTLES,
+                  'url_template': r'{host}/api/v1/{api_name}'},
+
     # grafana charting apis
     # trader curve details incl conversions
     'getTraderCurvesCatalog': {
