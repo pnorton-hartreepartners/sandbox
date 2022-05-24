@@ -2,14 +2,15 @@
 this was to test a new get api with url params which is easier to build for analysts
 '''
 import json
+import pandas as pd
 from mosaic_api_examples import prepare_inputs_for_api, example_kwargs_dict
-from constants import PROD, DEV
-from mosaic_api_utils import get_any_api, post_any_api, process_new_chart_data, build_new_payload
+from constants import PROD, DEV, URL_KWARGS, PARAMS_KWARGS
+from mosaic_api_utils import get_any_api, post_any_api, process_new_chart_data, build_new_payload, get_any_api2
 
-api_name = 'getTraderCurveTS'
-old_skool = True
+old_skool = False
 
 if old_skool:
+    api_name = 'getTraderCurveTS'
     env = PROD
 
     curves = [{'factor': 1, 'expression': 'BRT-F', 'contracts': ['202212']}]
@@ -31,11 +32,19 @@ if old_skool:
     df.to_clipboard()
 
 else:
+    api_name = 'getCurveTS'
     env = DEV
-    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=example_kwargs_dict)
-    result, df, error = get_any_api(url, params)
+
+    kwargs_dict = {'getCurveTS': {
+        URL_KWARGS: {'symbol': 'BRT-F',
+                     'contract': '202212'}},
+    }
+
+    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=kwargs_dict)
+    response = get_any_api2(url, params)
+    df = pd.DataFrame(response)
     print(df.head())
-    df.to_clipboard()
+    df.to_clipboard(index=False)
 pass
 
 

@@ -90,8 +90,8 @@ api_config_dict = {
                          'url_template': r'{host}/api/v1/{api_name}'},
 
     # new dev version
-    # 'getTraderCurveTS': {'host': CHARTING,
-    #                      'url_template': r'{host}/api/v1/{api_name}/{symbol}/{contract}'},
+    'getCurveTS': {'host': CHARTING,
+                         'url_template': r'{host}/api/v1/{api_name}/{symbol}/{contract}'},
 
 
     # search tool
