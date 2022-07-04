@@ -1,0 +1,22 @@
+[
+  {
+    "symbol": "Coal - API 2",
+    "type": "Pull",
+    "tempest_code": "Coal - API 2"
+  },
+  {
+    "symbol": "Ethanol",
+    "type": "Pull",
+    "tempest_code": "Ethanol"
+  },
+  {
+    "symbol": "LSCR1%NYHCARGO",
+    "type": "Pull",
+    "tempest_code": "LSCR1%NYHCARGO"
+  },
+  {
+    "symbol": "NaphtaSing",
+    "type": "Pull",
+    "tempest_code": "NaphtaSing"
+  }
+]

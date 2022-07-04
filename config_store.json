@@ -1,0 +1,1463 @@
+{
+    "curves": [
+    {
+        "symbol": "WTI-F",
+        "type": "Pull",
+        "tempest_code": "1NBNYMWTI",
+        "mos_symbol": "CL",
+        "mos_exchange": "CME"
+    },
+    {
+        "symbol": "BRT-F",
+        "type": "Pull",
+        "tempest_code": "1NBIPEBRT",
+        "mos_symbol": "B",
+        "mos_exchange": "ICE"
+    },
+    {
+        "symbol": "RB-F",
+        "type": "Pull",
+        "tempest_code": "1NBNYMRBOB",
+        "mos_symbol": "RB",
+        "mos_exchange": "CME"
+    },
+    {
+        "symbol": "TTF",
+        "type": "Pull",
+        "tempest_code": "ICETTF",
+        "mos_symbol": "TTF",
+        "mos_exchange": "ICE"
+    },
+    {
+        "symbol": "WTI-BRT-F",
+        "type": "Combo",
+        "components":[
+            {"symbol":"WTI-F", "factor":1},
+            {"symbol":"BRT-F", "factor":-1}
+        ]
+    },
+    {
+        "symbol":"DATED",
+        "type":"Pull",
+        "tempest_code":"BRENTDTDMONTHLY"
+    },
+    {
+        "symbol": "BRT-S",
+        "type": "Swap",
+        "underlying": "BRT-F",
+        "holiday_calendar": "ICE",
+        "mos_symbol": "B",
+        "mos_exchange": "ICE",
+        "offset_days": -1
+    },
+    {
+        "symbol":"DFL",
+        "type":"Combo",
+        "components":[
+            {"symbol":"DATED", "factor":1},
+            {"symbol":"BRT-S", "factor":-1}
+        ]
+    },
+    {
+        "symbol":"GO-F",
+        "type":"Pull",
+        "tempest_code":"1NBIPEGO",
+        "mos_symbol":"G",
+        "mos_exchange":"ICE",
+        "mos_eod_cut":"1930LON"
+    },
+    {
+        "symbol": "GO-S",
+        "type": "Swap",
+        "underlying": "GO-F",
+        "holiday_calendar": "ICE",
+        "mos_symbol": "G",
+        "mos_exchange": "ICE",
+        "offset_days": -1
+    },
+    {
+        "symbol": "HO-F",
+        "type": "Pull",
+        "tempest_code": "1NBNYMHO",
+        "mos_symbol": "HO",
+        "mos_exchange": "CME"
+    },
+    {
+        "symbol": "HO-S",
+        "type": "Swap",
+        "underlying": "HO-F",
+        "holiday_calendar": "NYMEX",
+        "mos_symbol": "HO",
+        "mos_exchange": "CME",
+        "offset_days": 0
+    },
+    {
+        "symbol": "WTI-S",
+        "type": "Swap",
+        "underlying": "WTI-F",
+        "holiday_calendar": "NYMEX",
+        "mos_symbol": "CL",
+        "mos_exchange": "CME",
+        "offset_days": 0
+    },
+    {
+        "symbol": "RB-S",
+        "type": "Swap",
+        "underlying": "RB-F",
+        "holiday_calendar": "NYMEX",
+        "mos_symbol": "RB",
+        "mos_exchange": "CME",
+        "offset_days": 0
+    },
+    {
+        "symbol": "WTI-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "symbol": "WTI-S", "factor": 1.0  },
+            { "symbol": "BRT-S", "factor": -1.0 }
+        ]
+    },
+    {
+        "symbol": "DUBAI",
+        "type": "Pull",
+        "tempest_code": "1NBDUBAI"
+    },
+    {
+        "symbol": "BRT-DUBAI-EFS",
+        "type": "Combo",
+        "components": [
+            { "factor": -1.0, "symbol": "DUBAI" },
+            { "factor": 1.0, "symbol": "BRT-F" }
+        ]
+    },
+    {
+        "symbol": "BRT-DUBAI",
+        "type": "Combo",
+        "components": [
+            { "symbol": "BRT-S", "factor": 1.0  },
+            { "symbol": "DUBAI", "factor": -1.0 }
+        ]
+    },
+    {
+        "symbol": "DUBAI-TS",
+        "type": "Combo",
+        "components": [
+            { "symbol": "DUBAI", "factor": 1.0  },
+            { "symbol": "BRT-F", "factor": -1.0, "crack": true }
+        ]
+    },
+    {
+        "symbol":"GO-BRT-F",
+        "type":"Combo",
+        "components":[
+            {"symbol":"GO-F", "factor":0.13422818791},
+            {"symbol":"BRT-F", "factor":-1}
+        ]
+    },
+    {
+        "symbol":"GO-BRT-S",
+        "type":"Combo",
+        "components":[
+            {"symbol":"GO-S", "factor":0.13422818791},
+            {"symbol":"BRT-S", "factor":-1}
+        ]
+    },
+    {
+        "symbol":"HO-GO-F",
+        "type":"Combo",
+        "components":[
+            {"symbol":"HO-F", "factor":1},
+            {"symbol":"GO-F", "factor":-0.00319590923}]
+    },
+    {
+        "symbol":"HO-GO-S",
+        "type":"Combo",
+        "components":[
+            {"symbol":"HO-S", "factor":1},
+            {"symbol":"GO-S", "factor":-0.00319590923}
+        ]
+    },
+    {
+        "symbol":"HO-BRT-F",
+        "type":"Combo",
+        "components":[
+            {"symbol":"HO-F", "factor": 42},
+            {"symbol":"BRT-F", "factor": -1}
+        ]
+    },
+    {
+        "symbol":"HO-BRT-S",
+        "type":"Combo",
+        "components":[
+            {"symbol":"HO-S", "factor": 42},
+            {"symbol":"BRT-S", "factor": -1}
+        ]
+    },
+    {
+        "symbol":"HO-WTI-F",
+        "type":"Combo",
+        "components":[
+            {"symbol": "HO-F", "factor": 42},
+            {"symbol": "WTI-F", "factor": -1}
+        ]
+    },
+    {
+        "symbol":"HO-WTI-S",
+        "type":"Combo",
+        "components":[
+            {"symbol": "HO-S", "factor": 42},
+            {"symbol": "WTI-S", "factor": -1}
+        ]
+    },
+    {
+        "symbol":"HO-DATED-S",
+        "type":"Combo",
+        "components":[
+            {"symbol": "HO-S", "factor": 42},
+            {"symbol": "DATED", "factor": -1}
+        ]
+    },
+    {
+        "symbol":"GO-DUBAI-S",
+        "type":"Combo",
+        "components":[
+            {"symbol": "GO-S", "factor": 0.13422818791},
+            {"symbol": "DUBAI", "factor": -1}
+        ]
+    },
+    {
+        "symbol": "C5",
+        "type": "Pull",
+        "tempest_code": "OPISNonTETNGAS"
+    },
+    {
+        "symbol":"C5-WTI",
+        "type":"Combo",
+        "components":[
+            {"symbol":"C5", "factor":42},
+            {"symbol":"WTI-S", "factor":-1}
+        ]
+    },
+    {
+        "symbol":"C5-BRT",
+        "type":"Combo",
+        "components":[
+            {"symbol":"C5", "factor":42},
+            {"symbol":"BRT-S", "factor":-1}
+        ]
+    },
+    {
+        "symbol": "EUA",
+        "type": "Pull",
+        "tempest_code": "ICEEUA",
+        "mos_symbol": "EUA",
+        "mos_exchange": "ICE"
+    },
+    {
+        "symbol": "COPPER",
+        "type": "Pull",
+        "tempest_code": "LMECOP",
+        "mos_symbol": "CU",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "LLS",
+        "type": "Pull",
+        "tempest_code": "LLS"
+    },
+    {
+        "symbol":"LLS-TM",
+        "type":"Combo",
+        "components":[
+            { "symbol":"LLS", "factor": 1 },
+            { "symbol":"WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MARS",
+        "type": "Pull",
+        "tempest_code": "MARS"
+    },
+    {
+        "symbol":"MARS-TM",
+        "type":"Combo",
+        "components":[
+            { "symbol":"MARS", "factor": 1 },
+            { "symbol":"WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MEH",
+        "type": "Pull",
+        "tempest_code": "WTI Houston"
+    },
+    {
+        "symbol":"MEH-TM",
+        "type":"Combo",
+        "components":[
+            { "symbol":"MEH", "factor": 1 },
+            { "symbol":"WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MID-WTI",
+        "type": "Pull",
+        "tempest_code": "WTI Midland"
+    },
+    {
+        "symbol":"MID-WTI-TM",
+        "type":"Combo",
+        "components":[
+            { "symbol":"MID-WTI", "factor": 1 },
+            { "symbol":"WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MID-WTS",
+        "type": "Pull",
+        "tempest_code": "WTS"
+    },
+    {
+        "symbol":"MID-WTS-TM",
+        "type":"Combo",
+        "components":[
+            { "symbol":"MID-WTS", "factor": 1 },
+            { "symbol":"WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "NWEFO-S",
+        "type": "Pull",
+        "tempest_code": "HS3.5%ROTTERDAM"
+    },
+    {
+        "symbol": "NWEFO-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "symbol": "NWEFO-S", "factor": 0.157480315 },
+            { "symbol": "BRT-S", "factor": -1.0 }
+        ]
+    },
+    {
+        "symbol": "NWEFO-TS",
+        "type": "Combo",
+        "components": [
+            { "symbol": "NWEFO-S", "factor": 0.157480315 },
+            { "symbol": "BRT-S", "factor": -1.0, "crack": true }
+        ],
+        "timing_factor": 0.1575
+    },
+    {
+        "symbol": "NWEJET-S",
+        "type": "Pull",
+        "tempest_code": "JETNWECIF"
+    },
+    {
+        "symbol": "NWEJET-DIFF",
+        "type": "Combo",
+        "components": [
+            { "symbol": "NWEJET-S", "factor": 1.0  },
+            { "symbol": "GO-S", "factor": -1.0 }
+        ]
+    },
+    {
+        "symbol": "NWEJET-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "symbol": "NWEJET-S", "factor": 0.1269035533 },
+            { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "GCJET-S",
+        "type": "Pull",
+        "tempest_code": "USGCJET54 PAPER"
+    },
+    {
+        "symbol": "RB-BRT-F",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-F", "factor": 42 },
+          { "symbol": "BRT-F", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-BRT-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 42 },
+          { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-WTI-F",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-F", "factor": 42 },
+          { "symbol": "WTI-F", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-WTI-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 42 },
+          { "symbol": "WTI-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-HO-F",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-F", "factor": 1 },
+          { "symbol": "HO-F", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-HO-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 1 },
+          { "symbol": "HO-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-DATED-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 42 },
+          { "symbol": "DATED", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "SING-GO",
+        "type": "Pull",
+        "tempest_code": "GOSPORE 10ppm"
+    },
+    {
+        "symbol": "SING-GO-EFS",
+        "type": "Combo",
+        "components": [
+            { "factor": 7.45, "symbol": "SING-GO" },
+            { "factor": -1, "symbol": "GO-F" }
+        ]
+    },
+    {
+        "symbol": "SING-GO-TS",
+        "type": "Combo",
+        "components": [
+            { "factor": 7.45, "symbol": "SING-GO" },
+            { "factor": -1, "symbol": "GO-F", "crack": true }
+        ],
+        "timing_factor": 7.45
+    },
+    {
+        "symbol": "SING-GO-GO-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 7.45, "symbol": "SING-GO" },
+            { "factor": -1, "symbol": "GO-S" }
+        ]
+    },
+    {
+        "symbol": "SING-GO-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SING-GO" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SING-GO-DUBAI",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SING-GO" },
+            { "factor": -1, "symbol": "DUBAI" }
+        ]
+    },
+    {
+        "symbol": "MOGAS-MOPJ-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "MOGAS" },
+            { "factor": -0.1123595506, "symbol": "MOPJ" }
+        ]
+    },
+    {
+        "symbol": "EBOB-S",
+        "type": "Pull",
+        "tempest_code": "EurobobOxyGas"
+    },
+    {
+        "symbol": "EBOB-ARB",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 100 },
+          { "symbol": "EBOB-S", "factor": -0.285829 }
+        ]
+    },
+    {
+        "symbol": "EBOB-TS",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-S", "factor": -1 },
+          { "symbol": "RB-S", "factor": 349.86, "crack": true }
+        ],
+        "timing_factor": -1
+    },
+    {
+        "symbol": "EBOB-BRT-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-S", "factor": 0.1200480192 },
+          { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "EBOB-GO-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-S", "factor": 1 },
+          { "symbol": "GO-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "EBOB-CRK-GO-CRK-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-BRT-S", "factor": 1 },
+          { "symbol": "GO-BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MOGAS",
+        "type": "Pull",
+        "tempest_code": "Sing92RON"
+    },
+    {
+        "symbol": "MOGAS-EW",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOGAS", "factor": 1 },
+          { "symbol": "EBOB-S", "factor": -0.1200480192 }
+        ]
+    },
+    {
+        "symbol": "MOGAS-TS",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOGAS", "factor": 1 },
+          { "symbol": "EBOB-S", "factor": -0.1200480192, "crack":true }
+        ]
+    },
+    {
+        "symbol": "MOGAS-BRT-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOGAS", "factor": 1 },
+          { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "NAP",
+        "type": "Pull",
+        "tempest_code": "NAPphysCIFNWE"
+    },
+    {
+        "symbol": "NAP-CRK",
+        "type": "Combo",
+        "components": [
+          { "symbol": "NAP", "factor": 0.11235955 },
+          { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "NAP-TS",
+        "type": "Combo",
+        "components": [
+          { "symbol": "NAP", "factor": 0.11235955 },
+          { "symbol": "BRT-S", "factor": -1, "crack": true }
+        ],
+        "timing_factor": 0.1124
+    },
+    {
+        "symbol": "MOPJ",
+        "type": "Pull",
+        "tempest_code": "NapthaJPN"
+    },
+    {
+        "symbol": "EW-NAP-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOPJ", "factor": 1 },
+          { "symbol": "NAP", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MOPJ-CRK",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOPJ", "factor": 0.1123595506 },
+          { "symbol": "BRT-S", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "MOPJ-TS",
+        "type": "Combo",
+        "components": [
+          { "symbol": "MOPJ", "factor": 1 },
+          { "symbol": "NAP", "factor": -1, "crack": true }
+        ]
+    },
+    {
+        "symbol": "EBOB-NAP-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-S", "factor": 1 },
+          { "symbol": "NAP", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "EBOB-NAP-CRK",
+        "type": "Combo",
+        "components": [
+          { "symbol": "EBOB-BRT-S", "factor": 1 },
+          { "symbol": "NAP-CRK", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-NAP-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-S", "factor": 1 },
+          { "symbol": "NAP", "factor": -0.002675227394 }
+        ]
+    },
+    {
+        "symbol": "RB-NAP-CRK",
+        "type": "Combo",
+        "components": [
+          { "symbol": "RB-BRT-S", "factor": 1 },
+          { "symbol": "NAP-CRK", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "GO-NAP-S",
+        "type": "Combo",
+        "components": [
+          { "symbol": "GO-S", "factor": 1 },
+          { "symbol": "NAP", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "GO-NAP-CRK",
+        "type": "Combo",
+        "components": [
+          { "symbol": "GO-BRT-S", "factor": 1 },
+          { "symbol": "NAP-CRK", "factor": -1 }
+        ]
+    },
+    {
+        "symbol": "RB-GO-F",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "RB-F" },
+            { "factor": -0.003195909236, "symbol": "GO-F" }
+        ]
+    },
+    {
+        "symbol": "RB-GO-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "RB-S" },
+            { "factor": -0.003195909236, "symbol": "GO-S" }
+        ]
+    },
+    {
+        "symbol": "GCULSD-S",
+        "type": "Pull",
+        "tempest_code": "USGC ULSD PIPE"
+    },
+    {
+        "symbol": "GCULSD-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "GCULSD-S" },
+            { "factor": -1, "symbol": "HO-S" }
+        ]
+    },
+    {
+        "symbol": "GCULSD-WTI-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 42, "symbol": "GCULSD-S" },
+            { "factor": -1, "symbol": "WTI-S" }
+        ]
+    },
+    {
+        "symbol": "GCULSD-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 42, "symbol": "GCULSD-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "GCJET-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "GCJET-S" },
+            { "factor": -1, "symbol": "HO-S" }
+        ]
+    },
+    {
+        "symbol": "GCJET-WTI-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 42, "symbol": "GCJET-S" },
+            { "factor": -1, "symbol": "WTI-S" }
+        ]
+    },
+    {
+        "symbol": "GCJET-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 42, "symbol": "GCJET-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SINGJET-S",
+        "type": "Pull",
+        "tempest_code": "JETSPORE"
+    },
+    {
+        "symbol": "SINGJET-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "SING-GO" },
+            { "factor": 1, "symbol": "SINGJET-S" }
+        ]
+    },
+    {
+        "symbol": "SINGJET-DUBAI-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SINGJET-S" },
+            { "factor": -1, "symbol": "DUBAI" }
+        ]
+    },
+    {
+        "symbol": "LSFO-S",
+        "type": "Pull",
+        "tempest_code": "LS1%FOBNWE"
+    },
+    {
+        "symbol": "HILO-S",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "LSFO-S" }
+        ]
+    },
+    {
+        "symbol": "HILO-EUR-S",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "LSFO-S" }
+        ]
+    },
+    {
+        "symbol": "HI5-S",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "LSFO-S" }
+        ]
+    },
+    {
+        "symbol": "LSFO-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "LSFO-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SING380-S",
+        "type": "Pull",
+        "tempest_code": "HSFO 380cstSING"
+    },
+    {
+        "symbol": "SING180-S",
+        "type": "Pull",
+        "tempest_code": "HSFO180cst_SING"
+    },
+    {
+        "symbol": "SING.5-S",
+        "type": "Pull",
+        "tempest_code": "MF0.5%SING"
+    },
+    {
+        "symbol": "EWFO-S",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "SING380-S" }
+        ]
+    },
+    {
+        "symbol": "SING380-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "SING380-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SING180-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "SING180-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "VISCO",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SING180-S" },
+            { "factor": -1, "symbol": "SING380-S" }
+        ]
+    },
+    {
+        "symbol": "MARINE.5-S",
+        "type": "Pull",
+        "tempest_code": "MF0.5%RDAMBG"
+    },
+    {
+        "symbol": "EURO.5-S",
+        "type": "Pull",
+        "tempest_code": "MF0.5%RDAMBG"
+    },
+    {
+        "symbol": "MARINE.5-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "EURO.5-S" }
+        ]
+    },
+    {
+        "symbol": "EURO HI-5-S",
+        "type": "Combo",
+        "components": [
+            { "factor": -1, "symbol": "NWEFO-S" },
+            { "factor": 1, "symbol": "EURO.5-S" }
+        ]
+    },
+    {
+        "symbol": "MARINE.5-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "EURO.5-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "EURO.5-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "EURO.5-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SING-HI5-S",
+        "type": "Pull",
+        "tempest_code": "MF0.5%SING"
+    },
+    {
+        "symbol": "SING-HI5-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SING.5-S" },
+            { "factor": -1, "symbol": "SING380-S" }
+        ]
+    },
+    {
+        "symbol": "SING HI-5-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "SING.5-S" },
+            { "factor": -1, "symbol": "SING380-S" }
+        ]
+    },
+    {
+        "symbol": "SING-HI5-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "SING.5-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "SING.5-BRT-CRK",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.157480315, "symbol": "SING.5-S" },
+            { "factor": -1, "symbol": "BRT-S" }
+        ]
+    },
+    {
+        "symbol": "321-BRT-F",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.6666666667, "symbol": "RB-BRT-F" },
+            { "factor": 0.3333333333, "symbol": "HO-BRT-F" }
+        ]
+    },
+    {
+        "symbol": "321-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.6666666667, "symbol": "RB-BRT-S" },
+            { "factor": 0.3333333333, "symbol": "HO-BRT-S" }
+        ]
+    },
+    {
+        "symbol": "321-WTI-F",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.6666666667, "symbol": "RB-WTI-F" },
+            { "factor": 0.3333333333, "symbol": "HO-WTI-F" }
+        ]
+    },
+    {
+        "symbol": "321-WTI-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.6666666667, "symbol": "RB-WTI-S" },
+            { "factor": 0.3333333333, "symbol": "HO-WTI-S" }
+        ]
+    },
+    {
+        "symbol": "211-BRT-F",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "RB-BRT-F" },
+            { "factor": 0.5, "symbol": "HO-BRT-F" }
+        ]
+    },
+    {
+        "symbol": "211-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "RB-BRT-S" },
+            { "factor": 0.5, "symbol": "HO-BRT-S" }
+        ]
+    },
+    {
+        "symbol": "211-WTI-F",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "RB-WTI-F" },
+            { "factor": 0.5, "symbol": "HO-WTI-F" }
+        ]
+    },
+    {
+        "symbol": "211-WTI-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "RB-WTI-S" },
+            { "factor": 0.5, "symbol": "HO-WTI-S" }
+        ]
+    },
+    {
+        "symbol": "211-DATED-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "RB-DATED-S" },
+            { "factor": 0.5, "symbol": "HO-DATED-S" }
+        ]
+    },
+    {
+        "symbol": "EUR211-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "EBOB-BRT-S" },
+            { "factor": 0.5, "symbol": "GO-BRT-S" }
+        ]
+    },
+    {
+        "symbol": "FOGO5050-BRT-S",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.5, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": 0.5, "symbol": "GO-BRT-S" }
+        ]
+    },
+    {
+        "symbol": "TOPPING",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.3, "symbol": "NAP-CRK" },
+            { "factor": 0.4, "symbol": "GO-BRT-S" },
+            { "factor": 0.1, "symbol": "NWEJET-BRT-S" },
+            { "factor": 0.2, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": -1, "symbol": "DFL" }
+        ]
+    },
+    {
+        "symbol": "HYDRO",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.1, "symbol": "NAP-CRK" },
+            { "factor": 0.2, "symbol": "EBOB-BRT-S" },
+            { "factor": 0.3, "symbol": "GO-BRT-S" },
+            { "factor": 0.2, "symbol": "NWEJET-BRT-S" },
+            { "factor": 0.2, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": -1, "symbol": "DFL" }
+        ]
+    },
+    {
+        "symbol": "CRACKING",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.1, "symbol": "NAP-CRK" },
+            { "factor": 0.5, "symbol": "EBOB-BRT-S" },
+            { "factor": 0.3, "symbol": "GO-BRT-S" },
+            { "factor": 0.1, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": -1, "symbol": "DFL" }
+        ]
+    },
+    {
+        "symbol": "COMPLEX-EU-P",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.06, "symbol": "NAP-CRK" },
+            { "factor": 0.33, "symbol": "EBOB-BRT-S" },
+            { "factor": 0.44, "symbol": "GO-BRT-S" },
+            { "factor": 0.17, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": -1, "symbol": "DFL" }
+        ]
+    },
+    {
+        "symbol": "SIMPLE-EU-P",
+        "type": "Combo",
+        "components": [
+            { "factor": 0.2, "symbol": "NAP-CRK" },
+            { "factor": 0.5, "symbol": "GO-BRT-S" },
+            { "factor": 0.3, "symbol": "NWEFO-BRT-CRK" },
+            { "factor": -1, "symbol": "DFL" }
+        ]
+    },
+    {
+        "symbol": "NG",
+        "type": "Pull",
+        "tempest_code": "NYMNG",
+        "mos_symbol": "NG",
+        "mos_exchange": "CME"
+    },
+    {
+        "symbol": "MEDGAS-S",
+        "type": "Pull",
+        "tempest_code": "GASFOBMEDPrmUnl"
+    },
+    {
+        "symbol": "MEDNORTH-GAS-DIFF",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "MEDGAS-S" },
+            { "factor": -1, "symbol": "EBOB-S" }
+        ]
+    },
+    {
+        "symbol": "ZINC",
+        "type": "Pull",
+        "tempest_code": "LMEZINC",
+        "mos_symbol": "ZN",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALUMINIUM",
+        "type": "Pull",
+        "tempest_code": "LMEALUM",
+        "mos_symbol": "AL",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "WTL-S",
+        "type": "Pull",
+        "tempest_code": "ArgWTLMidland"
+    },
+    {
+        "symbol": "WTL-TM",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "WTL-S" },
+            { "factor": -1, "symbol": "WTI-S" }
+        ]
+    },
+    {
+        "symbol": "TC2_USDMT",
+        "type": "Pull",
+        "tempest_code": "TC2 MT"
+    },
+    {
+        "symbol": "TC5_USDMT",
+        "type": "Pull",
+        "tempest_code": "TC5 MT"
+    },
+    {
+        "symbol": "TC6_USDMT",
+        "type": "Pull",
+        "tempest_code": "TC6 MT"
+    },
+    {
+        "symbol": "TC12_USDMT",
+        "type": "Pull",
+        "tempest_code": "TC12 MT"
+    },
+    {
+        "symbol": "TC14_USDMT",
+        "type": "Pull",
+        "tempest_code": "TC14 MT"
+    },
+    {
+        "symbol": "TD3_USDMT",
+        "type": "Pull",
+        "tempest_code": "TD3C MT"
+    },
+    {
+        "symbol": "TD7_USDMT",
+        "type": "Pull",
+        "tempest_code": "TD7 MT"
+    },
+    {
+        "symbol": "TD20_USDMT",
+        "type": "Pull",
+        "tempest_code": "TD20 MT"
+    },
+    {
+        "symbol": "TD22_USDMT",
+        "type": "Pull",
+        "tempest_code": "TD22 MT"
+    },
+    {
+        "symbol": "TD25_USDMT",
+        "type": "Pull",
+        "tempest_code": "TD25 MT"
+    },
+    {
+        "symbol": "ETH_RINS_21",
+        "type": "Pull",
+        "tempest_code": "RINS 21 D6"
+    },
+    {
+        "symbol": "ETH_RINS_22",
+        "type": "Pull",
+        "tempest_code": "RINS 22 D6"
+    },
+    {
+        "symbol": "ETH_RINS_23",
+        "type": "Pull",
+        "tempest_code": "RINS 23 D6"
+    },
+    {
+        "symbol": "BIO_RINS_21",
+        "type": "Pull",
+        "tempest_code": "RINS 21 D4"
+    },
+    {
+        "symbol": "BIO_RINS_22",
+        "type": "Pull",
+        "tempest_code": "RINS 22 D4"
+    },
+    {
+        "symbol": "BIO_RINS_23",
+        "type": "Pull",
+        "tempest_code": "RINS 23 D4"
+    },
+    {
+        "symbol": "RVO_09",
+        "type": "Pull",
+        "tempest_code": "RINS09 RVO"
+    },
+    {
+        "symbol": "RVO_10",
+        "type": "Pull",
+        "tempest_code": "RINS10 RVO"
+    },
+    {
+        "symbol": "RVO_11",
+        "type": "Pull",
+        "tempest_code": "RINS11 RVO"
+    },
+    {
+        "symbol": "RVO_12",
+        "type": "Pull",
+        "tempest_code": "RINS12 RVO"
+    },
+     {
+        "symbol": "RVO_13",
+        "type": "Pull",
+        "tempest_code": "RINS13 RVO"
+    },
+    {
+        "symbol": "RVO_14",
+        "type": "Pull",
+        "tempest_code": "RINS14 RVO"
+    },
+    {
+        "symbol": "RVO_15",
+        "type": "Pull",
+        "tempest_code": "RINS15 RVO"
+    },
+    {
+        "symbol": "RVO_16",
+        "type": "Pull",
+        "tempest_code": "RINS16 RVO"
+    },
+    {
+        "symbol": "RVO_17",
+        "type": "Pull",
+        "tempest_code": "RINS17 RVO"
+    },
+    {
+        "symbol": "RVO_18",
+        "type": "Pull",
+        "tempest_code": "RINS18 RVO"
+    },
+    {
+        "symbol": "RVO_19",
+        "type": "Pull",
+        "tempest_code": "RINS19 RVO"
+    },
+    {
+        "symbol": "RVO_20",
+        "type": "Pull",
+        "tempest_code": "RINS20RVO"
+    },
+    {
+        "symbol": "RVO_21",
+        "type": "Pull",
+        "tempest_code": "RINS20RVO"
+    },
+    {
+        "symbol": "RVO_22",
+        "type": "Pull",
+        "tempest_code": "RINS22RVO"
+    },
+    {
+        "symbol": "NWE-Propane",
+        "type": "Pull",
+        "tempest_code": "ARGProCIFARALG"
+    },
+    {
+        "symbol": "NWE-Pro-Nap",
+        "type": "Combo",
+        "components": [
+            { "factor": 1, "symbol": "NWE-Propane" },
+            { "factor": -1, "symbol": "NAP" }
+        ]
+    },
+    {
+        "symbol": "C4-NONTET",
+        "type": "Pull",
+        "tempest_code": "OPISButneNonTET"
+    },
+    {
+        "symbol": "C4-CONWAY",
+        "type": "Pull",
+        "tempest_code": "OpisCnwyNButne"
+    },
+    {     "symbol": "C5-CONWAY",
+        "type": "Pull",
+        "tempest_code": "OpisCnwyNGas"
+    },
+    {
+        "symbol": "C3-CONWAY",
+        "type": "Pull",
+        "tempest_code": "OPISCnwyPropane"
+    },
+    {
+        "symbol": "C3-TET",
+        "type": "Pull",
+        "tempest_code": "OPISPropaneTET"
+    },
+    {
+        "symbol": "C3-NONTET",
+        "type": "Pull",
+        "tempest_code": "OPISPropNonTET"
+    },
+    {
+        "symbol": "C2-NONTET",
+        "type": "Pull",
+        "tempest_code": "OPIS Ethane"
+    },
+    {
+        "symbol": "CVSWEET_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVSweet"
+    },
+    {
+        "symbol": "CVFRN_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVFRN"
+    },
+    {
+        "symbol": "CVKEROSENE_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVKerosene"
+    },
+    {
+        "symbol": "CVATB_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVATB"
+    },
+    {
+        "symbol": "CVGASOIL_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVGasoil"
+    },
+    {
+        "symbol": "CVLPG_DIFF",
+        "type": "Pull",
+        "tempest_code": "CVLPG"
+    },
+    {
+        "symbol": "ALMWFCA-P",
+        "type": "Pull",
+        "tempest_code": "Ali Det/Tol FCA",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALAEP-P",
+        "type": "Pull",
+        "tempest_code": "Ali Europe",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALAEPEXW-P",
+        "type": "Pull",
+        "tempest_code": "Ali Europe EXW",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALAEPFCA-P",
+        "type": "Pull",
+        "tempest_code": "Ali Europe FCA",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALAEPINW-P",
+        "type": "Pull",
+        "tempest_code": "Ali Europe INW",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALPEDFCA-P",
+        "type": "Pull",
+        "tempest_code": "Ali PED",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "ALSEA-P",
+        "type": "Pull",
+        "tempest_code": "Ali SEA",
+        "mos_exchange": "LME"
+    },
+    {
+        "symbol": "CB0-CARBDIESEL",
+        "type": "Pull",
+        "tempest_code": "Carb#2+Carbon"
+    },
+    {
+        "symbol": "CEL_RINS_21",
+        "type": "Pull",
+        "tempest_code": "RINS 21 D3"
+    },
+    {
+        "symbol": "CEL_RINS_22",
+        "type": "Pull",
+        "tempest_code": "RINS 22 D3"
+    },
+    {
+        "symbol": "CEL_RINS_23",
+        "type": "Pull",
+        "tempest_code": "RINS 23 D3"
+    },
+    {
+        "symbol": "RVO_09",
+        "type": "Pull",
+        "tempest_code": "RINS09 RVO"
+    },
+    {
+        "symbol": "RVO_10",
+        "type": "Pull",
+        "tempest_code": "RINS10 RVO"
+    },
+    {
+        "symbol": "RVO_11",
+        "type": "Pull",
+        "tempest_code": "RINS11 RVO"
+    },
+    {
+        "symbol": "RVO_12",
+        "type": "Pull",
+        "tempest_code": "RINS12"
+    },
+     {
+        "symbol": "RVO_13",
+        "type": "Pull",
+        "tempest_code": "RINS13 RVO"
+    },
+    {
+        "symbol": "RVO_14",
+        "type": "Pull",
+        "tempest_code": "RINS14 RVO"
+    },
+    {
+        "symbol": "RVO_15",
+        "type": "Pull",
+        "tempest_code": "RINS15 RVO"
+    },
+    {
+        "symbol": "RVO_16",
+        "type": "Pull",
+        "tempest_code": "RINS16 RVO"
+    },
+    {
+        "symbol": "RVO_17",
+        "type": "Pull",
+        "tempest_code": "RINS17 RVO"
+    },
+    {
+        "symbol": "RVO_18",
+        "type": "Pull",
+        "tempest_code": "RINS18 RVO"
+    },
+    {
+        "symbol": "RVO_19",
+        "type": "Pull",
+        "tempest_code": "RINS19 RVO"
+    },
+    {
+        "symbol": "RVO_20",
+        "type": "Pull",
+        "tempest_code": "RINS20RVO"
+    },
+    {
+        "symbol": "ZC",
+        "type": "Pull",
+        "tempest_code": "CMECORN"
+    },
+    {
+        "symbol": "ZW",
+        "type": "Pull",
+        "tempest_code": "CMECHIWW"
+    }
+]
+}
