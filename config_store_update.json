@@ -1,22 +1,22 @@
 [
   {
-    "symbol": "Coal - API 2",
+    "symbol": "ARGFarEastIndex",
     "type": "Pull",
-    "tempest_code": "Coal - API 2"
+    "tempest_code": "ARGFarEastIndex"
   },
   {
-    "symbol": "Ethanol",
+    "symbol": "ARGSaudiAramco",
     "type": "Pull",
-    "tempest_code": "Ethanol"
+    "tempest_code": "ARGSaudiAramco"
   },
   {
-    "symbol": "LSCR1%NYHCARGO",
+    "symbol": "JETFOBrott",
     "type": "Pull",
-    "tempest_code": "LSCR1%NYHCARGO"
+    "tempest_code": "JETFOBrott"
   },
   {
-    "symbol": "NaphtaSing",
+    "symbol": "Urals NWE",
     "type": "Pull",
-    "tempest_code": "NaphtaSing"
+    "tempest_code": "Urals NWE"
   }
 ]
