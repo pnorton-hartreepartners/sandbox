@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 from zipfile import ZipFile
 from bs4 import BeautifulSoup
 
@@ -14,8 +15,7 @@ filename_and_path = os.path.join(path, filename)
 zip_extension = '.zip'
 zip_filename_and_path = filename_and_path.split('.')[0] + zip_extension
 
-if rename_file:
-    os.rename(filename_and_path, zip_filename_and_path)
+copyfile(filename_and_path, zip_filename_and_path)
 
 # ===========================================================
 # open the zip file and save the worksheets to a dict
