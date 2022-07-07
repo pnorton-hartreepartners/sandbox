@@ -26,7 +26,7 @@ with ZipFile(zip_filename_and_path) as zf:
         if file.startswith(r'xl/worksheets') and file.endswith(r'.xml'):
             with zf.open(file) as f:
                 data = f.readlines()
-                worksheets[f.name] = [data]
+                worksheets[f.name] = data
                 print(f.name)
 
 
@@ -34,7 +34,7 @@ with ZipFile(zip_filename_and_path) as zf:
 # select a worksheet
 
 worksheet_name = 'xl/worksheets/sheet1.xml'
-ws = worksheets[worksheet_name][0][1]
+ws = worksheets[worksheet_name][1]
 
 
 # ===========================================================
