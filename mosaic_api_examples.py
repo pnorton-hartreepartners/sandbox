@@ -180,7 +180,7 @@ if __name__ == '__main__':
     else:
         api_name = key
         url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=example_kwargs_dict)
-        content = get_any_api2(url, params)
+        response, content = get_any_api2(url, params)
         kwargs = example_kwargs_dict[api_name][URL_KWARGS]
         print(kwargs['key'])
         print(content)

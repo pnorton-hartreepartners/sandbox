@@ -41,7 +41,7 @@ else:
     }
 
     url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=kwargs_dict)
-    response = get_any_api2(url, params)
+    response, content = get_any_api2(url, params)
     df = pd.DataFrame(response)
     print(df.head())
     df.to_clipboard(index=False)

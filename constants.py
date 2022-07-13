@@ -1,6 +1,10 @@
 path = r'C:\Temp'
-# json_for_trader_curves_definitions = 'trader_curves_definitions.json'
 json_for_trader_curves_definitions = 'tempest.json'
+
+month_codes = 'FGHJKMNQUVXZ'
+month_codes = [c for c in month_codes]
+month_numbers = range(1, 13)
+month_code_mapper = list(zip(month_numbers, month_codes))
 
 PROD = 'prod'
 DEV = 'dev'

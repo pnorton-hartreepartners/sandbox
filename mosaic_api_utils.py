@@ -69,7 +69,7 @@ def get_any_api2(url, params):
     except Exception as e:
         print(f'error: {e}')
         content = {}
-    return content
+    return response, content
 
 
 def process_new_chart_data(response_dict):

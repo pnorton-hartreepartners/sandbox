@@ -44,7 +44,7 @@ env = PROD
 def get_expiry_date(kwargs_dict, env=PROD):
     api_name = 'getExpiry'
     url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=kwargs_dict)
-    expiry_date = get_any_api2(url, params=params)
+    response, expiry_date = get_any_api2(url, params=params)
     expiry_date = expiry_date['ExpirationDate']
     expiry_date = pd.to_datetime(expiry_date)
     print(expiry_date)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     api_name = 'getHolidaysForCalendar'
     url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=holidays_kwargs_dict)
-    holidays = get_any_api2(url, params=params)
+    response, holidays = get_any_api2(url, params=params)
     holidays = pd.to_datetime(holidays)
 
     historic_year_obs_index = pd.bdate_range(start=start_date, end=historic_year_expiry_date, freq='C', holidays=holidays)
