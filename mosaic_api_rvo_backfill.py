@@ -45,6 +45,8 @@ if __name__ == '__main__':
     api_name = 'getCurveTS'
     describe_dfs = []
     describe_columns = ['count', 'min', 'max']
+    null_stats = {key: 0 for key in describe_columns}
+    null_stats.update({key: pd.NaT for key in ['min_date', 'max_date']})
     for symbol in rvo_symbols:
         kwargs_dict['getCurveTS'][URL_KWARGS]['symbol'] = symbol
         contracts = all_contracts_dict[symbol]
@@ -56,12 +58,14 @@ if __name__ == '__main__':
                 contract = kwargs_dict[api_name][URL_KWARGS]['contract']
                 df = pd.DataFrame(data=content)
                 try:
-                    describe_df = df.describe().T[describe_columns]
-                except ValueError as v:
-                    print(v)
-                    describe_df = pd.DataFrame(data=[{key: 0 for key in describe_columns}])
+                    describe_df = df['value'].describe().to_frame().T[describe_columns]
+                    describe_df['min_date'] = df['date'].min()
+                    describe_df['max_date'] = df['date'].max()
+                except KeyError as e:
+                    print(e)
+                    describe_df = pd.DataFrame(data=[null_stats])
             else:
-                describe_df = pd.DataFrame(data=[{key: 0 for key in describe_columns}])
+                describe_df = pd.DataFrame(data=[null_stats])
 
             describe_df.insert(loc=0, column='symbol', value=symbol)
             describe_df.insert(loc=1, column='contract', value=contract)
