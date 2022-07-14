@@ -1,3 +1,9 @@
+'''
+1) build some sql that young showed me; although i think its overcomplicated
+way to test for symbol in tempest
+2) read config-store and make sure proposed symbols don't already exist
+3) build new entries for config-store
+'''
 import json
 
 # constants
@@ -71,7 +77,7 @@ with open(r'C:\Users\PNorton\OneDrive - Hartree Partners\Documents\tools\SQL\tem
     file.write(sql)
 
 # ============================================================
-# build the dict of updates and check they're not already there
+# check the symbol isnt already there and build the dict of updates
 
 update_dicts = []
 config_store_keys = {c.get('tempest_code') for c in config_store['curves']}

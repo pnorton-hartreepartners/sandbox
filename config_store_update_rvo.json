@@ -1,0 +1,72 @@
+[
+  {
+    "symbol": "RVO_09",
+    "type": "Pull",
+    "tempest_code": "RINS09RVO"
+  },
+  {
+    "symbol": "RVO_10",
+    "type": "Pull",
+    "tempest_code": "RINS10RVO"
+  },
+  {
+    "symbol": "RVO_11",
+    "type": "Pull",
+    "tempest_code": "RINS11RVO"
+  },
+  {
+    "symbol": "RVO_12",
+    "type": "Pull",
+    "tempest_code": "RINS12RVO"
+  },
+  {
+    "symbol": "RVO_13",
+    "type": "Pull",
+    "tempest_code": "RINS13RVO"
+  },
+  {
+    "symbol": "RVO_14",
+    "type": "Pull",
+    "tempest_code": "RINS14RVO"
+  },
+  {
+    "symbol": "RVO_15",
+    "type": "Pull",
+    "tempest_code": "RINS15RVO"
+  },
+  {
+    "symbol": "RVO_16",
+    "type": "Pull",
+    "tempest_code": "RINS16RVO"
+  },
+  {
+    "symbol": "RVO_17",
+    "type": "Pull",
+    "tempest_code": "RINS17RVO"
+  },
+  {
+    "symbol": "RVO_18",
+    "type": "Pull",
+    "tempest_code": "RINS18RVO"
+  },
+  {
+    "symbol": "RVO_19",
+    "type": "Pull",
+    "tempest_code": "RINS19RVO"
+  },
+  {
+    "symbol": "RVO_20",
+    "type": "Pull",
+    "tempest_code": "RINS20RVO"
+  },
+  {
+    "symbol": "RVO_21",
+    "type": "Pull",
+    "tempest_code": "RINS21RVO"
+  },
+  {
+    "symbol": "RVO_22",
+    "type": "Pull",
+    "tempest_code": "RINS22RVO"
+  }
+]

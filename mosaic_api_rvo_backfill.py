@@ -1,3 +1,6 @@
+'''
+analysis of rvo data in mosaic
+'''
 from constants import URL_KWARGS, PARAMS_KWARGS, PROD, month_code_mapper, month_numbers
 from mosaic_api_utils import prepare_inputs_for_api, get_any_api2
 import pandas as pd
@@ -12,17 +15,24 @@ kwargs_dict = {
                      'contract': '202103'}},
 }
 
+
+def get_trader_curves_catalogue():
+    api_name = 'getTraderCurvesCatalog'
+    kwargs_dict = {api_name: {URL_KWARGS: {}, PARAMS_KWARGS: {}}}
+    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=kwargs_dict)
+    response, content = get_any_api2(url, params)
+    catalogue_df = pd.DataFrame(content)
+    catalogue_df.sort_values(by='symbol', inplace=True)
+    return catalogue_df
+
+
 if __name__ == '__main__':
 
     env = PROD
 
     # ===========================================================
     # get the list of symbols
-    api_name = 'getTraderCurvesCatalog'
-    url, params, method = prepare_inputs_for_api(api_name, env, kwargs_dict=kwargs_dict)
-    response, content = get_any_api2(url, params)
-    catalogue_df = pd.DataFrame(content)
-    catalogue_df.sort_values(by='symbol', inplace=True)
+    catalogue_df = get_trader_curves_catalogue()
     mask = catalogue_df['symbol'].str.startswith('RVO')
     rvo_symbols = catalogue_df.loc[mask, 'symbol'].values.tolist()
 
